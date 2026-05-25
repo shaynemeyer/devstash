@@ -17,3 +17,5 @@ Read the following to get the full context of the project:
 - **Build**: `npm run build`
 - **Production server**: `npm run start`
 - **Lint**: `npm run lint`
+
+All versions should be locked. no `^` in the package.json
