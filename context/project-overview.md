@@ -12,28 +12,28 @@ Developers keep essentials scattered across VS Code, Notion, browser bookmarks, 
 
 ## Target Users
 
-| User | Need |
-| ---- | ---- |
-| Everyday Developer | Fast access to snippets, commands, links |
-| AI-first Developer | Saves prompts, system messages, context files, workflows |
-| Content Creator / Educator | Code blocks, explanations, course notes |
-| Full-stack Builder | Patterns, boilerplates, API examples |
+| User                       | Need                                                     |
+| -------------------------- | -------------------------------------------------------- |
+| Everyday Developer         | Fast access to snippets, commands, links                 |
+| AI-first Developer         | Saves prompts, system messages, context files, workflows |
+| Content Creator / Educator | Code blocks, explanations, course notes                  |
+| Full-stack Builder         | Patterns, boilerplates, API examples                     |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-| ----- | ---------- |
-| Framework | [Next.js 16](https://nextjs.org/docs) / [React 19](https://react.dev) |
-| Language | [TypeScript](https://www.typescriptlang.org/docs/) |
-| Database | [Neon](https://neon.tech/docs) (PostgreSQL) |
-| ORM | [Prisma 7](https://www.prisma.io/docs) |
-| Auth | [NextAuth v5](https://authjs.dev/getting-started) (email/password + GitHub OAuth) |
-| CSS | [Tailwind CSS v4](https://tailwindcss.com/docs) + [ShadCN UI](https://ui.shadcn.com) |
-| File Storage | [Cloudflare R2](https://developers.cloudflare.com/r2/) |
-| AI | [OpenAI](https://platform.openai.com/docs) `gpt-4o-mini` |
-| Icons | [Lucide React](https://lucide.dev/icons/) |
+| Layer        | Technology                                                                           |
+| ------------ | ------------------------------------------------------------------------------------ |
+| Framework    | [Next.js 16](https://nextjs.org/docs) / [React 19](https://react.dev)                |
+| Language     | [TypeScript](https://www.typescriptlang.org/docs/)                                   |
+| Database     | [Neon](https://neon.tech/docs) (PostgreSQL)                                          |
+| ORM          | [Prisma 7](https://www.prisma.io/docs)                                               |
+| Auth         | [NextAuth v5](https://authjs.dev/getting-started) (email/password + GitHub OAuth)    |
+| CSS          | [Tailwind CSS v4](https://tailwindcss.com/docs) + [ShadCN UI](https://ui.shadcn.com) |
+| File Storage | [Cloudflare R2](https://developers.cloudflare.com/r2/)                               |
+| AI           | [OpenAI](https://platform.openai.com/docs) `gpt-4o-mini`                             |
+| Icons        | [Lucide React](https://lucide.dev/icons/)                                            |
 
 > **DB Rule**: Never use `db push`. Always create and run migrations.
 
@@ -45,15 +45,15 @@ Developers keep essentials scattered across VS Code, Notion, browser bookmarks, 
 
 Items have a type. System types are read-only. Custom types are Pro only (future).
 
-| Type | Icon | Color | URL Slug | Content |
-| ---- | ---- | ----- | -------- | ------- |
-| Snippet | `Code` | `#3b82f6` blue | `/items/snippets` | text |
-| Prompt | `Sparkles` | `#8b5cf6` purple | `/items/prompts` | text |
-| Command | `Terminal` | `#f97316` orange | `/items/commands` | text |
-| Note | `StickyNote` | `#fde047` yellow | `/items/notes` | text |
-| File | `File` | `#6b7280` gray | `/items/files` | file (Pro) |
-| Image | `Image` | `#ec4899` pink | `/items/images` | file (Pro) |
-| Link | `Link` | `#10b981` emerald | `/items/links` | url |
+| Type    | Icon         | Color             | URL Slug          | Content    |
+| ------- | ------------ | ----------------- | ----------------- | ---------- |
+| Snippet | `Code`       | `#3b82f6` blue    | `/items/snippets` | text       |
+| Prompt  | `Sparkles`   | `#8b5cf6` purple  | `/items/prompts`  | text       |
+| Command | `Terminal`   | `#f97316` orange  | `/items/commands` | text       |
+| Note    | `StickyNote` | `#fde047` yellow  | `/items/notes`    | text       |
+| File    | `File`       | `#6b7280` gray    | `/items/files`    | file (Pro) |
+| Image   | `Image`      | `#ec4899` pink    | `/items/images`   | file (Pro) |
+| Link    | `Link`       | `#10b981` emerald | `/items/links`    | url        |
 
 Items open in a quick-access **drawer** for fast create/view.
 
@@ -97,10 +97,10 @@ Email/password and GitHub OAuth via NextAuth v5.
 
 > During development, all users have full access.
 
-| Plan | Price           | Limits                                                                   |
-| ---- | --------------- | ------------------------------------------------------------------------ |
-| Free | $0              | 50 items, 3 collections, no files/images, no AI                          |
-| Pro  | $8/mo or $72/yr | Unlimited items & collections, files, AI, export, custom types (future)  |
+| Plan | Price           | Limits                                                                  |
+| ---- | --------------- | ----------------------------------------------------------------------- |
+| Free | $0              | 50 items, 3 collections, no files/images, no AI                         |
+| Pro  | $8/mo or $72/yr | Unlimited items & collections, files, AI, export, custom types (future) |
 
 Stripe for payments — `stripeCustomerId` and `stripeSubscriptionId` stored on `User`.
 
@@ -269,21 +269,28 @@ erDiagram
 - Toast notifications for actions
 - Loading skeletons for async content
 
+### Screenshots
+
+Refer to the screenshots below as a base for the dashboard UI. It does not have to be exact. Use it as a reference.
+
+- @context/screenshots/dashboard-ui-main.png
+- @context/screenshots/dashboard-ui-drawer.png
+
 ---
 
 ## URL Structure
 
-| Route | Description |
-| ----- | ----------- |
-| `/` | Dashboard / home |
-| `/items` | All items |
-| `/items/snippets` | Snippets |
-| `/items/prompts` | Prompts |
-| `/items/commands` | Commands |
-| `/items/notes` | Notes |
-| `/items/links` | Links |
-| `/items/files` | Files (Pro) |
-| `/items/images` | Images (Pro) |
-| `/collections` | All collections |
+| Route               | Description       |
+| ------------------- | ----------------- |
+| `/`                 | Dashboard / home  |
+| `/items`            | All items         |
+| `/items/snippets`   | Snippets          |
+| `/items/prompts`    | Prompts           |
+| `/items/commands`   | Commands          |
+| `/items/notes`      | Notes             |
+| `/items/links`      | Links             |
+| `/items/files`      | Files (Pro)       |
+| `/items/images`     | Images (Pro)      |
+| `/collections`      | All collections   |
 | `/collections/[id]` | Single collection |
-| `/settings` | User settings |
+| `/settings`         | User settings     |
