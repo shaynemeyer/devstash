@@ -21,3 +21,4 @@ Not Started
 <!-- Keep this updated. Earliest to latest -->
 
 - Project setup and boilerplate cleanup
+- Initial Next.js setup with React 19, TypeScript, Tailwind CSS v4, ESLint; all package versions locked
