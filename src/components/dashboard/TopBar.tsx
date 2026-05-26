@@ -1,4 +1,4 @@
-import { Search, Plus, FolderPlus } from "lucide-react";
+import { Search, Plus, FolderPlus, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -13,10 +13,21 @@ function BrandLogo() {
   );
 }
 
-export function TopBar() {
+interface TopBarProps {
+  onMobileMenuClick?: () => void;
+}
+
+export function TopBar({ onMobileMenuClick }: TopBarProps) {
   return (
     <header className="flex items-center px-4 h-12 border-b border-border bg-background shrink-0">
-      <div className="w-52 shrink-0">
+      <div className="w-52 shrink-0 flex items-center gap-2">
+        <button
+          className="md:hidden text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent"
+          onClick={onMobileMenuClick}
+          aria-label="Open menu"
+        >
+          <Menu className="size-4" />
+        </button>
         <BrandLogo />
       </div>
       <div className="flex-1 flex justify-center">
