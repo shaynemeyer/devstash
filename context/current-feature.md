@@ -1,30 +1,8 @@
 # Current Feature
 
-## Dashboard Collections
-
 ## Status
 
-In Progress
-
-## Goals
-
-Replace the dummy collection data displayed in the main area of the dashboard (right side) with actual data from the database. It should look how it does now with the 6 cards of recent collections, but instead of using data from `src/lib/mock-data.ts`, it should be from our Neon database using Prisma.
-
-Do not add the items underneath yet. We will do that later.
-
-## Requirements
-
-- Create `src/lib/db/collections.ts` with data fetching functions
-- Fetch collections directly in server component
-- Collection card border color derived from most-used content type in that collection
-- Show small icons of all types in that collection
-- Keep the current design. You can also reference the screenshot
-- Update collection stats display
-
-## References
-
-- See `context/features/dashboard-collections-spec.md` for full spec detail
-- Check `context/screenshots/dashboard-ui-main.png` screenshot if needed
+Completed
 
 ## History
 
@@ -35,4 +13,4 @@ Do not add the items underneath yet. We will do that later.
 - Dashboard Phase 3: Stats cards (items/collections/favorites), Recent Collections with colored left accents and type-colored icons, Pinned Items with accent bars, 10 Recent Items list with type badges; mock data expanded to 10 items
 - Database setup: Prisma 7 + Neon PostgreSQL; full schema (User, Item, ItemType, Collection, ItemCollection, Tag, TagsOnItems, Account, Session, VerificationToken) with indexes and cascade deletes; prisma.config.ts for CLI; src/lib/db.ts singleton via PrismaNeon adapter; .env placeholder + .env.example added
 - Seed data: prisma/seed.ts populates 7 system item types, demo user (`demo@devstash.io` / 12345678, bcryptjs 12 rounds), 5 collections (React Patterns, AI Workflows, DevOps, Terminal Commands, Design Resources), and 18 items with tags; idempotent via upsert; bcryptjs 2.4.3 added
-- Dashboard Collections: replacing mock data with real Prisma queries; collection card border color from most-used item type; type icons displayed per collection
+- Dashboard Collections: replaced mock data with real Prisma queries via src/lib/db/collections.ts; dominant color derived from most-used item type; per-type icons with individual colors; DashboardPage is now async server component
