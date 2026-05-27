@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { Star, Code, Sparkles, Terminal, StickyNote, File, Image, Link as LinkIcon } from "lucide-react";
-import { mockCollections, mockItemTypes } from "@/lib/mock-data";
+import { CollectionWithMeta } from "@/lib/db/collections";
 
 const ICON_MAP = { Code, Sparkles, Terminal, StickyNote, File, Image, Link: LinkIcon };
-const TYPE_COLOR_MAP = Object.fromEntries(mockItemTypes.map((t) => [t.icon, t.color]));
 
-const recent = [...mockCollections]
-  .sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0))
-  .slice(0, 6);
+interface Props {
+  collections: CollectionWithMeta[];
+}
 
-export function RecentCollections() {
+export function RecentCollections({ collections }: Props) {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
@@ -19,7 +18,7 @@ export function RecentCollections() {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {recent.map((col) => (
+        {collections.map((col) => (
           <Link
             key={col.id}
             href={`/collections/${col.id}`}
@@ -36,10 +35,10 @@ export function RecentCollections() {
               <p className="text-xs text-muted-foreground">{col.itemCount} items</p>
               <p className="text-xs text-muted-foreground line-clamp-2 flex-1">{col.description}</p>
               <div className="flex items-center gap-1.5 pt-1">
-                {col.typeIcons.slice(0, 4).map((iconName) => {
-                  const Icon = ICON_MAP[iconName as keyof typeof ICON_MAP];
+                {col.typeIcons.slice(0, 4).map(({ icon, color }) => {
+                  const Icon = ICON_MAP[icon as keyof typeof ICON_MAP];
                   return Icon ? (
-                    <Icon key={iconName} className="size-3.5" style={{ color: TYPE_COLOR_MAP[iconName] ?? "currentColor" }} />
+                    <Icon key={icon} className="size-3.5" style={{ color }} />
                   ) : null;
                 })}
               </div>
