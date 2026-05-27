@@ -1,5 +1,32 @@
 import { db } from "@/lib/db";
 
+export interface ItemTypeWithCount {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  count: number;
+}
+
+export async function getItemTypesWithCounts(userId: string): Promise<ItemTypeWithCount[]> {
+  const types = await db.itemType.findMany({
+    where: { isSystem: true },
+    include: {
+      _count: {
+        select: { items: { where: { userId } } },
+      },
+    },
+  });
+
+  return types.map((t) => ({
+    id: t.id,
+    name: t.name,
+    icon: t.icon,
+    color: t.color,
+    count: t._count.items,
+  }));
+}
+
 export interface ItemWithMeta {
   id: string;
   title: string;
