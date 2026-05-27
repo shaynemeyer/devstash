@@ -3,8 +3,21 @@ import { StatsCards } from "@/components/dashboard/StatsCards";
 import { RecentCollections } from "@/components/dashboard/RecentCollections";
 import { PinnedItems } from "@/components/dashboard/PinnedItems";
 import { RecentItems } from "@/components/dashboard/RecentItems";
+import { getRecentCollections } from "@/lib/db/collections";
+import { db } from "@/lib/db";
 
-export default function DashboardPage() {
+async function getDemoUserId(): Promise<string | null> {
+  const user = await db.user.findUnique({
+    where: { email: "demo@devstash.io" },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
+export default async function DashboardPage() {
+  const userId = await getDemoUserId();
+  const collections = userId ? await getRecentCollections(userId) : [];
+
   return (
     <DashboardShell>
       <div className="p-6 max-w-6xl mx-auto space-y-8">
@@ -13,7 +26,7 @@ export default function DashboardPage() {
           <p className="text-muted-foreground text-sm mt-1">Your developer knowledge hub</p>
         </div>
         <StatsCards />
-        <RecentCollections />
+        <RecentCollections collections={collections} />
         <PinnedItems />
         <RecentItems />
       </div>
