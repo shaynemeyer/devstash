@@ -16,8 +16,11 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
+
+const PRO_TYPE_NAMES = new Set(["File", "Image"]);
 
 const ICON_MAP = {
   Code,
@@ -104,6 +107,11 @@ function SidebarInner({ collapsed, onToggleCollapse, onClose, itemTypes, collect
                 {!collapsed && (
                   <>
                     <span className="flex-1">{type.name}s</span>
+                    {PRO_TYPE_NAMES.has(type.name) && (
+                      <Badge variant="outline" className="h-4 px-1 text-[10px] font-semibold tracking-wide text-muted-foreground border-muted-foreground/30">
+                        PRO
+                      </Badge>
+                    )}
                     <span className="text-xs text-muted-foreground tabular-nums">{type.count}</span>
                   </>
                 )}
