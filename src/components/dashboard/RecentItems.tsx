@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Code, Sparkles, Terminal, StickyNote, File, Image, Link as LinkIcon, Star } from "lucide-react";
-import { mockItems } from "@/lib/mock-data";
+import { ItemWithMeta } from "@/lib/db/items";
 
 const ICON_MAP = { Code, Sparkles, Terminal, StickyNote, File, Image, Link: LinkIcon };
 
-const recent = [...mockItems]
-  .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-  .slice(0, 10);
+interface RecentItemsProps {
+  items: ItemWithMeta[];
+}
 
-export function RecentItems() {
+export function RecentItems({ items }: RecentItemsProps) {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
@@ -18,7 +18,7 @@ export function RecentItems() {
         </Link>
       </div>
       <div className="flex flex-col gap-2">
-        {recent.map((item) => {
+        {items.map((item) => {
           const Icon = ICON_MAP[item.typeIcon as keyof typeof ICON_MAP];
           const date = item.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
           return (

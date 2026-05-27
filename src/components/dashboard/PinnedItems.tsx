@@ -1,12 +1,14 @@
 import { Pin, Code, Sparkles, Terminal, StickyNote, File, Image, Link as LinkIcon } from "lucide-react";
-import { mockItems } from "@/lib/mock-data";
+import { ItemWithMeta } from "@/lib/db/items";
 
 const ICON_MAP = { Code, Sparkles, Terminal, StickyNote, File, Image, Link: LinkIcon };
 
-const pinned = mockItems.filter((i) => i.isPinned);
+interface PinnedItemsProps {
+  items: ItemWithMeta[];
+}
 
-export function PinnedItems() {
-  if (pinned.length === 0) return null;
+export function PinnedItems({ items }: PinnedItemsProps) {
+  if (items.length === 0) return null;
 
   return (
     <section>
@@ -15,7 +17,7 @@ export function PinnedItems() {
         <h2 className="text-sm font-semibold text-foreground">Pinned</h2>
       </div>
       <div className="flex flex-col gap-2">
-        {pinned.map((item) => {
+        {items.map((item) => {
           const Icon = ICON_MAP[item.typeIcon as keyof typeof ICON_MAP];
           const date = item.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
           return (
