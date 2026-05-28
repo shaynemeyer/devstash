@@ -9,22 +9,26 @@ export interface ItemTypeWithCount {
 }
 
 export async function getItemTypesWithCounts(userId: string): Promise<ItemTypeWithCount[]> {
-  const types = await db.itemType.findMany({
-    where: { isSystem: true },
-    include: {
-      _count: {
-        select: { items: { where: { userId } } },
+  try {
+    const types = await db.itemType.findMany({
+      where: { isSystem: true },
+      include: {
+        _count: {
+          select: { items: { where: { userId } } },
+        },
       },
-    },
-  });
+    });
 
-  return types.map((t) => ({
-    id: t.id,
-    name: t.name,
-    icon: t.icon,
-    color: t.color,
-    count: t._count.items,
-  }));
+    return types.map((t) => ({
+      id: t.id,
+      name: t.name,
+      icon: t.icon,
+      color: t.color,
+      count: t._count.items,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export interface ItemWithMeta {
@@ -48,41 +52,53 @@ export interface DashboardStats {
 }
 
 export async function getPinnedItems(userId: string): Promise<ItemWithMeta[]> {
-  const items = await db.item.findMany({
-    where: { userId, isPinned: true },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      type: true,
-      tags: { include: { tag: true } },
-    },
-  });
+  try {
+    const items = await db.item.findMany({
+      where: { userId, isPinned: true },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        type: { select: { icon: true, color: true, name: true } },
+        tags: { include: { tag: { select: { name: true } } } },
+      },
+    });
 
-  return items.map(toItemWithMeta);
+    return items.map(toItemWithMeta);
+  } catch {
+    return [];
+  }
 }
 
 export async function getRecentItems(userId: string, limit = 10): Promise<ItemWithMeta[]> {
-  const items = await db.item.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: limit,
-    include: {
-      type: true,
-      tags: { include: { tag: true } },
-    },
-  });
+  try {
+    const items = await db.item.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        type: { select: { icon: true, color: true, name: true } },
+        tags: { include: { tag: { select: { name: true } } } },
+      },
+    });
 
-  return items.map(toItemWithMeta);
+    return items.map(toItemWithMeta);
+  } catch {
+    return [];
+  }
 }
 
 export async function getDashboardStats(userId: string): Promise<DashboardStats> {
-  const [totalItems, totalCollections, favoriteItems, favoriteCollections] = await Promise.all([
-    db.item.count({ where: { userId } }),
-    db.collection.count({ where: { userId } }),
-    db.item.count({ where: { userId, isFavorite: true } }),
-    db.collection.count({ where: { userId, isFavorite: true } }),
-  ]);
+  try {
+    const [totalItems, totalCollections, favoriteItems, favoriteCollections] = await Promise.all([
+      db.item.count({ where: { userId } }),
+      db.collection.count({ where: { userId } }),
+      db.item.count({ where: { userId, isFavorite: true } }),
+      db.collection.count({ where: { userId, isFavorite: true } }),
+    ]);
 
-  return { totalItems, totalCollections, favoriteItems, favoriteCollections };
+    return { totalItems, totalCollections, favoriteItems, favoriteCollections };
+  } catch {
+    return { totalItems: 0, totalCollections: 0, favoriteItems: 0, favoriteCollections: 0 };
+  }
 }
 
 function toItemWithMeta(item: {

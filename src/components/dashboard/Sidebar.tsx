@@ -1,36 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link as LinkIcon,
-  Star,
-  Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
-  X,
-} from "lucide-react";
+import { Star, Settings, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { getIcon } from "@/lib/icons";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
 
 const PRO_TYPE_NAMES = new Set(["File", "Image"]);
-
-const ICON_MAP = {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link: LinkIcon,
-};
 
 function typeSlug(name: string): string {
   return name.toLowerCase() + "s";
@@ -89,8 +67,7 @@ function SidebarInner({ collapsed, onToggleCollapse, onClose, itemTypes, collect
         )}
         <nav className="space-y-0.5">
           {itemTypes.map((type) => {
-            const Icon = ICON_MAP[type.icon as keyof typeof ICON_MAP];
-            if (!Icon) return null;
+            const Icon = getIcon(type.icon);
             const slug = typeSlug(type.name);
             return (
               <Link

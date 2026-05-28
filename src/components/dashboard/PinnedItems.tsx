@@ -1,7 +1,6 @@
-import { Pin, Code, Sparkles, Terminal, StickyNote, File, Image, Link as LinkIcon } from "lucide-react";
+import { Pin } from "lucide-react";
+import { getIcon } from "@/lib/icons";
 import { ItemWithMeta } from "@/lib/db/items";
-
-const ICON_MAP = { Code, Sparkles, Terminal, StickyNote, File, Image, Link: LinkIcon };
 
 interface PinnedItemsProps {
   items: ItemWithMeta[];
@@ -18,7 +17,7 @@ export function PinnedItems({ items }: PinnedItemsProps) {
       </div>
       <div className="flex flex-col gap-2">
         {items.map((item) => {
-          const Icon = ICON_MAP[item.typeIcon as keyof typeof ICON_MAP];
+          const Icon = getIcon(item.typeIcon);
           const date = item.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
           return (
             <div
@@ -31,7 +30,7 @@ export function PinnedItems({ items }: PinnedItemsProps) {
                   className="size-8 rounded-md flex items-center justify-center shrink-0 mt-0.5"
                   style={{ backgroundColor: item.typeColor + "22" }}
                 >
-                  {Icon && <Icon className="size-4" style={{ color: item.typeColor }} />}
+                  <Icon className="size-4" style={{ color: item.typeColor }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
