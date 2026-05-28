@@ -2,18 +2,7 @@
 
 ## Status
 
-In Progress
-
-## Feature: Code Quality Quick Wins
-
-Low-risk improvements identified by code scanner. No behavior changes, no migrations, no auth work.
-
-### Tasks
-
-- [x] Optimize Prisma queries in `src/lib/db/items.ts` and `src/lib/db/collections.ts`: replace `include: { type: true }` with `select` fetching only `icon`, `color`, `name`; same for nested tag queries
-- [x] Add `try/catch` to all async DB functions in `items.ts` and `collections.ts`; return safe empty-array/zero fallback values on error
-- [x] Create a `getIcon(name: string)` utility in `src/lib/icons.ts` that returns a default icon instead of `null` for unknown icon names; replace all `as keyof typeof ICON_MAP` casts
-- [x] Remove `Link as LinkIcon` lucide import shadowing in all dashboard components by switching to shared `getIcon` utility
+Completed
 
 ## History
 
@@ -28,3 +17,4 @@ Low-risk improvements identified by code scanner. No behavior changes, no migrat
 - Dashboard Items: replaced mock item data with real Prisma queries via src/lib/db/items.ts; getPinnedItems, getRecentItems, getDashboardStats fetched in parallel; PinnedItems hidden when empty; StatsCards, PinnedItems, RecentItems updated to accept real data as props
 - Stats & Sidebar: replaced all mock-data in Sidebar with real Prisma queries; getItemTypesWithCounts (items.ts) and getSidebarCollections (collections.ts) added; DashboardShell accepts itemTypes/collections props; sidebar shows live type counts linking to /items/[slug], favorites with stars, recents with dominant-color circles, and "View all collections" link to /collections
 - Add Pro Badge to Sidebar: ShadCN Badge component added; Files and Images item types in the sidebar now show a subtle outline PRO badge; badge hidden when sidebar is collapsed
+- Code Quality Quick Wins: Prisma include → select on type/tag relations in items.ts and collections.ts; try/catch with safe fallbacks added to all async DB functions; shared getIcon() utility extracted to src/lib/icons.ts with Code as default fallback; duplicated ICON_MAP and unsafe keyof casts removed from all dashboard components
