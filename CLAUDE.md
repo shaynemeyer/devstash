@@ -19,3 +19,9 @@ Read the following to get the full context of the project:
 - **Lint**: `npm run lint`
 
 All versions should be locked. no `^` in the package.json
+
+## Neon Database
+
+- Project: `devstash` (ID: `rapid-grass-17252016`)
+- **Always use the `development` branch** (ID: `br-nameless-shape-akjezna7`) for all Neon MCP queries
+- **Never query or modify the `production` branch** unless explicitly instructed
