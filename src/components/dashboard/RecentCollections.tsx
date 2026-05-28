@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Star, Code, Sparkles, Terminal, StickyNote, File, Image, Link as LinkIcon } from "lucide-react";
+import { Star } from "lucide-react";
+import { getIcon } from "@/lib/icons";
 import { CollectionWithMeta } from "@/lib/db/collections";
-
-const ICON_MAP = { Code, Sparkles, Terminal, StickyNote, File, Image, Link: LinkIcon };
 
 interface Props {
   collections: CollectionWithMeta[];
@@ -36,10 +35,8 @@ export function RecentCollections({ collections }: Props) {
               <p className="text-xs text-muted-foreground line-clamp-2 flex-1">{col.description}</p>
               <div className="flex items-center gap-1.5 pt-1">
                 {col.typeIcons.slice(0, 4).map(({ icon, color }) => {
-                  const Icon = ICON_MAP[icon as keyof typeof ICON_MAP];
-                  return Icon ? (
-                    <Icon key={icon} className="size-3.5" style={{ color }} />
-                  ) : null;
+                  const Icon = getIcon(icon);
+                  return <Icon key={icon} className="size-3.5" style={{ color }} />;
                 })}
               </div>
             </div>

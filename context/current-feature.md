@@ -2,7 +2,18 @@
 
 ## Status
 
-Completed
+In Progress
+
+## Feature: Code Quality Quick Wins
+
+Low-risk improvements identified by code scanner. No behavior changes, no migrations, no auth work.
+
+### Tasks
+
+- [x] Optimize Prisma queries in `src/lib/db/items.ts` and `src/lib/db/collections.ts`: replace `include: { type: true }` with `select` fetching only `icon`, `color`, `name`; same for nested tag queries
+- [x] Add `try/catch` to all async DB functions in `items.ts` and `collections.ts`; return safe empty-array/zero fallback values on error
+- [x] Create a `getIcon(name: string)` utility in `src/lib/icons.ts` that returns a default icon instead of `null` for unknown icon names; replace all `as keyof typeof ICON_MAP` casts
+- [x] Remove `Link as LinkIcon` lucide import shadowing in all dashboard components by switching to shared `getIcon` utility
 
 ## History
 
