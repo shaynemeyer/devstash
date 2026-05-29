@@ -1,23 +1,8 @@
-# Current Feature: Auth Credentials - Email/Password Provider
+# Current Feature
 
 ## Status
 
-In Progress
-
-## Goals
-
-- Add `password` field to User model via migration (if not already present)
-- Add Credentials provider placeholder to `auth.config.ts` (edge-safe, `authorize: () => null`)
-- Override Credentials provider in `auth.ts` with bcrypt validation
-- Create `POST /api/auth/register` route: accepts name, email, password, confirmPassword; validates, hashes, creates user
-- Verify email/password sign-in redirects to `/dashboard`
-- Verify GitHub OAuth still works after changes
-
-## Notes
-
-- bcryptjs is already installed (used by seed.ts)
-- Uses the split auth config pattern: `auth.config.ts` is edge-safe (no bcrypt), `auth.ts` handles real validation
-- Credentials provider reference: [authjs.dev/getting-started/authentication/credentials](https://authjs.dev/getting-started/authentication/credentials)
+Completed
 
 ## History
 
@@ -34,3 +19,4 @@ In Progress
 - Add Pro Badge to Sidebar: ShadCN Badge component added; Files and Images item types in the sidebar now show a subtle outline PRO badge; badge hidden when sidebar is collapsed
 - Code Quality Quick Wins: Prisma include → select on type/tag relations in items.ts and collections.ts; try/catch with safe fallbacks added to all async DB functions; shared getIcon() utility extracted to src/lib/icons.ts with Code as default fallback; duplicated ICON_MAP and unsafe keyof casts removed from all dashboard components
 - Auth Setup: NextAuth v5 (5.0.0-beta.31) + @auth/prisma-adapter; split auth config (auth.config.ts edge-safe with GitHub provider, auth.ts with Prisma adapter + JWT strategy); API route handler at /api/auth/[...nextauth]; proxy.ts protects /dashboard/* with redirect to sign-in; Session type extended with user.id
+- Auth Credentials: password field added to User via migration; Credentials provider added to auth.config.ts (edge-safe placeholder) and overridden in auth.ts with bcrypt validation; POST /api/auth/register route handles registration with duplicate/mismatch validation; seed.ts updated to store demo user password in correct field
