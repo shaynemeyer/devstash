@@ -1,8 +1,23 @@
-# Current Feature
+# Current Feature: Auth Credentials - Email/Password Provider
 
 ## Status
 
-Completed
+In Progress
+
+## Goals
+
+- Add `password` field to User model via migration (if not already present)
+- Add Credentials provider placeholder to `auth.config.ts` (edge-safe, `authorize: () => null`)
+- Override Credentials provider in `auth.ts` with bcrypt validation
+- Create `POST /api/auth/register` route: accepts name, email, password, confirmPassword; validates, hashes, creates user
+- Verify email/password sign-in redirects to `/dashboard`
+- Verify GitHub OAuth still works after changes
+
+## Notes
+
+- bcryptjs is already installed (used by seed.ts)
+- Uses the split auth config pattern: `auth.config.ts` is edge-safe (no bcrypt), `auth.ts` handles real validation
+- Credentials provider reference: [authjs.dev/getting-started/authentication/credentials](https://authjs.dev/getting-started/authentication/credentials)
 
 ## History
 

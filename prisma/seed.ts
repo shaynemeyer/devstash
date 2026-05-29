@@ -454,15 +454,13 @@ async function main() {
   const passwordHash = await bcrypt.hash("12345678", 12);
   const user = await db.user.upsert({
     where: { email: "demo@devstash.io" },
-    update: {},
+    update: { password: passwordHash },
     create: {
       email: "demo@devstash.io",
       name: "Demo User",
       emailVerified: new Date(),
       isPro: false,
-      // Store hash in `image` field until auth is wired up with a password field.
-      // NextAuth credential provider will read from here in the interim.
-      image: passwordHash,
+      password: passwordHash,
     },
   });
   console.log(`  - ${user.email}`);
