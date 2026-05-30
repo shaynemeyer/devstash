@@ -23,8 +23,10 @@ export function RecentItems({ items }: RecentItemsProps) {
           return (
             <div
               key={item.id}
-              className="rounded-xl border border-border bg-card p-3 flex items-center gap-3 hover:bg-card/80 transition-colors cursor-pointer"
+              className="rounded-xl border border-border bg-card flex items-stretch overflow-hidden hover:bg-card/80 transition-colors cursor-pointer"
             >
+              <div className="w-1 shrink-0" style={{ backgroundColor: item.typeColor }} />
+              <div className="flex items-center gap-3 p-3 flex-1 min-w-0">
               <div
                 className="size-8 rounded-md flex items-center justify-center shrink-0"
                 style={{ backgroundColor: item.typeColor + "22" }}
@@ -46,6 +48,7 @@ export function RecentItems({ items }: RecentItemsProps) {
                   {item.typeName}
                 </span>
                 <span className="text-xs text-muted-foreground tabular-nums">{date}</span>
+              </div>
               </div>
             </div>
           );
