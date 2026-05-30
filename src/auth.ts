@@ -20,7 +20,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         const user = await db.user.findUnique({
           where: { email: credentials.email as string },
-          select: { id: true, name: true, email: true, image: true, password: true },
+          select: { id: true, name: true, email: true, image: true, password: true, emailVerified: true },
         })
 
         if (!user?.password) return null
@@ -28,8 +28,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(credentials.password as string, user.password)
         if (!valid) return null
 
+        if (!user.emailVerified) return null
+
         return { id: user.id, name: user.name, email: user.email, image: user.image }
       },
     }),
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) token.id = user.id
+      return token
+    },
+    session({ session, token }) {
+      if (token.id) session.user.id = token.id as string
+      return session
+    },
+  },
 })
