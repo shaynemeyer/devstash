@@ -1,8 +1,27 @@
-# Current Feature
+# Current Feature: Forgot Password
 
 ## Status
 
-Completed
+In Progress
+
+## Goals
+
+- Add a "Forgot password?" link on the `/sign-in` page
+- Create a `/forgot-password` page with an email input form
+- `POST /api/auth/forgot-password` — look up user by email, create a `VerificationToken` record with a reset token (1hr expiry), send a reset link via Resend
+- Create a `/reset-password?token=...` page with new-password / confirm-password fields
+- `POST /api/auth/reset-password` — validate token (exists, not expired), hash and update user's password, delete the token, redirect to `/sign-in` with a success toast
+- Block password reset for OAuth-only accounts (no password field set)
+- Reuse existing `VerificationToken` model — no schema changes needed
+
+## Notes
+
+- Use the existing `VerificationToken` model (`identifier`, `token`, `expires`)
+- Use `identifier` = user email, `token` = random UUID or crypto token
+- Reuse `src/lib/email.ts` for sending the reset email (add a new `sendPasswordResetEmail` function)
+- Keep consistent with existing auth UI style (`/sign-in`, `/register`)
+- `EMAIL_VERIFICATION_ENABLED` flag does NOT gate this feature — password reset should always work
+- Token expiry: 1 hour (shorter than email verification's 24hr)
 
 ## History
 

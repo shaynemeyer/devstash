@@ -20,3 +20,19 @@ export async function sendVerificationEmail(email: string, token: string) {
     `,
   })
 }
+
+export async function sendPasswordResetEmail(email: string, token: string) {
+  const url = `${APP_URL}/reset-password?token=${token}`
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Reset your DevStash password",
+    html: `
+      <p>We received a request to reset your DevStash password.</p>
+      <p>Click the link below to choose a new password. The link expires in 1 hour.</p>
+      <p><a href="${url}">Reset password</a></p>
+      <p>If you did not request a password reset, you can ignore this email.</p>
+    `,
+  })
+}
