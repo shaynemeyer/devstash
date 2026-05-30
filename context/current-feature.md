@@ -1,8 +1,22 @@
-# Current Feature
+# Current Feature: Email Verification Toggle Flag
 
 ## Status
 
-Completed
+In Progress
+
+## Goals
+
+- Add a flag (env variable) to enable/disable email verification on registration
+- When disabled, users can register and sign in immediately without verifying their email
+- When enabled, the existing email verification flow remains unchanged
+- Default the flag to `false` (disabled) so development is unblocked without a Resend domain
+
+## Notes
+
+- Current constraint: Resend is configured with `onboarding@resend.dev`, which only allows sending to the Resend account owner's email. Until a custom domain is linked, email verification blocks all new registrations.
+- Implementation: `EMAIL_VERIFICATION_ENABLED=true|false` env variable in `.env` / `.env.example`
+- The flag should gate: (1) sending the verification email in `/api/auth/register`, (2) the `emailVerified` check in `authorize()` in `auth.ts`
+- When disabled, skip sending the email and skip the `emailVerified` block — user can sign in immediately after registration
 
 ## History
 

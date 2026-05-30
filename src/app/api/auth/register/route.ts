@@ -4,6 +4,8 @@ import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
 import { sendVerificationEmail } from "@/lib/email"
 
+const EMAIL_VERIFICATION_ENABLED = process.env.EMAIL_VERIFICATION_ENABLED === "true"
+
 export async function POST(request: Request) {
   const body = await request.json()
   const { name, email, password, confirmPassword } = body
@@ -27,14 +29,16 @@ export async function POST(request: Request) {
     data: { name, email, password: hashed },
   })
 
-  const token = randomUUID()
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  if (EMAIL_VERIFICATION_ENABLED) {
+    const token = randomUUID()
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
 
-  await db.verificationToken.create({
-    data: { identifier: email, token, expires },
-  })
+    await db.verificationToken.create({
+      data: { identifier: email, token, expires },
+    })
 
-  await sendVerificationEmail(email, token)
+    await sendVerificationEmail(email, token)
+  }
 
   return NextResponse.json({ success: true }, { status: 201 })
 }

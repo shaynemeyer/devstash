@@ -5,6 +5,8 @@ import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 
+const EMAIL_VERIFICATION_ENABLED = process.env.EMAIL_VERIFICATION_ENABLED === "true"
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
@@ -28,7 +30,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(credentials.password as string, user.password)
         if (!valid) return null
 
-        if (!user.emailVerified) return null
+        if (EMAIL_VERIFICATION_ENABLED && !user.emailVerified) return null
 
         return { id: user.id, name: user.name, email: user.email, image: user.image }
       },
