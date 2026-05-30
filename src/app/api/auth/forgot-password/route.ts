@@ -2,8 +2,12 @@ import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
 import { sendPasswordResetEmail } from "@/lib/email"
+import { validateOrigin } from "@/lib/csrf"
 
 export async function POST(request: Request) {
+  const csrfError = validateOrigin(request)
+  if (csrfError) return csrfError
+
   const body = await request.json()
   const { email } = body
 

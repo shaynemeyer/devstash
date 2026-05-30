@@ -37,8 +37,27 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
-      if (user) token.id = user.id
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        // Record when this session started so we can compare against passwordChangedAt
+        token.sessionStart = Math.floor(Date.now() / 1000)
+      }
+
+      // Invalidate the session if the password was changed after this token was issued
+      if (token.id && token.sessionStart) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { passwordChangedAt: true },
+        })
+        if (dbUser?.passwordChangedAt) {
+          const changedAt = Math.floor(dbUser.passwordChangedAt.getTime() / 1000)
+          if ((token.sessionStart as number) < changedAt) {
+            return null
+          }
+        }
+      }
+
       return token
     },
     session({ session, token }) {

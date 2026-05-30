@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
+import { validateOrigin } from "@/lib/csrf"
 
 export async function POST(request: Request) {
+  const csrfError = validateOrigin(request)
+  if (csrfError) return csrfError
+
   const body = await request.json()
   const { token, password, confirmPassword } = body
 
@@ -29,7 +33,7 @@ export async function POST(request: Request) {
 
   await db.user.update({
     where: { email: record.identifier },
-    data: { password: hashed },
+    data: { password: hashed, passwordChangedAt: new Date() },
   })
 
   await db.verificationToken.delete({ where: { token } })

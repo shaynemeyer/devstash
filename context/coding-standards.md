@@ -82,7 +82,14 @@ Example v4 configuration:
 
 - Server components fetch directly with Prisma
 - Client components use Server Actions
-- Validate all inputs with Zod
+
+## Validation
+
+- **All API routes and Server Actions that accept user input must validate with Zod** before any business logic or database access
+- Define schemas in `src/lib/validations/[feature].ts` — one file per feature area (e.g. `auth.ts`, `items.ts`)
+- Use `.safeParse()` so validation errors can be returned as responses without throwing; extract the first error with `result.error.errors[0].message`
+- Do not duplicate Zod schemas on the client — client-side validation (e.g. HTML `required`, `minLength`) is a UX convenience only; the server schema is the source of truth
+- Query parameters and URL params must also be validated with Zod before use
 
 ## Error Handling
 

@@ -47,3 +47,6 @@ next-env.d.ts
 
 # Playwright Generated content
 .playwright-mcp
+
+# Don't expose audit results
+docs/audit-results
