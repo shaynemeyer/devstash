@@ -1,12 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { Star, Settings, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { Star, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { getIcon } from "@/lib/icons";
+import { SidebarUserArea } from "./SidebarUserArea";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
+
+interface SidebarUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
 
 const PRO_TYPE_NAMES = new Set(["File", "Image"]);
 
@@ -20,9 +28,10 @@ interface SidebarInnerProps {
   onClose?: () => void;
   itemTypes: ItemTypeWithCount[];
   collections: SidebarCollection[];
+  user: SidebarUser;
 }
 
-function SidebarInner({ collapsed, onToggleCollapse, onClose, itemTypes, collections }: SidebarInnerProps) {
+function SidebarInner({ collapsed, onToggleCollapse, onClose, itemTypes, collections, user }: SidebarInnerProps) {
   const favorites = collections.filter((c) => c.isFavorite);
   const rest = collections.filter((c) => !c.isFavorite);
 
@@ -167,27 +176,12 @@ function SidebarInner({ collapsed, onToggleCollapse, onClose, itemTypes, collect
       {collapsed && <div className="flex-1" />}
 
       {/* User area */}
-      <div className={cn("p-3 border-t border-sidebar-border shrink-0", collapsed && "flex justify-center")}>
-        <div className={cn("flex items-center gap-2.5", collapsed && "justify-center")}>
-          <div className="size-7 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 text-white text-xs font-bold uppercase">
-            D
-          </div>
-          {!collapsed && (
-            <>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-sidebar-foreground truncate">Demo User</p>
-                <p className="text-xs text-muted-foreground truncate">demo@devstash.io</p>
-              </div>
-              <button
-                className="text-muted-foreground hover:text-sidebar-foreground p-1 rounded-md hover:bg-sidebar-accent"
-                aria-label="Settings"
-              >
-                <Settings className="size-4" />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      <SidebarUserArea
+        name={user.name}
+        email={user.email}
+        image={user.image}
+        collapsed={collapsed}
+      />
     </div>
   );
 }
@@ -199,9 +193,10 @@ interface SidebarProps {
   onMobileClose: () => void;
   itemTypes: ItemTypeWithCount[];
   collections: SidebarCollection[];
+  user: SidebarUser;
 }
 
-export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMobileClose, itemTypes, collections }: SidebarProps) {
+export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMobileClose, itemTypes, collections, user }: SidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
@@ -216,6 +211,7 @@ export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMobileClose
           onToggleCollapse={onToggleCollapse}
           itemTypes={itemTypes}
           collections={collections}
+          user={user}
         />
       </aside>
 
@@ -234,6 +230,7 @@ export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onMobileClose
               onClose={onMobileClose}
               itemTypes={itemTypes}
               collections={collections}
+              user={user}
             />
           </aside>
         </div>
