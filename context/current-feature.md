@@ -1,4 +1,4 @@
-# Current Feature
+# Current Feature: Items List View
 
 ## Status
 
@@ -6,7 +6,16 @@ Completed
 
 ## Goals
 
+- Dynamic route `/items/[type]` filters items by type slug (snippets, notes, commands, prompts, links, files, images)
+- Responsive two-column grid (md+) of ItemCard components
+- Each card has a left border colored by item type
+- Follow existing codebase patterns
+
 ## Notes
+
+- Spec: `context/features/item-list-view-spec.md`
+- Route already linked from Sidebar (`/items/[slug]`)
+- Item types and colors already defined in `src/lib/icons.ts`
 
 ## History
 

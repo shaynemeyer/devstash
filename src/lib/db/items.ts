@@ -101,6 +101,34 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   }
 }
 
+export async function getItemsByTypeSlug(userId: string, slug: string): Promise<ItemWithMeta[]> {
+  const slugToName: Record<string, string> = {
+    snippets: "Snippet",
+    prompts: "Prompt",
+    commands: "Command",
+    notes: "Note",
+    files: "File",
+    images: "Image",
+    links: "Link",
+  };
+  const typeName = slugToName[slug];
+  if (!typeName) return [];
+
+  try {
+    const items = await db.item.findMany({
+      where: { userId, type: { name: typeName, isSystem: true } },
+      orderBy: { createdAt: "desc" },
+      include: {
+        type: { select: { icon: true, color: true, name: true } },
+        tags: { include: { tag: { select: { name: true } } } },
+      },
+    });
+    return items.map(toItemWithMeta);
+  } catch {
+    return [];
+  }
+}
+
 function toItemWithMeta(item: {
   id: string;
   title: string;
