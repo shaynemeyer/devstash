@@ -2,17 +2,19 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { validateOrigin } from "@/lib/csrf"
+import { ResetPasswordSchema } from "@/lib/validations/auth"
 
 export async function POST(request: Request) {
   const csrfError = validateOrigin(request)
   if (csrfError) return csrfError
 
   const body = await request.json()
-  const { token, password, confirmPassword } = body
-
-  if (!token || !password || !confirmPassword) {
-    return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+  const result = ResetPasswordSchema.safeParse(body)
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
+
+  const { token, password, confirmPassword } = result.data
 
   if (password !== confirmPassword) {
     return NextResponse.json({ error: "Passwords do not match" }, { status: 400 })
