@@ -4,6 +4,10 @@
 
 Completed
 
+## Goals
+
+## Notes
+
 ## History
 
 - Project setup and boilerplate cleanup
@@ -25,3 +29,4 @@ Completed
 - Email Verification Toggle Flag: EMAIL_VERIFICATION_ENABLED env var added; gates token creation/email send in /api/auth/register and the emailVerified check in authorize(); defaults to false (unset = disabled) so registration works without a Resend domain configured
 - Forgot Password: "Forgot password?" link added to sign-in form; /forgot-password page with email form creates a 1hr VerificationToken and sends reset link via Resend; /reset-password?token=... page validates token, hashes and updates password, deletes token, redirects to /sign-in?reset=true with success toast; OAuth-only accounts silently no-op; no schema changes (reuses existing VerificationToken model)
 - Profile Page: /profile route added (protected); displays user info (avatar, name, email, join date), usage stats (total items/collections + per-type breakdown), change password form (email users only, gated on hasPassword), and delete account with confirmation dialog; ShadCN dialog component added; UserAvatar fixed to guard against invalid image URLs; src/lib/db/profile.ts added with getProfileUser and getProfileStats; API routes at /api/profile/change-password and /api/profile/delete-account
+- Auth Zod Validation: zod@4.4.3 installed; src/lib/validations/auth.ts added with RegisterSchema, ForgotPasswordSchema, ResetPasswordSchema, ChangePasswordSchema; all four auth API routes replaced ad-hoc if-checks with .safeParse(); closes two High-severity audit findings (missing server-side password length on register and reset-password)

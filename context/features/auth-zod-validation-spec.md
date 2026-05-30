@@ -30,10 +30,10 @@ Replace ad-hoc if-statement validation in auth API routes with Zod schemas. Iden
 
 ## Security Issues Closed by This Feature
 
-This feature also resolves two High severity findings from the auth security audit:
+This feature resolves two High severity findings from the auth security audit:
 
-**No Password Length Validation in Registration** (`src/app/api/auth/register/route.ts` lines 9–24): No server-side minimum length check — client-side `minLength={8}` is easily bypassed. Resolved by `RegisterSchema` enforcing `password: z.string().min(8)`.
+**[FIXED] No Password Length Validation in Registration** (`src/app/api/auth/register/route.ts`): No server-side minimum length check — client-side `minLength={8}` is easily bypassed. Fixed by `RegisterSchema` enforcing `password: z.string().min(8)`. Manual field-presence checks replaced with `.safeParse()`.
 
-**No Password Length Validation in Password Reset** (`src/app/api/auth/reset-password/route.ts` lines 5–15): Same gap on the reset endpoint. Resolved by `ResetPasswordSchema` enforcing `password: z.string().min(8)`.
+**[FIXED] No Password Length Validation in Password Reset** (`src/app/api/auth/reset-password/route.ts`): Same gap on the reset endpoint. Fixed by `ResetPasswordSchema` enforcing `password: z.string().min(8)`. Manual field-presence checks replaced with `.safeParse()`.
 
-Both match the 8-character minimum already enforced in `src/app/api/profile/change-password/route.ts`.
+Both now match the 8-character minimum enforced in `src/app/api/profile/change-password/route.ts`. All four routes use `src/lib/validations/auth.ts` as the single source of validation truth.

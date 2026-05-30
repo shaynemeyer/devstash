@@ -3,17 +3,19 @@ import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
 import { sendPasswordResetEmail } from "@/lib/email"
 import { validateOrigin } from "@/lib/csrf"
+import { ForgotPasswordSchema } from "@/lib/validations/auth"
 
 export async function POST(request: Request) {
   const csrfError = validateOrigin(request)
   if (csrfError) return csrfError
 
   const body = await request.json()
-  const { email } = body
-
-  if (!email) {
-    return NextResponse.json({ error: "Email is required" }, { status: 400 })
+  const result = ForgotPasswordSchema.safeParse(body)
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
+
+  const { email } = result.data
 
   const user = await db.user.findUnique({ where: { email } })
 

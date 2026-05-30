@@ -4,6 +4,7 @@ import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
 import { sendVerificationEmail } from "@/lib/email"
 import { validateOrigin } from "@/lib/csrf"
+import { RegisterSchema } from "@/lib/validations/auth"
 
 const EMAIL_VERIFICATION_ENABLED = process.env.EMAIL_VERIFICATION_ENABLED === "true"
 
@@ -12,11 +13,12 @@ export async function POST(request: Request) {
   if (csrfError) return csrfError
 
   const body = await request.json()
-  const { name, email, password, confirmPassword } = body
-
-  if (!email || !password || !confirmPassword) {
-    return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+  const result = RegisterSchema.safeParse(body)
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
+
+  const { name, email, password, confirmPassword } = result.data
 
   if (password !== confirmPassword) {
     return NextResponse.json({ error: "Passwords do not match" }, { status: 400 })
