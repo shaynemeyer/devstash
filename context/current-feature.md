@@ -1,24 +1,8 @@
-# Current Feature: Profile Page
+# Current Feature
 
 ## Status
 
-In Progress
-
-## Goals
-
-- Create profile page at `/profile` route (protected, requires auth)
-- Display user info: name, email, avatar (GitHub image or initials fallback), account creation date
-- Show usage stats: total items, total collections, breakdown by item type
-- Add change password form (email/password users only, hidden for OAuth-only accounts)
-- Add delete account action with confirmation dialog
-
-## Notes
-
-- Avatar logic mirrors the existing `UserAvatar` component — GitHub image if available, otherwise initials from name/email
-- Change password should not appear for GitHub OAuth-only users (no password on record)
-- Delete account confirmation dialog to prevent accidental deletion
-- Item type breakdown shows counts for each system type (snippets, prompts, notes, commands, links, files, images)
-- Fetch data server-side using existing Prisma patterns
+Completed
 
 ## History
 
@@ -40,3 +24,4 @@ In Progress
 - Email Verification on Register: resend 4.5.1 added; src/lib/email.ts sends 24hr verification link via `onboarding@resend.dev`; token stored in VerificationToken model; GET /api/auth/verify-email validates token, sets emailVerified, redirects to /sign-in?verified=true; unverified Credentials users blocked in authorize(); /verify-email "check your email" page added; VerifiedToast shown on sign-in after verification; scripts/purge-users.ts added to wipe all non-demo users and their content
 - Email Verification Toggle Flag: EMAIL_VERIFICATION_ENABLED env var added; gates token creation/email send in /api/auth/register and the emailVerified check in authorize(); defaults to false (unset = disabled) so registration works without a Resend domain configured
 - Forgot Password: "Forgot password?" link added to sign-in form; /forgot-password page with email form creates a 1hr VerificationToken and sends reset link via Resend; /reset-password?token=... page validates token, hashes and updates password, deletes token, redirects to /sign-in?reset=true with success toast; OAuth-only accounts silently no-op; no schema changes (reuses existing VerificationToken model)
+- Profile Page: /profile route added (protected); displays user info (avatar, name, email, join date), usage stats (total items/collections + per-type breakdown), change password form (email users only, gated on hasPassword), and delete account with confirmation dialog; ShadCN dialog component added; UserAvatar fixed to guard against invalid image URLs; src/lib/db/profile.ts added with getProfileUser and getProfileStats; API routes at /api/profile/change-password and /api/profile/delete-account
