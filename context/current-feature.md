@@ -1,27 +1,8 @@
-# Current Feature: Forgot Password
+# Current Feature
 
 ## Status
 
-In Progress
-
-## Goals
-
-- Add a "Forgot password?" link on the `/sign-in` page
-- Create a `/forgot-password` page with an email input form
-- `POST /api/auth/forgot-password` — look up user by email, create a `VerificationToken` record with a reset token (1hr expiry), send a reset link via Resend
-- Create a `/reset-password?token=...` page with new-password / confirm-password fields
-- `POST /api/auth/reset-password` — validate token (exists, not expired), hash and update user's password, delete the token, redirect to `/sign-in` with a success toast
-- Block password reset for OAuth-only accounts (no password field set)
-- Reuse existing `VerificationToken` model — no schema changes needed
-
-## Notes
-
-- Use the existing `VerificationToken` model (`identifier`, `token`, `expires`)
-- Use `identifier` = user email, `token` = random UUID or crypto token
-- Reuse `src/lib/email.ts` for sending the reset email (add a new `sendPasswordResetEmail` function)
-- Keep consistent with existing auth UI style (`/sign-in`, `/register`)
-- `EMAIL_VERIFICATION_ENABLED` flag does NOT gate this feature — password reset should always work
-- Token expiry: 1 hour (shorter than email verification's 24hr)
+Completed
 
 ## History
 
@@ -40,5 +21,6 @@ In Progress
 - Auth Setup: NextAuth v5 (5.0.0-beta.31) + @auth/prisma-adapter; split auth config (auth.config.ts edge-safe with GitHub provider, auth.ts with Prisma adapter + JWT strategy); API route handler at /api/auth/[...nextauth]; proxy.ts protects /dashboard/* with redirect to sign-in; Session type extended with user.id
 - Auth Credentials: password field added to User via migration; Credentials provider added to auth.config.ts (edge-safe placeholder) and overridden in auth.ts with bcrypt validation; POST /api/auth/register route handles registration with duplicate/mismatch validation; seed.ts updated to store demo user password in correct field
 - Auth UI: custom /sign-in page (email/password + GitHub OAuth button, link to register); custom /register page (name/email/password/confirm, validates, posts to /api/auth/register, redirects to /sign-in with success toast); reusable UserAvatar component (GitHub image or initials fallback); sidebar bottom replaced with real user avatar/name/email and a dropdown with Profile link and Sign out action; NextAuth pages config and proxy redirect both point to /sign-in; sonner 2.0.7 added with Toaster at top-right in root layout
-- Email Verification on Register: resend 4.5.1 added; src/lib/email.ts sends 24hr verification link via onboarding@resend.dev; token stored in VerificationToken model; GET /api/auth/verify-email validates token, sets emailVerified, redirects to /sign-in?verified=true; unverified Credentials users blocked in authorize(); /verify-email "check your email" page added; VerifiedToast shown on sign-in after verification; scripts/purge-users.ts added to wipe all non-demo users and their content
+- Email Verification on Register: resend 4.5.1 added; src/lib/email.ts sends 24hr verification link via `onboarding@resend.dev`; token stored in VerificationToken model; GET /api/auth/verify-email validates token, sets emailVerified, redirects to /sign-in?verified=true; unverified Credentials users blocked in authorize(); /verify-email "check your email" page added; VerifiedToast shown on sign-in after verification; scripts/purge-users.ts added to wipe all non-demo users and their content
 - Email Verification Toggle Flag: EMAIL_VERIFICATION_ENABLED env var added; gates token creation/email send in /api/auth/register and the emailVerified check in authorize(); defaults to false (unset = disabled) so registration works without a Resend domain configured
+- Forgot Password: "Forgot password?" link added to sign-in form; /forgot-password page with email form creates a 1hr VerificationToken and sends reset link via Resend; /reset-password?token=... page validates token, hashes and updates password, deletes token, redirects to /sign-in?reset=true with success toast; OAuth-only accounts silently no-op; no schema changes (reuses existing VerificationToken model)
