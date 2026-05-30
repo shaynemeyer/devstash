@@ -5,6 +5,7 @@ import { PinnedItems } from "@/components/dashboard/PinnedItems";
 import { RecentItems } from "@/components/dashboard/RecentItems";
 import { getRecentCollections, getSidebarCollections } from "@/lib/db/collections";
 import { getPinnedItems, getRecentItems, getDashboardStats, getItemTypesWithCounts } from "@/lib/db/items";
+import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
 async function getDemoUserId(): Promise<string | null> {
@@ -16,7 +17,8 @@ async function getDemoUserId(): Promise<string | null> {
 }
 
 export default async function DashboardPage() {
-  const userId = await getDemoUserId();
+  const session = await auth();
+  const userId = session?.user?.id ?? (await getDemoUserId());
 
   const [collections, pinnedItems, recentItems, stats, sidebarItemTypes, sidebarCollections] = await Promise.all([
     userId ? getRecentCollections(userId) : Promise.resolve([]),
@@ -27,8 +29,14 @@ export default async function DashboardPage() {
     userId ? getSidebarCollections(userId) : Promise.resolve([]),
   ]);
 
+  const user = {
+    name: session?.user?.name ?? "Demo User",
+    email: session?.user?.email ?? "demo@devstash.io",
+    image: session?.user?.image ?? null,
+  };
+
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
       <div className="p-6 max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>

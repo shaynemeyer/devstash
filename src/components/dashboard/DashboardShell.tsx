@@ -6,13 +6,20 @@ import { Sidebar } from "./Sidebar";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
 
+interface ShellUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
 interface DashboardShellProps {
   children: React.ReactNode;
   itemTypes: ItemTypeWithCount[];
   collections: SidebarCollection[];
+  user: ShellUser;
 }
 
-export function DashboardShell({ children, itemTypes, collections }: DashboardShellProps) {
+export function DashboardShell({ children, itemTypes, collections, user }: DashboardShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -27,6 +34,7 @@ export function DashboardShell({ children, itemTypes, collections }: DashboardSh
           onMobileClose={() => setMobileOpen(false)}
           itemTypes={itemTypes}
           collections={collections}
+          user={user}
         />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
