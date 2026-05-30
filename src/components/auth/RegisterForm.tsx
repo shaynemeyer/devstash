@@ -38,7 +38,7 @@ export function RegisterForm() {
     if (!res.ok) {
       setError(data.error ?? "Registration failed.");
     } else {
-      router.push("/sign-in?registered=true");
+      router.push("/verify-email");
     }
   }
 
