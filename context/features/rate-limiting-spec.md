@@ -32,7 +32,7 @@ Implement rate limiting on authentication endpoints to prevent brute force attac
 
 ## Environment Variables
 
-```
+```text
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 ```

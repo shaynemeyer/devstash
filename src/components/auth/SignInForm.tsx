@@ -25,7 +25,11 @@ export function SignInForm() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password.");
+      if (result.code === "too_many_requests") {
+        setError("Too many sign-in attempts. Please try again in 15 minutes.");
+      } else {
+        setError("Invalid email or password.");
+      }
     } else {
       router.push("/dashboard");
     }

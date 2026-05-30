@@ -5,12 +5,17 @@ import { db } from "@/lib/db"
 import { sendVerificationEmail } from "@/lib/email"
 import { validateOrigin } from "@/lib/csrf"
 import { RegisterSchema } from "@/lib/validations/auth"
+import { applyRateLimit, registerLimiter, getIp } from "@/lib/rate-limit"
 
 const EMAIL_VERIFICATION_ENABLED = process.env.EMAIL_VERIFICATION_ENABLED === "true"
 
 export async function POST(request: Request) {
   const csrfError = validateOrigin(request)
   if (csrfError) return csrfError
+
+  const ip = getIp(request)
+  const rateLimitError = await applyRateLimit(registerLimiter, `register:${ip}`)
+  if (rateLimitError) return rateLimitError
 
   const body = await request.json()
   const result = RegisterSchema.safeParse(body)

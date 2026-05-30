@@ -3,10 +3,15 @@ import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { validateOrigin } from "@/lib/csrf"
 import { ResetPasswordSchema } from "@/lib/validations/auth"
+import { applyRateLimit, resetPasswordLimiter, getIp } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
   const csrfError = validateOrigin(request)
   if (csrfError) return csrfError
+
+  const ip = getIp(request)
+  const rateLimitError = await applyRateLimit(resetPasswordLimiter, `reset-password:${ip}`)
+  if (rateLimitError) return rateLimitError
 
   const body = await request.json()
   const result = ResetPasswordSchema.safeParse(body)

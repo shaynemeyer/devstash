@@ -1,11 +1,16 @@
-import NextAuth from "next-auth"
+import NextAuth, { CredentialsSignin } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import GitHub from "next-auth/providers/github"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
+import { checkRateLimit, loginLimiter, getIp } from "@/lib/rate-limit"
 
 const EMAIL_VERIFICATION_ENABLED = process.env.EMAIL_VERIFICATION_ENABLED === "true"
+
+class TooManyRequestsError extends CredentialsSignin {
+  code = "too_many_requests"
+}
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -17,11 +22,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null
 
+        const ip = getIp(request)
+        const email = credentials.email as string
+        const allowed = await checkRateLimit(loginLimiter, `login:${ip}:${email}`)
+        if (!allowed) throw new TooManyRequestsError()
+
         const user = await db.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
           select: { id: true, name: true, email: true, image: true, password: true, emailVerified: true },
         })
 
