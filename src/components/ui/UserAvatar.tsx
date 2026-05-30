@@ -8,6 +8,15 @@ interface UserAvatarProps {
   size?: number;
 }
 
+function isValidUrl(src: string): boolean {
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function getInitials(name: string): string {
   return name
     .trim()
@@ -20,7 +29,7 @@ function getInitials(name: string): string {
 export function UserAvatar({ name, image, className, size = 28 }: UserAvatarProps) {
   const initials = name ? getInitials(name) : "?";
 
-  if (image) {
+  if (image && isValidUrl(image)) {
     return (
       <Image
         src={image}
