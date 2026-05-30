@@ -1,4 +1,4 @@
-# Current Feature: Items List View
+# Current Feature
 
 ## Status
 
@@ -6,16 +6,7 @@ Completed
 
 ## Goals
 
-- Dynamic route `/items/[type]` filters items by type slug (snippets, notes, commands, prompts, links, files, images)
-- Responsive two-column grid (md+) of ItemCard components
-- Each card has a left border colored by item type
-- Follow existing codebase patterns
-
 ## Notes
-
-- Spec: `context/features/item-list-view-spec.md`
-- Route already linked from Sidebar (`/items/[slug]`)
-- Item types and colors already defined in `src/lib/icons.ts`
 
 ## History
 
@@ -40,3 +31,4 @@ Completed
 - Profile Page: /profile route added (protected); displays user info (avatar, name, email, join date), usage stats (total items/collections + per-type breakdown), change password form (email users only, gated on hasPassword), and delete account with confirmation dialog; ShadCN dialog component added; UserAvatar fixed to guard against invalid image URLs; src/lib/db/profile.ts added with getProfileUser and getProfileStats; API routes at /api/profile/change-password and /api/profile/delete-account
 - Auth Zod Validation: zod@4.4.3 installed; src/lib/validations/auth.ts added with RegisterSchema, ForgotPasswordSchema, ResetPasswordSchema, ChangePasswordSchema; all four auth API routes replaced ad-hoc if-checks with .safeParse(); closes two High-severity audit findings (missing server-side password length on register and reset-password)
 - Rate Limiting for Auth: @upstash/ratelimit 2.0.8 + @upstash/redis 1.38.0 added; src/lib/rate-limit.ts utility with sliding window limiters for all 5 auth endpoints; register (3/hr IP), forgot-password (3/hr IP), reset-password (5/15min IP), resend-verification (3/15min IP+email), login (5/15min IP+email via authorize() throw); 429 responses with Retry-After header; fails open when Upstash unconfigured; new POST /api/auth/resend-verification route added; SignInForm handles too_many_requests error code; ForgotPasswordForm fixed to read API error body
+- Items List View: dynamic route /items/[type] added; getItemsByTypeSlug query in items.ts maps slug to system type name; ItemCard component with type-colored left border, icon, description, and tags; 2-col responsive grid (md:grid-cols-2); empty state with dashed border; invalid slugs return 404 via notFound()
