@@ -1,22 +1,8 @@
-# Current Feature: Email Verification Toggle Flag
+# Current Feature
 
 ## Status
 
-In Progress
-
-## Goals
-
-- Add a flag (env variable) to enable/disable email verification on registration
-- When disabled, users can register and sign in immediately without verifying their email
-- When enabled, the existing email verification flow remains unchanged
-- Default the flag to `false` (disabled) so development is unblocked without a Resend domain
-
-## Notes
-
-- Current constraint: Resend is configured with `onboarding@resend.dev`, which only allows sending to the Resend account owner's email. Until a custom domain is linked, email verification blocks all new registrations.
-- Implementation: `EMAIL_VERIFICATION_ENABLED=true|false` env variable in `.env` / `.env.example`
-- The flag should gate: (1) sending the verification email in `/api/auth/register`, (2) the `emailVerified` check in `authorize()` in `auth.ts`
-- When disabled, skip sending the email and skip the `emailVerified` block — user can sign in immediately after registration
+Completed
 
 ## History
 
@@ -36,3 +22,4 @@ In Progress
 - Auth Credentials: password field added to User via migration; Credentials provider added to auth.config.ts (edge-safe placeholder) and overridden in auth.ts with bcrypt validation; POST /api/auth/register route handles registration with duplicate/mismatch validation; seed.ts updated to store demo user password in correct field
 - Auth UI: custom /sign-in page (email/password + GitHub OAuth button, link to register); custom /register page (name/email/password/confirm, validates, posts to /api/auth/register, redirects to /sign-in with success toast); reusable UserAvatar component (GitHub image or initials fallback); sidebar bottom replaced with real user avatar/name/email and a dropdown with Profile link and Sign out action; NextAuth pages config and proxy redirect both point to /sign-in; sonner 2.0.7 added with Toaster at top-right in root layout
 - Email Verification on Register: resend 4.5.1 added; src/lib/email.ts sends 24hr verification link via onboarding@resend.dev; token stored in VerificationToken model; GET /api/auth/verify-email validates token, sets emailVerified, redirects to /sign-in?verified=true; unverified Credentials users blocked in authorize(); /verify-email "check your email" page added; VerifiedToast shown on sign-in after verification; scripts/purge-users.ts added to wipe all non-demo users and their content
+- Email Verification Toggle Flag: EMAIL_VERIFICATION_ENABLED env var added; gates token creation/email send in /api/auth/register and the emailVerified check in authorize(); defaults to false (unset = disabled) so registration works without a Resend domain configured
