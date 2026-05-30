@@ -1,42 +1,12 @@
-# Current Feature: Rate Limiting for Auth
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Add rate limiting to all auth-related API routes to prevent brute force and abuse
-- Use Upstash Redis with `@upstash/ratelimit` (serverless-compatible)
-- Create reusable `src/lib/rate-limit.ts` utility with sliding window algorithm
-- Return 429 responses with `Retry-After` header and user-friendly error messages
-- Display rate limit errors via toast on the frontend
-- Fail open (allow request) if Upstash is unavailable
-
 ## Notes
-
-### Endpoints to Protect
-
-| Endpoint | Limit | Window | Key By |
-|----------|-------|--------|--------|
-| `/api/auth/callback/credentials` (login) | 5 attempts | 15 min | IP + email |
-| `/api/auth/register` | 3 attempts | 1 hour | IP |
-| `/api/auth/forgot-password` | 3 attempts | 1 hour | IP |
-| `/api/auth/reset-password` | 5 attempts | 15 min | IP |
-| `/api/auth/resend-verification` | 3 attempts | 15 min | IP + email |
-
-### Environment Variables Required
-
-```
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
-```
-
-### Implementation Notes
-
-- Login limiting with NextAuth credentials is tricky — may need custom sign-in handler
-- Upstash free tier: 10k requests/day (sufficient for auth limiting)
-- Rate limiting middleware could be a future cleanup
 
 ## History
 
@@ -60,3 +30,4 @@ UPSTASH_REDIS_REST_TOKEN=
 - Forgot Password: "Forgot password?" link added to sign-in form; /forgot-password page with email form creates a 1hr VerificationToken and sends reset link via Resend; /reset-password?token=... page validates token, hashes and updates password, deletes token, redirects to /sign-in?reset=true with success toast; OAuth-only accounts silently no-op; no schema changes (reuses existing VerificationToken model)
 - Profile Page: /profile route added (protected); displays user info (avatar, name, email, join date), usage stats (total items/collections + per-type breakdown), change password form (email users only, gated on hasPassword), and delete account with confirmation dialog; ShadCN dialog component added; UserAvatar fixed to guard against invalid image URLs; src/lib/db/profile.ts added with getProfileUser and getProfileStats; API routes at /api/profile/change-password and /api/profile/delete-account
 - Auth Zod Validation: zod@4.4.3 installed; src/lib/validations/auth.ts added with RegisterSchema, ForgotPasswordSchema, ResetPasswordSchema, ChangePasswordSchema; all four auth API routes replaced ad-hoc if-checks with .safeParse(); closes two High-severity audit findings (missing server-side password length on register and reset-password)
+- Rate Limiting for Auth: @upstash/ratelimit 2.0.8 + @upstash/redis 1.38.0 added; src/lib/rate-limit.ts utility with sliding window limiters for all 5 auth endpoints; register (3/hr IP), forgot-password (3/hr IP), reset-password (5/15min IP), resend-verification (3/15min IP+email), login (5/15min IP+email via authorize() throw); 429 responses with Retry-After header; fails open when Upstash unconfigured; new POST /api/auth/resend-verification route added; SignInForm handles too_many_requests error code; ForgotPasswordForm fixed to read API error body
