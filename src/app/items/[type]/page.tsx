@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { ItemCard } from "@/components/items/ItemCard";
+import { ItemsGrid } from "@/components/items/ItemsGrid";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
 
@@ -61,17 +61,7 @@ export default async function ItemsTypePage({ params }: Props) {
             {items.length} {items.length === 1 ? "item" : "items"}
           </p>
         </div>
-        {items.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border p-12 text-center">
-            <p className="text-muted-foreground text-sm">No {label.toLowerCase()} yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {items.map((item) => (
-              <ItemCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
+        <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
       </div>
     </DashboardShell>
   );

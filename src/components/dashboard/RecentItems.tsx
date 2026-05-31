@@ -1,13 +1,25 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { getIcon } from "@/lib/icons";
 import { ItemWithMeta } from "@/lib/db/items";
+import { ItemDrawer } from "@/components/items/ItemDrawer";
 
 interface RecentItemsProps {
   items: ItemWithMeta[];
 }
 
 export function RecentItems({ items }: RecentItemsProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  function openDrawer(id: string) {
+    setSelectedId(id);
+    setDrawerOpen(true);
+  }
+
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
@@ -23,6 +35,7 @@ export function RecentItems({ items }: RecentItemsProps) {
           return (
             <div
               key={item.id}
+              onClick={() => openDrawer(item.id)}
               className="rounded-xl border border-border bg-card flex items-stretch overflow-hidden hover:bg-card/80 transition-colors cursor-pointer"
             >
               <div className="w-1 shrink-0" style={{ backgroundColor: item.typeColor }} />
@@ -54,6 +67,7 @@ export function RecentItems({ items }: RecentItemsProps) {
           );
         })}
       </div>
+      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} />
     </section>
   );
 }
