@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -131,4 +132,23 @@
 
 .cn-toast-success {
   border-left: 3px solid theme(colors.green.500) !important;
+}
+
+/* Match prose code blocks to the CodeEditor dark theme */
+.markdown-preview :where(pre):not(:where([class~="not-prose"] *)) {
+  background-color: #2d2d2d;
+  border: 1px solid #3a3a3a;
+}
+.markdown-preview :where(code):not(:where([class~="not-prose"] *)) {
+  background-color: #2d2d2d;
+  border: 1px solid #3a3a3a;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+  color: #ce9178;
+}
+.markdown-preview :where(pre code):not(:where([class~="not-prose"] *)) {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: #d4d4d4;
 }
