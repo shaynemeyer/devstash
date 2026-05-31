@@ -276,6 +276,15 @@ export async function updateItem(
   }
 }
 
+export async function deleteItem(id: string, userId: string): Promise<boolean> {
+  try {
+    await db.item.delete({ where: { id, userId } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function toItemWithMeta(item: {
   id: string;
   title: string;

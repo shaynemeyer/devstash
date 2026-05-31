@@ -5,9 +5,20 @@ import { useRouter } from "next/navigation";
 import { Star, Pin, Copy, Pencil, Trash2, Calendar, FolderOpen, Tag, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { getIcon } from "@/lib/icons";
-import { updateItem } from "@/actions/items";
+import { updateItem, deleteItem } from "@/actions/items";
 import type { ItemDetail } from "@/lib/db/items";
 
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
@@ -38,7 +49,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
         {loading && <DrawerSkeleton />}
         {!loading && item && (
-          <DrawerBody item={item} onItemChange={setItem} />
+          <DrawerBody item={item} onItemChange={setItem} onClose={() => onOpenChange(false)} />
         )}
       </SheetContent>
     </Sheet>
@@ -48,14 +59,17 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
 function DrawerBody({
   item,
   onItemChange,
+  onClose,
 }: {
   item: ItemDetail;
   onItemChange: (item: ItemDetail) => void;
+  onClose: () => void;
 }) {
   const router = useRouter();
   const Icon = getIcon(item.typeIcon);
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const [title, setTitle] = useState(item.title);
   const [description, setDescription] = useState(item.description ?? "");
@@ -125,6 +139,19 @@ function DrawerBody({
     onItemChange(result.data);
     setEditMode(false);
     toast.success("Item saved");
+    router.refresh();
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    const result = await deleteItem(item.id);
+    setDeleting(false);
+    if (!result.success) {
+      toast.error(result.error ?? "Failed to delete item");
+      return;
+    }
+    toast.success("Item deleted");
+    onClose();
     router.refresh();
   }
 
@@ -236,10 +263,31 @@ function DrawerBody({
               Edit
             </Button>
             <div className="flex-1" />
-            <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-destructive">
-              <Trash2 className="size-3.5" />
-              <span className="sr-only">Delete</span>
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={<Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-destructive" disabled={deleting} />}
+              >
+                <Trash2 className="size-3.5" />
+                <span className="sr-only">Delete</span>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete item?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    &ldquo;{item.title}&rdquo; will be permanently deleted. This cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </>
         )}
       </div>

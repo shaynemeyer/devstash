@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { updateItem as dbUpdateItem } from "@/lib/db/items";
+import { updateItem as dbUpdateItem, deleteItem as dbDeleteItem } from "@/lib/db/items";
 import { UpdateItemSchema } from "@/lib/validations/items";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -37,4 +37,18 @@ export async function updateItem(itemId: string, input: unknown): Promise<Action
   }
 
   return { success: true, data: updated };
+}
+
+export async function deleteItem(itemId: string): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const ok = await dbDeleteItem(itemId, session.user.id);
+  if (!ok) {
+    return { success: false, error: "Failed to delete item" };
+  }
+
+  return { success: true };
 }
