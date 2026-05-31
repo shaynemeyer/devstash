@@ -19,10 +19,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { getIcon } from "@/lib/icons";
 import { updateItem, deleteItem } from "@/actions/items";
+import { CodeEditor } from "@/components/ui/CodeEditor";
 import type { ItemDetail } from "@/lib/db/items";
 
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
 const LANGUAGE_TYPES = ["Snippet", "Command"];
+const CODE_TYPES = ["Snippet", "Command"];
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -163,6 +165,7 @@ function DrawerBody({
   const showContent = CONTENT_TYPES.includes(item.typeName);
   const showLanguage = LANGUAGE_TYPES.includes(item.typeName);
   const showUrl = item.typeName === "Link";
+  const useCodeEditor = CODE_TYPES.includes(item.typeName);
 
   return (
     <div className="flex flex-col h-full">
@@ -325,13 +328,21 @@ function DrawerBody({
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
               Content
             </p>
-            <textarea
-              className="w-full rounded-lg bg-muted p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              rows={8}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Content"
-            />
+            {useCodeEditor ? (
+              <CodeEditor
+                value={content}
+                onChange={setContent}
+                language={language || "plaintext"}
+              />
+            ) : (
+              <textarea
+                className="w-full rounded-lg bg-muted p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                rows={8}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Content"
+              />
+            )}
           </section>
         ) : (
           !editMode && item.content && (
@@ -339,9 +350,17 @@ function DrawerBody({
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
                 Content
               </p>
-              <pre className="rounded-lg bg-muted p-4 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
-                <code>{item.content}</code>
-              </pre>
+              {useCodeEditor ? (
+                <CodeEditor
+                  value={item.content}
+                  language={item.language || "plaintext"}
+                  readOnly
+                />
+              ) : (
+                <pre className="rounded-lg bg-muted p-4 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
+                  <code>{item.content}</code>
+                </pre>
+              )}
             </section>
           )
         )}

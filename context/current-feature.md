@@ -1,12 +1,23 @@
-# Current Feature
+# Current Feature: Code Editor
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- Create a `CodeEditor` component using Monaco Editor with dark theme
+- Replace the `Textarea` in `ItemDrawer` with `CodeEditor` for snippets and commands only (keep `Textarea` for notes, prompts, links)
+- Add macOS-style window chrome dots (red/yellow/green) in the editor header
+- Show the language label in the editor header alongside a quick copy button
+- Support both readonly (display) and editable modes
+- Fluid height with a max of 400px and a themed scrollbar
+
 ## Notes
+
+- Only snippet and command item types get the code editor
+- Other types (note, prompt, link) keep the existing textarea
+- Both the item drawer view mode and edit mode need to use the CodeEditor for applicable types
 
 ## History
 
@@ -22,7 +33,7 @@ Completed
 - Stats & Sidebar: replaced all mock-data in Sidebar with real Prisma queries; getItemTypesWithCounts (items.ts) and getSidebarCollections (collections.ts) added; DashboardShell accepts itemTypes/collections props; sidebar shows live type counts linking to /items/[slug], favorites with stars, recents with dominant-color circles, and "View all collections" link to /collections
 - Add Pro Badge to Sidebar: ShadCN Badge component added; Files and Images item types in the sidebar now show a subtle outline PRO badge; badge hidden when sidebar is collapsed
 - Code Quality Quick Wins: Prisma include → select on type/tag relations in items.ts and collections.ts; try/catch with safe fallbacks added to all async DB functions; shared getIcon() utility extracted to src/lib/icons.ts with Code as default fallback; duplicated ICON_MAP and unsafe keyof casts removed from all dashboard components
-- Auth Setup: NextAuth v5 (5.0.0-beta.31) + @auth/prisma-adapter; split auth config (auth.config.ts edge-safe with GitHub provider, auth.ts with Prisma adapter + JWT strategy); API route handler at /api/auth/[...nextauth]; proxy.ts protects /dashboard/* with redirect to sign-in; Session type extended with user.id
+- Auth Setup: NextAuth v5 (5.0.0-beta.31) + @auth/prisma-adapter; split auth config (auth.config.ts edge-safe with GitHub provider, auth.ts with Prisma adapter + JWT strategy); API route handler at /api/auth/[...nextauth]; proxy.ts protects /dashboard/\* with redirect to sign-in; Session type extended with user.id
 - Auth Credentials: password field added to User via migration; Credentials provider added to auth.config.ts (edge-safe placeholder) and overridden in auth.ts with bcrypt validation; POST /api/auth/register route handles registration with duplicate/mismatch validation; seed.ts updated to store demo user password in correct field
 - Auth UI: custom /sign-in page (email/password + GitHub OAuth button, link to register); custom /register page (name/email/password/confirm, validates, posts to /api/auth/register, redirects to /sign-in with success toast); reusable UserAvatar component (GitHub image or initials fallback); sidebar bottom replaced with real user avatar/name/email and a dropdown with Profile link and Sign out action; NextAuth pages config and proxy redirect both point to /sign-in; sonner 2.0.7 added with Toaster at top-right in root layout
 - Email Verification on Register: resend 4.5.1 added; src/lib/email.ts sends 24hr verification link via `onboarding@resend.dev`; token stored in VerificationToken model; GET /api/auth/verify-email validates token, sets emailVerified, redirects to /sign-in?verified=true; unverified Credentials users blocked in authorize(); /verify-email "check your email" page added; VerifiedToast shown on sign-in after verification; scripts/purge-users.ts added to wipe all non-demo users and their content
@@ -32,7 +43,7 @@ Completed
 - Auth Zod Validation: zod@4.4.3 installed; src/lib/validations/auth.ts added with RegisterSchema, ForgotPasswordSchema, ResetPasswordSchema, ChangePasswordSchema; all four auth API routes replaced ad-hoc if-checks with .safeParse(); closes two High-severity audit findings (missing server-side password length on register and reset-password)
 - Rate Limiting for Auth: @upstash/ratelimit 2.0.8 + @upstash/redis 1.38.0 added; src/lib/rate-limit.ts utility with sliding window limiters for all 5 auth endpoints; register (3/hr IP), forgot-password (3/hr IP), reset-password (5/15min IP), resend-verification (3/15min IP+email), login (5/15min IP+email via authorize() throw); 429 responses with Retry-After header; fails open when Upstash unconfigured; new POST /api/auth/resend-verification route added; SignInForm handles too_many_requests error code; ForgotPasswordForm fixed to read API error body
 - Items List View: dynamic route /items/[type] added; getItemsByTypeSlug query in items.ts maps slug to system type name; ItemCard component with type-colored left border, icon, description, and tags; 2-col responsive grid (md:grid-cols-2); empty state with dashed border; invalid slugs return 404 via notFound()
-- Vitest Setup: vitest@4.1.7 + @vitest/coverage-v8 + vite-tsconfig-paths added; vitest.config.ts targets src/actions/**/*.test.ts and src/lib/**/*.test.ts with node environment; test/test:run/test:coverage scripts added; example tests in src/lib/utils.test.ts; ai-interaction.md workflow updated to include unit testing step
+- Vitest Setup: vitest@4.1.7 + @vitest/coverage-v8 + vite-tsconfig-paths added; vitest.config.ts targets src/actions/**/\*.test.ts and src/lib/**/\*.test.ts with node environment; test/test:run/test:coverage scripts added; example tests in src/lib/utils.test.ts; ai-interaction.md workflow updated to include unit testing step
 - Item List 3-Column Layout: items list grid updated from md:grid-cols-2 to grid-cols-1 md:grid-cols-2 lg:grid-cols-3 for responsive 3-column layout on large screens
 - Item Drawer: right-side Sheet drawer opens on ItemCard click on dashboard (Pinned + Recent) and items list pages; ShadCN sheet.tsx added; getItemDetail query in items.ts fetches full item data (content, language, url, collections); GET /api/items/[id] route with auth + demo-user fallback; ItemDrawer client component with skeleton loading, action bar (Favorite/Pin/Copy/Edit/Delete), and sections for description, content, URL, tags, collections, and dates; ItemsGrid client component wraps items list grid with drawer state; RecentItems and PinnedItems converted to client components
 - Item Drawer Edit Mode: Edit button toggles inline edit mode in the drawer; Save/Cancel replace the action bar; updateItem server action in src/actions/items.ts with Zod validation (src/lib/validations/items.ts) and ownership check; updateItem DB query in items.ts with tag replacement (deleteMany + connectOrCreate); type-specific fields (content/language/url) shown per item type; router.refresh() syncs the underlying list on save; useEffect resets edit state when item.id changes
