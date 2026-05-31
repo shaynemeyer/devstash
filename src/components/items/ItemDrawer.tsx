@@ -20,11 +20,13 @@ import { Button } from "@/components/ui/button";
 import { getIcon } from "@/lib/icons";
 import { updateItem, deleteItem } from "@/actions/items";
 import { CodeEditor } from "@/components/ui/CodeEditor";
+import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import type { ItemDetail } from "@/lib/db/items";
 
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
 const LANGUAGE_TYPES = ["Snippet", "Command"];
 const CODE_TYPES = ["Snippet", "Command"];
+const MARKDOWN_TYPES = ["Note", "Prompt"];
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -166,6 +168,7 @@ function DrawerBody({
   const showLanguage = LANGUAGE_TYPES.includes(item.typeName);
   const showUrl = item.typeName === "Link";
   const useCodeEditor = CODE_TYPES.includes(item.typeName);
+  const useMarkdownEditor = MARKDOWN_TYPES.includes(item.typeName);
 
   return (
     <div className="flex flex-col h-full">
@@ -334,6 +337,8 @@ function DrawerBody({
                 onChange={setContent}
                 language={language || "plaintext"}
               />
+            ) : useMarkdownEditor ? (
+              <MarkdownEditor value={content} onChange={setContent} />
             ) : (
               <textarea
                 className="w-full rounded-lg bg-muted p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-none"
@@ -356,6 +361,8 @@ function DrawerBody({
                   language={item.language || "plaintext"}
                   readOnly
                 />
+              ) : useMarkdownEditor ? (
+                <MarkdownEditor value={item.content} readOnly />
               ) : (
                 <pre className="rounded-lg bg-muted p-4 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
                   <code>{item.content}</code>
