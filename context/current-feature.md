@@ -1,28 +1,12 @@
-# Current Feature: Item Drawer
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Clicking an ItemCard opens a right-side Sheet drawer with full item details
-- Works on both the dashboard and items list pages
-- Drawer fetches full item data on click via `/api/items/[id]` (skeleton while loading)
-- Action bar: Favorite (star, yellow when active), Pin, Copy, Edit (pencil), Delete (trash, right-aligned)
-- Client wrapper component manages drawer state (pages remain server components)
-- No page navigation — fast, snappy in-place detail view
-
 ## Notes
-
-- Use ShadCN `Sheet` component, opens from the right
-- Card data already fetched by server; drawer fetches full detail (content, collections, language, etc.) on click
-- Query function in `src/lib/db/items.ts`; API route at `/api/items/[id]` with auth check
-- Content editor / item-specific panels are out of scope for this phase — focus on detail display only
-- Reference screenshot: `context/screenshots/dashboard-ui-drawer.png`
-  - Header: type icon + title, type badge, language badge
-  - Action bar: Favorite | Pin | Copy | Edit | Delete
-  - Sections: Description, Content (code block), Tags, Collections, Details (created/updated dates)
 
 ## History
 
@@ -50,3 +34,4 @@ In Progress
 - Items List View: dynamic route /items/[type] added; getItemsByTypeSlug query in items.ts maps slug to system type name; ItemCard component with type-colored left border, icon, description, and tags; 2-col responsive grid (md:grid-cols-2); empty state with dashed border; invalid slugs return 404 via notFound()
 - Vitest Setup: vitest@4.1.7 + @vitest/coverage-v8 + vite-tsconfig-paths added; vitest.config.ts targets src/actions/**/*.test.ts and src/lib/**/*.test.ts with node environment; test/test:run/test:coverage scripts added; example tests in src/lib/utils.test.ts; ai-interaction.md workflow updated to include unit testing step
 - Item List 3-Column Layout: items list grid updated from md:grid-cols-2 to grid-cols-1 md:grid-cols-2 lg:grid-cols-3 for responsive 3-column layout on large screens
+- Item Drawer: right-side Sheet drawer opens on ItemCard click on dashboard (Pinned + Recent) and items list pages; ShadCN sheet.tsx added; getItemDetail query in items.ts fetches full item data (content, language, url, collections); GET /api/items/[id] route with auth + demo-user fallback; ItemDrawer client component with skeleton loading, action bar (Favorite/Pin/Copy/Edit/Delete), and sections for description, content, URL, tags, collections, and dates; ItemsGrid client component wraps items list grid with drawer state; RecentItems and PinnedItems converted to client components
