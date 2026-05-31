@@ -4,14 +4,15 @@ import { ItemWithMeta } from "@/lib/db/items";
 
 interface ItemCardProps {
   item: ItemWithMeta;
+  onClick?: () => void;
 }
 
-export function ItemCard({ item }: ItemCardProps) {
+export function ItemCard({ item, onClick }: ItemCardProps) {
   const Icon = getIcon(item.typeIcon);
   const date = item.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
-    <div className="rounded-xl border border-border bg-card flex items-stretch overflow-hidden hover:bg-card/80 transition-colors cursor-pointer">
+    <div className="rounded-xl border border-border bg-card flex items-stretch overflow-hidden hover:bg-card/80 transition-colors cursor-pointer" onClick={onClick}>
       <div className="w-1 shrink-0" style={{ backgroundColor: item.typeColor }} />
       <div className="flex items-start gap-3 p-4 flex-1 min-w-0">
         <div

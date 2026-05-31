@@ -129,6 +129,71 @@ export async function getItemsByTypeSlug(userId: string, slug: string): Promise<
   }
 }
 
+export interface ItemDetail extends ItemWithMeta {
+  content: string | null;
+  contentType: string;
+  language: string | null;
+  url: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  updatedAt: Date;
+  collections: string[];
+}
+
+export async function getItemDetail(id: string, userId: string): Promise<ItemDetail | null> {
+  try {
+    const item = await db.item.findUnique({
+      where: { id, userId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        content: true,
+        contentType: true,
+        language: true,
+        url: true,
+        fileUrl: true,
+        fileName: true,
+        fileSize: true,
+        isFavorite: true,
+        isPinned: true,
+        createdAt: true,
+        updatedAt: true,
+        type: { select: { icon: true, color: true, name: true } },
+        tags: { select: { tag: { select: { name: true } } } },
+        collections: { select: { collection: { select: { name: true } } } },
+      },
+    });
+
+    if (!item) return null;
+
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      content: item.content,
+      contentType: item.contentType,
+      language: item.language,
+      url: item.url,
+      fileUrl: item.fileUrl,
+      fileName: item.fileName,
+      fileSize: item.fileSize,
+      isFavorite: item.isFavorite,
+      isPinned: item.isPinned,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      typeIcon: item.type.icon,
+      typeColor: item.type.color,
+      typeName: item.type.name,
+      tags: item.tags.map((t) => t.tag.name),
+      collections: item.collections.map((c) => c.collection.name),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function toItemWithMeta(item: {
   id: string;
   title: string;
