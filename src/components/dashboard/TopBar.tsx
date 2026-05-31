@@ -15,9 +15,10 @@ function BrandLogo() {
 
 interface TopBarProps {
   onMobileMenuClick?: () => void;
+  onNewItem?: () => void;
 }
 
-export function TopBar({ onMobileMenuClick }: TopBarProps) {
+export function TopBar({ onMobileMenuClick, onNewItem }: TopBarProps) {
   return (
     <header className="flex items-center px-4 h-12 border-b border-border bg-background shrink-0">
       <div className="w-52 shrink-0 flex items-center gap-2">
@@ -48,7 +49,7 @@ export function TopBar({ onMobileMenuClick }: TopBarProps) {
           <FolderPlus className="size-3.5 mr-1.5" />
           New Collection
         </Button>
-        <Button size="sm" className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white border-0">
+        <Button size="sm" className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white border-0" onClick={onNewItem}>
           <Plus className="size-3.5 mr-1.5" />
           New Item
         </Button>

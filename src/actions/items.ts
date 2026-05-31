@@ -1,14 +1,45 @@
 "use server";
 
 import { auth } from "@/auth";
-import { updateItem as dbUpdateItem, deleteItem as dbDeleteItem } from "@/lib/db/items";
-import { UpdateItemSchema } from "@/lib/validations/items";
+import { createItem as dbCreateItem, updateItem as dbUpdateItem, deleteItem as dbDeleteItem } from "@/lib/db/items";
+import { CreateItemSchema, UpdateItemSchema } from "@/lib/validations/items";
 import type { ItemDetail } from "@/lib/db/items";
 
 interface ActionResult {
   success: boolean;
   data?: ItemDetail;
   error?: string;
+}
+
+export async function createItem(input: unknown): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const result = CreateItemSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  const { typeId, title, description, content, url, language, tags } = result.data;
+
+  const created = await dbCreateItem({
+    typeId,
+    title,
+    description: description ?? null,
+    content: content ?? null,
+    url: url ?? null,
+    language: language ?? null,
+    tags,
+    userId: session.user.id,
+  });
+
+  if (!created) {
+    return { success: false, error: "Failed to create item" };
+  }
+
+  return { success: true, data: created };
 }
 
 export async function updateItem(itemId: string, input: unknown): Promise<ActionResult> {
