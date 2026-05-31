@@ -4,27 +4,30 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Check } from "lucide-react";
 import { toast } from "sonner";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { getIcon } from "@/lib/icons";
 import { createItem } from "@/actions/items";
+import { CodeEditor } from "@/components/ui/CodeEditor";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
 const CREATABLE_TYPES = ["Snippet", "Prompt", "Command", "Note", "Link"];
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
 const LANGUAGE_TYPES = ["Snippet", "Command"];
+const CODE_TYPES = ["Snippet", "Command"];
 
 interface CreateItemDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   itemTypes: ItemTypeWithCount[];
+  defaultTypeId?: string;
 }
 
-export function CreateItemDrawer({ open, onOpenChange, itemTypes }: CreateItemDrawerProps) {
+export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId }: CreateItemDrawerProps) {
   const router = useRouter();
   const types = itemTypes.filter((t) => CREATABLE_TYPES.includes(t.name));
 
-  const [selectedTypeId, setSelectedTypeId] = useState<string>("");
+  const [selectedTypeId, setSelectedTypeId] = useState<string>(defaultTypeId ?? "");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
@@ -37,10 +40,11 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes }: CreateItemDr
   const showContent = selectedType ? CONTENT_TYPES.includes(selectedType.name) : false;
   const showLanguage = selectedType ? LANGUAGE_TYPES.includes(selectedType.name) : false;
   const showUrl = selectedType?.name === "Link";
+  const useCodeEditor = selectedType ? CODE_TYPES.includes(selectedType.name) : false;
   const Icon = selectedType ? getIcon(selectedType.icon) : null;
 
   function reset() {
-    setSelectedTypeId("");
+    setSelectedTypeId(defaultTypeId ?? "");
     setTitle("");
     setDescription("");
     setContent("");
@@ -178,13 +182,21 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes }: CreateItemDr
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
                   Content
                 </p>
-                <textarea
-                  className="w-full rounded-lg bg-muted p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-                  rows={8}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Content"
-                />
+                {useCodeEditor ? (
+                  <CodeEditor
+                    value={content}
+                    onChange={setContent}
+                    language={language || "plaintext"}
+                  />
+                ) : (
+                  <textarea
+                    className="w-full rounded-lg bg-muted p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                    rows={8}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Content"
+                  />
+                )}
               </section>
             )}
 

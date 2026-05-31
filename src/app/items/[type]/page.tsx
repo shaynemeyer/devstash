@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ItemsGrid } from "@/components/items/ItemsGrid";
+import { TypePageActions } from "@/components/items/TypePageActions";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
 
@@ -16,6 +17,16 @@ const SLUG_LABELS: Record<string, string> = {
   files: "Files",
   images: "Images",
   links: "Links",
+};
+
+const SLUG_TYPE_NAMES: Record<string, string> = {
+  snippets: "Snippet",
+  prompts: "Prompt",
+  commands: "Command",
+  notes: "Note",
+  files: "File",
+  images: "Image",
+  links: "Link",
 };
 
 async function getDemoUserId(): Promise<string | null> {
@@ -51,16 +62,18 @@ export default async function ItemsTypePage({ params }: Props) {
   };
 
   const label = SLUG_LABELS[type];
+  const typeName = SLUG_TYPE_NAMES[type];
+  const defaultTypeId = sidebarItemTypes.find((t) => t.name === typeName)?.id ?? "";
 
   return (
     <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">{label}</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {items.length} {items.length === 1 ? "item" : "items"}
-          </p>
-        </div>
+        <TypePageActions
+          label={label}
+          count={items.length}
+          itemTypes={sidebarItemTypes}
+          defaultTypeId={defaultTypeId}
+        />
         <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
       </div>
     </DashboardShell>

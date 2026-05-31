@@ -40,7 +40,12 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
-      <CreateItemDrawer open={createOpen} onOpenChange={setCreateOpen} itemTypes={itemTypes} />
+      <CreateItemDrawer
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        itemTypes={itemTypes}
+        defaultTypeId={itemTypes.find((t) => t.name === "Snippet")?.id ?? ""}
+      />
     </div>
   );
 }
