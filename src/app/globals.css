@@ -128,3 +128,7 @@
     @apply font-sans;
     }
 }
+
+.cn-toast-success {
+  border-left: 3px solid theme(colors.green.500) !important;
+}
