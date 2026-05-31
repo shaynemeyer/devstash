@@ -1,0 +1,64 @@
+import { describe, it, expect } from "vitest";
+import { UpdateItemSchema } from "./items";
+
+describe("UpdateItemSchema", () => {
+  const base = {
+    title: "My Item",
+    tags: [],
+  };
+
+  it("accepts a minimal valid payload", () => {
+    const result = UpdateItemSchema.safeParse(base);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an empty title", () => {
+    const result = UpdateItemSchema.safeParse({ ...base, title: "" });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Title is required");
+  });
+
+  it("trims whitespace from title and rejects whitespace-only title", () => {
+    const result = UpdateItemSchema.safeParse({ ...base, title: "   " });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects an invalid URL", () => {
+    const result = UpdateItemSchema.safeParse({ ...base, url: "not-a-url" });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Must be a valid URL");
+  });
+
+  it("accepts a valid URL", () => {
+    const result = UpdateItemSchema.safeParse({ ...base, url: "https://example.com" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts null for url", () => {
+    const result = UpdateItemSchema.safeParse({ ...base, url: null });
+    expect(result.success).toBe(true);
+  });
+
+  it("defaults tags to empty array when omitted", () => {
+    const result = UpdateItemSchema.safeParse({ title: "Test" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.tags).toEqual([]);
+  });
+
+  it("accepts an array of tags", () => {
+    const result = UpdateItemSchema.safeParse({ ...base, tags: ["react", "hooks"] });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.tags).toEqual(["react", "hooks"]);
+  });
+
+  it("accepts null for optional fields", () => {
+    const result = UpdateItemSchema.safeParse({
+      ...base,
+      description: null,
+      content: null,
+      language: null,
+      url: null,
+    });
+    expect(result.success).toBe(true);
+  });
+});

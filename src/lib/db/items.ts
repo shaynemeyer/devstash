@@ -194,6 +194,88 @@ export async function getItemDetail(id: string, userId: string): Promise<ItemDet
   }
 }
 
+export interface UpdateItemData {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+}
+
+export async function updateItem(
+  id: string,
+  userId: string,
+  data: UpdateItemData
+): Promise<ItemDetail | null> {
+  try {
+    const item = await db.item.update({
+      where: { id, userId },
+      data: {
+        title: data.title,
+        description: data.description,
+        content: data.content,
+        url: data.url,
+        language: data.language,
+        tags: {
+          deleteMany: {},
+          create: data.tags.map((name) => ({
+            tag: {
+              connectOrCreate: {
+                where: { name },
+                create: { name },
+              },
+            },
+          })),
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        content: true,
+        contentType: true,
+        language: true,
+        url: true,
+        fileUrl: true,
+        fileName: true,
+        fileSize: true,
+        isFavorite: true,
+        isPinned: true,
+        createdAt: true,
+        updatedAt: true,
+        type: { select: { icon: true, color: true, name: true } },
+        tags: { select: { tag: { select: { name: true } } } },
+        collections: { select: { collection: { select: { name: true } } } },
+      },
+    });
+
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      content: item.content,
+      contentType: item.contentType,
+      language: item.language,
+      url: item.url,
+      fileUrl: item.fileUrl,
+      fileName: item.fileName,
+      fileSize: item.fileSize,
+      isFavorite: item.isFavorite,
+      isPinned: item.isPinned,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      typeIcon: item.type.icon,
+      typeColor: item.type.color,
+      typeName: item.type.name,
+      tags: item.tags.map((t) => t.tag.name),
+      collections: item.collections.map((c) => c.collection.name),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function toItemWithMeta(item: {
   id: string;
   title: string;

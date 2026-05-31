@@ -1,12 +1,30 @@
-# Current Feature
+# Current Feature: Item Drawer — Edit Mode
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- Edit button in the drawer action bar toggles inline edit mode (same drawer stays open)
+- In edit mode, action bar replaced with Save and Cancel buttons
+- Cancel discards changes and returns to view mode
+- Save persists changes via server action, returns to view mode, refreshes drawer data, and triggers `router.refresh()`
+- Toast notification on save success or error
+- Editable fields for all types: Title (required), Description, Tags (comma-separated)
+- Type-specific fields: Content textarea (snippet/prompt/command/note), Language input (snippet/command), URL input (link)
+- Non-editable in edit mode: item type, collections, dates
+- `updateItem` server action in `src/actions/items.ts` with `{ success, data, error }` pattern
+- Zod schema in `src/lib/validations/items.ts` validates title, description, content, url, language, tags
+- `updateItem` query in `src/lib/db/items.ts` — disconnects all existing tags, connect-or-creates new ones, returns updated `ItemDetail`
+- Save button disabled when title is empty (client-side UX guard)
+
 ## Notes
+
+- No form library — use controlled inputs with local state
+- Content textarea is plain text (no code editor yet)
+- Server action validates ownership via `auth()` before any DB write
+- Zod is the source of truth for validation; client-side is UX only
 
 ## History
 
