@@ -7,4 +7,5 @@
    - ❌ Goals missing or incomplete
    - ⚠️ Code quality issues or bugs
    - 🚫 Scope creep (code beyond goals)
+   - 🧪 Adequate test coverage for new code
 4. Final verdict: Ready to complete or needs changes
