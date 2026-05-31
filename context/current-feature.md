@@ -1,25 +1,12 @@
-# Current Feature: Markdown Editor
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Create `MarkdownEditor` component with tabbed Write/Preview interface
-- Replace textarea with `MarkdownEditor` for notes and prompts in `ItemDrawer` and `CreateItemDrawer`
-- Keep `CodeEditor` unchanged for snippets and commands
-- Use `react-markdown` with `remark-gfm` for GitHub Flavored Markdown rendering
-- Match existing dark theme (bg-[#1e1e1e] container, bg-[#2d2d2d] header)
-- Add copy button in header (same style as `CodeEditor`)
-- Readonly mode shows Preview tab only; edit mode defaults to Write tab
-- Fluid height with max 400px; custom `.markdown-preview` CSS class for dark mode styling
-
 ## Notes
-
-- Styling requirements: distinct headings, dark code blocks, inline code highlight, indented lists with bullets, blockquote left border, blue links, bordered tables
-- Integration points: `CreateItemDrawer` (note/prompt content), `ItemDrawer` edit mode (note/prompt content), `ItemDrawer` view mode (readonly for note/prompt)
-- No changes to snippet/command flows
 
 ## History
 
@@ -52,3 +39,4 @@ In Progress
 - Item Delete: Trash2 button in ItemDrawer opens ShadCN AlertDialog confirmation; deleteItem server action in src/actions/items.ts with auth + ownership check; deleteItem DB query in items.ts; success toast via sonner; drawer closes and list refreshes on confirm; Vitest unit tests added for both deleteItem and updateItem actions (8 tests)
 - Item Create: "New Item" button in TopBar opens a right-side Sheet drawer; type selector for Snippet/Prompt/Command/Note/Link with conditional fields per type (content+language for snippet/command, content for prompt/note, URL required for link); createItem server action in actions/items.ts with Zod validation (CreateItemSchema); createItem DB query in lib/db/items.ts derives contentType from item type name; toast on success, drawer resets and closes, list refreshes; fixed UpdateItemSchema URL validation regression; 14 new Vitest tests added
 - Code Editor: @monaco-editor/react 4.7.0 added; CodeEditor component with vs-dark theme, macOS window chrome dots, language label, copy button, and fluid height (min 80px, max 400px) computed from line count; ItemDrawer and CreateItemDrawer use CodeEditor for Snippet and Command types in both view and edit modes, textarea kept for other types; TypePageActions client component adds a type-specific "New X" button on each /items/[type] page with the type pre-selected; TopBar New Item button defaults to Snippet
+- Markdown Editor: react-markdown@9.0.3 + remark-gfm@4.0.1 + @tailwindcss/typography@0.5.16 added; MarkdownEditor component with Write/Preview tabs, dark chrome matching CodeEditor (bg-[#1e1e1e]/bg-[#2d2d2d]), copy button, prose prose-invert dark theme, and fluid height (min 80px, max 400px); replaces textarea in CreateItemDrawer and ItemDrawer (edit + view modes) for Note and Prompt types; Snippet and Command unchanged; useEffect resets to Write tab when readOnly transitions false→true; custom .markdown-preview CSS overrides code block colors to match CodeEditor palette
