@@ -1,30 +1,12 @@
-# Current Feature: Item Drawer — Edit Mode
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Edit button in the drawer action bar toggles inline edit mode (same drawer stays open)
-- In edit mode, action bar replaced with Save and Cancel buttons
-- Cancel discards changes and returns to view mode
-- Save persists changes via server action, returns to view mode, refreshes drawer data, and triggers `router.refresh()`
-- Toast notification on save success or error
-- Editable fields for all types: Title (required), Description, Tags (comma-separated)
-- Type-specific fields: Content textarea (snippet/prompt/command/note), Language input (snippet/command), URL input (link)
-- Non-editable in edit mode: item type, collections, dates
-- `updateItem` server action in `src/actions/items.ts` with `{ success, data, error }` pattern
-- Zod schema in `src/lib/validations/items.ts` validates title, description, content, url, language, tags
-- `updateItem` query in `src/lib/db/items.ts` — disconnects all existing tags, connect-or-creates new ones, returns updated `ItemDetail`
-- Save button disabled when title is empty (client-side UX guard)
-
 ## Notes
-
-- No form library — use controlled inputs with local state
-- Content textarea is plain text (no code editor yet)
-- Server action validates ownership via `auth()` before any DB write
-- Zod is the source of truth for validation; client-side is UX only
 
 ## History
 
@@ -53,3 +35,4 @@ In Progress
 - Vitest Setup: vitest@4.1.7 + @vitest/coverage-v8 + vite-tsconfig-paths added; vitest.config.ts targets src/actions/**/*.test.ts and src/lib/**/*.test.ts with node environment; test/test:run/test:coverage scripts added; example tests in src/lib/utils.test.ts; ai-interaction.md workflow updated to include unit testing step
 - Item List 3-Column Layout: items list grid updated from md:grid-cols-2 to grid-cols-1 md:grid-cols-2 lg:grid-cols-3 for responsive 3-column layout on large screens
 - Item Drawer: right-side Sheet drawer opens on ItemCard click on dashboard (Pinned + Recent) and items list pages; ShadCN sheet.tsx added; getItemDetail query in items.ts fetches full item data (content, language, url, collections); GET /api/items/[id] route with auth + demo-user fallback; ItemDrawer client component with skeleton loading, action bar (Favorite/Pin/Copy/Edit/Delete), and sections for description, content, URL, tags, collections, and dates; ItemsGrid client component wraps items list grid with drawer state; RecentItems and PinnedItems converted to client components
+- Item Drawer Edit Mode: Edit button toggles inline edit mode in the drawer; Save/Cancel replace the action bar; updateItem server action in src/actions/items.ts with Zod validation (src/lib/validations/items.ts) and ownership check; updateItem DB query in items.ts with tag replacement (deleteMany + connectOrCreate); type-specific fields (content/language/url) shown per item type; router.refresh() syncs the underlying list on save; useEffect resets edit state when item.id changes
