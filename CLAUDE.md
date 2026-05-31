@@ -20,6 +20,13 @@ Read the following to get the full context of the project:
 
 All versions should be locked. no `^` in the package.json
 
+## Playwright
+
+After any Playwright verification session:
+
+- Delete all screenshots (`.png`/`.jpeg`) saved to the project directory unless told to keep them
+- Kill the browser process: `pkill -f "chrome"; pkill -f "Chromium"; pkill -f "playwright"`
+
 ## Neon Database
 
 - Project: `devstash` (ID: `rapid-grass-17252016`)

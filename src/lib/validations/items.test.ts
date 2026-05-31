@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { UpdateItemSchema } from "./items";
+import { CreateItemSchema, UpdateItemSchema } from "./items";
 
 describe("UpdateItemSchema", () => {
   const base = {
@@ -60,5 +60,59 @@ describe("UpdateItemSchema", () => {
       url: null,
     });
     expect(result.success).toBe(true);
+  });
+});
+
+describe("CreateItemSchema", () => {
+  const base = {
+    typeId: "type-1",
+    typeName: "Snippet",
+    title: "My Snippet",
+    tags: [],
+  };
+
+  it("accepts a minimal valid payload", () => {
+    const result = CreateItemSchema.safeParse(base);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an empty title", () => {
+    const result = CreateItemSchema.safeParse({ ...base, title: "" });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Title is required");
+  });
+
+  it("rejects missing typeId", () => {
+    const result = CreateItemSchema.safeParse({ ...base, typeId: "" });
+    expect(result.success).toBe(false);
+  });
+
+  it("requires URL for Link type", () => {
+    const result = CreateItemSchema.safeParse({ ...base, typeName: "Link", url: null });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("URL is required for links");
+  });
+
+  it("rejects an invalid URL for Link type", () => {
+    const result = CreateItemSchema.safeParse({ ...base, typeName: "Link", url: "not-a-url" });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Must be a valid URL");
+  });
+
+  it("accepts a valid URL for Link type", () => {
+    const result = CreateItemSchema.safeParse({ ...base, typeName: "Link", url: "https://example.com" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts optional URL for non-Link types", () => {
+    const result = CreateItemSchema.safeParse({ ...base, url: null });
+    expect(result.success).toBe(true);
+  });
+
+  it("defaults tags to empty array when omitted", () => {
+    const { tags: _, ...noTags } = base;
+    const result = CreateItemSchema.safeParse(noTags);
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.tags).toEqual([]);
   });
 });

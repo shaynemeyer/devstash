@@ -7,15 +7,17 @@ vi.mock("@/auth", () => ({
 vi.mock("@/lib/db/items", () => ({
   deleteItem: vi.fn(),
   updateItem: vi.fn(),
+  createItem: vi.fn(),
 }));
 
 import { auth } from "@/auth";
-import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem } from "@/lib/db/items";
-import { deleteItem, updateItem } from "./items";
+import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem } from "@/lib/db/items";
+import { deleteItem, updateItem, createItem } from "./items";
 
 const mockAuth = vi.mocked(auth);
 const mockDbDelete = vi.mocked(dbDeleteItem);
 const mockDbUpdate = vi.mocked(dbUpdateItem);
+const mockDbCreate = vi.mocked(dbCreateItem);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -84,6 +86,60 @@ describe("updateItem action", () => {
     const fakeItem = { id: "item-1", title: "My Item" };
     mockDbUpdate.mockResolvedValue(fakeItem as never);
     const result = await updateItem("item-1", validInput);
+    expect(result).toEqual({ success: true, data: fakeItem });
+  });
+});
+
+const validCreateInput = {
+  typeId: "type-1",
+  typeName: "Snippet",
+  title: "New Snippet",
+  tags: [],
+};
+
+describe("createItem action", () => {
+  it("returns unauthorized when no session", async () => {
+    mockAuth.mockResolvedValue(null as never);
+    const result = await createItem(validCreateInput);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns unauthorized when session has no user id", async () => {
+    mockAuth.mockResolvedValue({ user: {} } as never);
+    const result = await createItem(validCreateInput);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns validation error for empty title", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const result = await createItem({ ...validCreateInput, title: "" });
+    expect(result).toEqual({ success: false, error: "Title is required" });
+    expect(mockDbCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns validation error for Link with no URL", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const result = await createItem({ ...validCreateInput, typeName: "Link", url: null });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("URL is required for links");
+    expect(mockDbCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns error when db create fails", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbCreate.mockResolvedValue(null);
+    const result = await createItem(validCreateInput);
+    expect(result).toEqual({ success: false, error: "Failed to create item" });
+    expect(mockDbCreate).toHaveBeenCalledWith(expect.objectContaining({ title: "New Snippet", userId: "user-1" }));
+  });
+
+  it("returns created item on success", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const fakeItem = { id: "item-new", title: "New Snippet" };
+    mockDbCreate.mockResolvedValue(fakeItem as never);
+    const result = await createItem(validCreateInput);
     expect(result).toEqual({ success: true, data: fakeItem });
   });
 });

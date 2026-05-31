@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { ContentType } from "../../../prisma/generated/prisma/enums";
 
 export interface ItemTypeWithCount {
   id: string;
@@ -226,6 +227,100 @@ export async function updateItem(
                 create: { name },
               },
             },
+          })),
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        content: true,
+        contentType: true,
+        language: true,
+        url: true,
+        fileUrl: true,
+        fileName: true,
+        fileSize: true,
+        isFavorite: true,
+        isPinned: true,
+        createdAt: true,
+        updatedAt: true,
+        type: { select: { icon: true, color: true, name: true } },
+        tags: { select: { tag: { select: { name: true } } } },
+        collections: { select: { collection: { select: { name: true } } } },
+      },
+    });
+
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      content: item.content,
+      contentType: item.contentType,
+      language: item.language,
+      url: item.url,
+      fileUrl: item.fileUrl,
+      fileName: item.fileName,
+      fileSize: item.fileSize,
+      isFavorite: item.isFavorite,
+      isPinned: item.isPinned,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      typeIcon: item.type.icon,
+      typeColor: item.type.color,
+      typeName: item.type.name,
+      tags: item.tags.map((t) => t.tag.name),
+      collections: item.collections.map((c) => c.collection.name),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export interface CreateItemData {
+  typeId: string;
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+  userId: string;
+}
+
+const CONTENT_TYPE_MAP: Record<string, ContentType> = {
+  Snippet: ContentType.text,
+  Prompt: ContentType.text,
+  Command: ContentType.text,
+  Note: ContentType.text,
+  Link: ContentType.url,
+  File: ContentType.file,
+  Image: ContentType.file,
+};
+
+export async function createItem(data: CreateItemData): Promise<ItemDetail | null> {
+  try {
+    const type = await db.itemType.findUnique({
+      where: { id: data.typeId },
+      select: { name: true },
+    });
+    if (!type) return null;
+
+    const contentType = CONTENT_TYPE_MAP[type.name] ?? ContentType.text;
+
+    const item = await db.item.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        content: data.content,
+        url: data.url,
+        language: data.language,
+        contentType,
+        userId: data.userId,
+        typeId: data.typeId,
+        tags: {
+          create: data.tags.map((name) => ({
+            tag: { connectOrCreate: { where: { name }, create: { name } } },
           })),
         },
       },
