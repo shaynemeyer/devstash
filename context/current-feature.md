@@ -1,23 +1,12 @@
-# Current Feature: Code Editor
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Create a `CodeEditor` component using Monaco Editor with dark theme
-- Replace the `Textarea` in `ItemDrawer` with `CodeEditor` for snippets and commands only (keep `Textarea` for notes, prompts, links)
-- Add macOS-style window chrome dots (red/yellow/green) in the editor header
-- Show the language label in the editor header alongside a quick copy button
-- Support both readonly (display) and editable modes
-- Fluid height with a max of 400px and a themed scrollbar
-
 ## Notes
-
-- Only snippet and command item types get the code editor
-- Other types (note, prompt, link) keep the existing textarea
-- Both the item drawer view mode and edit mode need to use the CodeEditor for applicable types
 
 ## History
 
@@ -49,3 +38,4 @@ In Progress
 - Item Drawer Edit Mode: Edit button toggles inline edit mode in the drawer; Save/Cancel replace the action bar; updateItem server action in src/actions/items.ts with Zod validation (src/lib/validations/items.ts) and ownership check; updateItem DB query in items.ts with tag replacement (deleteMany + connectOrCreate); type-specific fields (content/language/url) shown per item type; router.refresh() syncs the underlying list on save; useEffect resets edit state when item.id changes
 - Item Delete: Trash2 button in ItemDrawer opens ShadCN AlertDialog confirmation; deleteItem server action in src/actions/items.ts with auth + ownership check; deleteItem DB query in items.ts; success toast via sonner; drawer closes and list refreshes on confirm; Vitest unit tests added for both deleteItem and updateItem actions (8 tests)
 - Item Create: "New Item" button in TopBar opens a right-side Sheet drawer; type selector for Snippet/Prompt/Command/Note/Link with conditional fields per type (content+language for snippet/command, content for prompt/note, URL required for link); createItem server action in actions/items.ts with Zod validation (CreateItemSchema); createItem DB query in lib/db/items.ts derives contentType from item type name; toast on success, drawer resets and closes, list refreshes; fixed UpdateItemSchema URL validation regression; 14 new Vitest tests added
+- Code Editor: @monaco-editor/react 4.7.0 added; CodeEditor component with vs-dark theme, macOS window chrome dots, language label, copy button, and fluid height (min 80px, max 400px) computed from line count; ItemDrawer and CreateItemDrawer use CodeEditor for Snippet and Command types in both view and edit modes, textarea kept for other types; TypePageActions client component adds a type-specific "New X" button on each /items/[type] page with the type pre-selected; TopBar New Item button defaults to Snippet
