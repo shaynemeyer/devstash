@@ -1,24 +1,12 @@
-# Current Feature: File List View
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- `/items/files` displays as a single-column list (Google Drive/Dropbox style) instead of grid cards
-- Each row shows: file icon (by extension), file name, file size, upload date, download button
-- Row hover highlight
-- Click row opens ItemDrawer
-- Download button triggers direct download (stop propagation)
-- Responsive: stack info vertically on mobile
-
 ## Notes
-
-- Mirror pattern used for Image Gallery View (`/items/images` → `ImageGallery`)
-- File icon should vary by extension (e.g. PDF, ZIP, TXT, etc.)
-- Download should use the existing `/api/files/[...key]` proxy route
-- Keep `ItemDrawer` wired in same as other list pages
 
 ## History
 
@@ -54,3 +42,4 @@ In Progress
 - Markdown Editor: react-markdown@9.0.3 + remark-gfm@4.0.1 + @tailwindcss/typography@0.5.16 added; MarkdownEditor component with Write/Preview tabs, dark chrome matching CodeEditor (bg-[#1e1e1e]/bg-[#2d2d2d]), copy button, prose prose-invert dark theme, and fluid height (min 80px, max 400px); replaces textarea in CreateItemDrawer and ItemDrawer (edit + view modes) for Note and Prompt types; Snippet and Command unchanged; useEffect resets to Write tab when readOnly transitions false→true; custom .markdown-preview CSS overrides code block colors to match CodeEditor palette
 - File & Image Upload with Cloudflare R2: @aws-sdk/client-s3@3.1057.0 added; src/lib/r2.ts singleton; POST /api/upload validates MIME type (5 images, 10 files) and size (5 MB images / 10 MB files), uploads to R2 under userId/uuid-name key; GET /api/files/[...key] proxies download with ownership check and streaming response; FileUpload component with drag-and-drop, XHR progress bar, image preview (blob URL with revokeObjectURL cleanup), file info card; File and Image added to CreateItemDrawer type selector with FileUpload wired in; ItemDrawer view mode shows image preview or file info + inline download button, edit mode shows FileUpload to replace file; deleteItem server action deletes R2 object after DB delete (silent on R2 failure); CreateItemSchema and UpdateItemSchema extended with fileUrl/fileName/fileSize; 8 new Vitest tests added covering R2 cleanup and file validation
 - Image Gallery View: /items/images replaced standard ItemsGrid with ImageGallery; ImageThumbnailCard shows 16:9 aspect-video thumbnail with object-cover and 5% hover zoom (300ms); ImageGallery is a 3-column responsive grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3) with ItemDrawer wired in; fileUrl added to ItemWithMeta and toItemWithMeta mapper so thumbnail src is available on list queries
+- File List View: /items/files replaced standard ItemsGrid with FileList; single-column list with divide-y rows; FileListRow shows extension-aware file icon, file name, file size, upload date, and hover-reveal download button (DOM-appended anchor for Firefox compatibility); click row opens ItemDrawer; responsive via flex-col sm:flex-row; formatBytes extracted to src/lib/utils.ts with 6 Vitest tests; fileName/fileSize added to ItemWithMeta and toItemWithMeta mapper
