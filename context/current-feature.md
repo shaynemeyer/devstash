@@ -1,28 +1,12 @@
-# Current Feature: File Upload with Cloudflare R2
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Create upload API route for R2
-- Create FileUpload component with drag-and-drop and upload progress indicator
-- Update create item drawer to use FileUpload for File and Image types
-- Delete files from R2 when items are deleted
-- Create download proxy API route (avoids CORS issues)
-- Add download button in ItemDrawer for file types
-- Display image preview for images, file info for files
-
 ## Notes
-
-- Stick to `lib/db/items.ts` for all Prisma/DB functions
-- File constraints:
-  - Images: max 5 MB — `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`
-  - Files: max 10 MB — `.pdf`, `.txt`, `.md`, `.json`, `.yaml`, `.yml`, `.xml`, `.csv`, `.toml`, `.ini`
-- MIME types:
-  - Images: `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/svg+xml`
-  - Files: `application/pdf`, `text/plain`, `text/markdown`, `application/json`, `application/x-yaml`, `text/yaml`, `application/xml`, `text/xml`, `text/csv`, `application/toml`
 
 ## History
 
@@ -56,3 +40,4 @@ In Progress
 - Item Create: "New Item" button in TopBar opens a right-side Sheet drawer; type selector for Snippet/Prompt/Command/Note/Link with conditional fields per type (content+language for snippet/command, content for prompt/note, URL required for link); createItem server action in actions/items.ts with Zod validation (CreateItemSchema); createItem DB query in lib/db/items.ts derives contentType from item type name; toast on success, drawer resets and closes, list refreshes; fixed UpdateItemSchema URL validation regression; 14 new Vitest tests added
 - Code Editor: @monaco-editor/react 4.7.0 added; CodeEditor component with vs-dark theme, macOS window chrome dots, language label, copy button, and fluid height (min 80px, max 400px) computed from line count; ItemDrawer and CreateItemDrawer use CodeEditor for Snippet and Command types in both view and edit modes, textarea kept for other types; TypePageActions client component adds a type-specific "New X" button on each /items/[type] page with the type pre-selected; TopBar New Item button defaults to Snippet
 - Markdown Editor: react-markdown@9.0.3 + remark-gfm@4.0.1 + @tailwindcss/typography@0.5.16 added; MarkdownEditor component with Write/Preview tabs, dark chrome matching CodeEditor (bg-[#1e1e1e]/bg-[#2d2d2d]), copy button, prose prose-invert dark theme, and fluid height (min 80px, max 400px); replaces textarea in CreateItemDrawer and ItemDrawer (edit + view modes) for Note and Prompt types; Snippet and Command unchanged; useEffect resets to Write tab when readOnly transitions false→true; custom .markdown-preview CSS overrides code block colors to match CodeEditor palette
+- File & Image Upload with Cloudflare R2: @aws-sdk/client-s3@3.1057.0 added; src/lib/r2.ts singleton; POST /api/upload validates MIME type (5 images, 10 files) and size (5 MB images / 10 MB files), uploads to R2 under userId/uuid-name key; GET /api/files/[...key] proxies download with ownership check and streaming response; FileUpload component with drag-and-drop, XHR progress bar, image preview (blob URL with revokeObjectURL cleanup), file info card; File and Image added to CreateItemDrawer type selector with FileUpload wired in; ItemDrawer view mode shows image preview or file info + inline download button, edit mode shows FileUpload to replace file; deleteItem server action deletes R2 object after DB delete (silent on R2 failure); CreateItemSchema and UpdateItemSchema extended with fileUrl/fileName/fileSize; 8 new Vitest tests added covering R2 cleanup and file validation
