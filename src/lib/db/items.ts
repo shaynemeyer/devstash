@@ -202,6 +202,9 @@ export interface UpdateItemData {
   url: string | null;
   language: string | null;
   tags: string[];
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileSize?: number | null;
 }
 
 export async function updateItem(
@@ -218,6 +221,9 @@ export async function updateItem(
         content: data.content,
         url: data.url,
         language: data.language,
+        ...(data.fileUrl !== undefined && { fileUrl: data.fileUrl }),
+        ...(data.fileName !== undefined && { fileName: data.fileName }),
+        ...(data.fileSize !== undefined && { fileSize: data.fileSize }),
         tags: {
           deleteMany: {},
           create: data.tags.map((name) => ({
@@ -286,6 +292,9 @@ export interface CreateItemData {
   language: string | null;
   tags: string[];
   userId: string;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileSize?: number | null;
 }
 
 const CONTENT_TYPE_MAP: Record<string, ContentType> = {
@@ -315,6 +324,9 @@ export async function createItem(data: CreateItemData): Promise<ItemDetail | nul
         content: data.content,
         url: data.url,
         language: data.language,
+        fileUrl: data.fileUrl ?? null,
+        fileName: data.fileName ?? null,
+        fileSize: data.fileSize ?? null,
         contentType,
         userId: data.userId,
         typeId: data.typeId,
@@ -371,12 +383,20 @@ export async function createItem(data: CreateItemData): Promise<ItemDetail | nul
   }
 }
 
-export async function deleteItem(id: string, userId: string): Promise<boolean> {
+export async function deleteItem(
+  id: string,
+  userId: string
+): Promise<{ ok: boolean; fileUrl: string | null }> {
   try {
+    const item = await db.item.findUnique({
+      where: { id, userId },
+      select: { fileUrl: true },
+    });
+    if (!item) return { ok: false, fileUrl: null };
     await db.item.delete({ where: { id, userId } });
-    return true;
+    return { ok: true, fileUrl: item.fileUrl };
   } catch {
-    return false;
+    return { ok: false, fileUrl: null };
   }
 }
 

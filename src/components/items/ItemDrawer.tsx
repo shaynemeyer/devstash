@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star, Pin, Copy, Pencil, Trash2, Calendar, FolderOpen, Tag, X, Check } from "lucide-react";
+import { Star, Pin, Copy, Pencil, Trash2, Calendar, FolderOpen, Tag, X, Check, Download, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -21,12 +21,21 @@ import { getIcon } from "@/lib/icons";
 import { updateItem, deleteItem } from "@/actions/items";
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
+import { FileUpload } from "@/components/ui/FileUpload";
+import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
 const LANGUAGE_TYPES = ["Snippet", "Command"];
 const CODE_TYPES = ["Snippet", "Command"];
 const MARKDOWN_TYPES = ["Note", "Prompt"];
+const FILE_UPLOAD_TYPES = ["File", "Image"];
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -81,6 +90,9 @@ function DrawerBody({
   const [url, setUrl] = useState(item.url ?? "");
   const [language, setLanguage] = useState(item.language ?? "");
   const [tagsInput, setTagsInput] = useState(item.tags.join(", "));
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(
+    item.fileUrl ? { key: item.fileUrl, fileName: item.fileName ?? "", fileSize: item.fileSize ?? 0, mimeType: "" } : null
+  );
 
   useEffect(() => {
     setEditMode(false);
@@ -90,6 +102,9 @@ function DrawerBody({
     setUrl(item.url ?? "");
     setLanguage(item.language ?? "");
     setTagsInput(item.tags.join(", "));
+    setUploadedFile(
+      item.fileUrl ? { key: item.fileUrl, fileName: item.fileName ?? "", fileSize: item.fileSize ?? 0, mimeType: "" } : null
+    );
   }, [item.id]);
 
   const created = new Date(item.createdAt).toLocaleDateString("en-US", {
@@ -110,6 +125,9 @@ function DrawerBody({
     setUrl(item.url ?? "");
     setLanguage(item.language ?? "");
     setTagsInput(item.tags.join(", "));
+    setUploadedFile(
+      item.fileUrl ? { key: item.fileUrl, fileName: item.fileName ?? "", fileSize: item.fileSize ?? 0, mimeType: "" } : null
+    );
     setEditMode(true);
   }
 
@@ -131,6 +149,9 @@ function DrawerBody({
       url: url.trim() || null,
       language: language.trim() || null,
       tags,
+      fileUrl: uploadedFile?.key ?? null,
+      fileName: uploadedFile?.fileName ?? null,
+      fileSize: uploadedFile?.fileSize ?? null,
     });
 
     setSaving(false);
@@ -167,6 +188,7 @@ function DrawerBody({
   const showContent = CONTENT_TYPES.includes(item.typeName);
   const showLanguage = LANGUAGE_TYPES.includes(item.typeName);
   const showUrl = item.typeName === "Link";
+  const showFileSection = FILE_UPLOAD_TYPES.includes(item.typeName);
   const useCodeEditor = CODE_TYPES.includes(item.typeName);
   const useMarkdownEditor = MARKDOWN_TYPES.includes(item.typeName);
 
@@ -250,15 +272,27 @@ function DrawerBody({
               <Pin className="size-3.5" />
               Pin
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5 text-xs text-muted-foreground"
-              onClick={copyContent}
-            >
-              <Copy className="size-3.5" />
-              Copy
-            </Button>
+            {!showFileSection && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-xs text-muted-foreground"
+                onClick={copyContent}
+              >
+                <Copy className="size-3.5" />
+                Copy
+              </Button>
+            )}
+            {showFileSection && item.fileUrl && (
+              <a
+                href={`/api/files/${item.fileUrl}`}
+                download={item.fileName ?? true}
+                className="inline-flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors font-medium h-8"
+              >
+                <Download className="size-3.5" />
+                Download
+              </a>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -417,6 +451,64 @@ function DrawerBody({
               </a>
             </section>
           )
+        )}
+
+        {/* File */}
+        {showFileSection && (
+          editMode ? (
+            <section>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
+                File
+              </p>
+              <FileUpload
+                accept={item.typeName === "Image" ? "image" : "file"}
+                value={uploadedFile}
+                onChange={setUploadedFile}
+              />
+            </section>
+          ) : item.fileUrl ? (
+            <section>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
+                File
+              </p>
+              {item.typeName === "Image" ? (
+                <div className="rounded-lg overflow-hidden border border-border bg-[#1e1e1e]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/api/files/${item.fileUrl}`}
+                    alt={item.fileName ?? item.title}
+                    className="w-full max-h-64 object-contain"
+                  />
+                  {item.fileName && (
+                    <div className="px-3 py-2 flex items-center justify-between gap-2">
+                      <span className="text-xs text-muted-foreground truncate">{item.fileName}</span>
+                      {item.fileSize != null && (
+                        <span className="text-xs text-muted-foreground shrink-0">{formatBytes(item.fileSize)}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-lg border border-border bg-muted/50 p-3 flex items-center gap-3">
+                  <FileText className="size-8 text-muted-foreground shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate">{item.fileName ?? "File"}</p>
+                    {item.fileSize != null && (
+                      <p className="text-xs text-muted-foreground">{formatBytes(item.fileSize)}</p>
+                    )}
+                  </div>
+                  <a
+                    href={`/api/files/${item.fileUrl}`}
+                    download={item.fileName ?? true}
+                    className="shrink-0 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    aria-label="Download file"
+                  >
+                    <Download className="size-4" />
+                  </a>
+                </div>
+              )}
+            </section>
+          ) : null
         )}
 
         {/* Tags */}

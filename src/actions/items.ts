@@ -1,8 +1,10 @@
 "use server";
 
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/auth";
 import { createItem as dbCreateItem, updateItem as dbUpdateItem, deleteItem as dbDeleteItem } from "@/lib/db/items";
 import { CreateItemSchema, UpdateItemSchema } from "@/lib/validations/items";
+import { r2, R2_BUCKET } from "@/lib/r2";
 import type { ItemDetail } from "@/lib/db/items";
 
 interface ActionResult {
@@ -22,7 +24,7 @@ export async function createItem(input: unknown): Promise<ActionResult> {
     return { success: false, error: result.error.issues[0].message };
   }
 
-  const { typeId, title, description, content, url, language, tags } = result.data;
+  const { typeId, title, description, content, url, language, tags, fileUrl, fileName, fileSize } = result.data;
 
   const created = await dbCreateItem({
     typeId,
@@ -33,6 +35,9 @@ export async function createItem(input: unknown): Promise<ActionResult> {
     language: language ?? null,
     tags,
     userId: session.user.id,
+    fileUrl: fileUrl ?? null,
+    fileName: fileName ?? null,
+    fileSize: fileSize ?? null,
   });
 
   if (!created) {
@@ -61,6 +66,9 @@ export async function updateItem(itemId: string, input: unknown): Promise<Action
     url: data.url ?? null,
     language: data.language ?? null,
     tags: data.tags,
+    fileUrl: data.fileUrl ?? null,
+    fileName: data.fileName ?? null,
+    fileSize: data.fileSize ?? null,
   });
 
   if (!updated) {
@@ -76,9 +84,13 @@ export async function deleteItem(itemId: string): Promise<{ success: boolean; er
     return { success: false, error: "Unauthorized" };
   }
 
-  const ok = await dbDeleteItem(itemId, session.user.id);
+  const { ok, fileUrl } = await dbDeleteItem(itemId, session.user.id);
   if (!ok) {
     return { success: false, error: "Failed to delete item" };
+  }
+
+  if (fileUrl) {
+    await r2.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: fileUrl })).catch(() => {});
   }
 
   return { success: true };

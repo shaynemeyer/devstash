@@ -9,6 +9,9 @@ export const CreateItemSchema = z.object({
   url: z.string().nullable().optional(),
   language: z.string().trim().nullable().optional(),
   tags: z.array(z.string().trim().min(1)).default([]),
+  fileUrl: z.string().nullable().optional(),
+  fileName: z.string().nullable().optional(),
+  fileSize: z.number().int().nonnegative().nullable().optional(),
 }).superRefine((data, ctx) => {
   if (data.typeName === "Link" && !data.url?.trim()) {
     ctx.addIssue({ code: "custom", message: "URL is required for links", path: ["url"] });
@@ -17,6 +20,9 @@ export const CreateItemSchema = z.object({
     try { new URL(data.url.trim()); } catch {
       ctx.addIssue({ code: "custom", message: "Must be a valid URL", path: ["url"] });
     }
+  }
+  if ((data.typeName === "File" || data.typeName === "Image") && !data.fileUrl) {
+    ctx.addIssue({ code: "custom", message: "A file is required", path: ["fileUrl"] });
   }
 });
 
@@ -33,6 +39,9 @@ export const UpdateItemSchema = z.object({
     .optional(),
   language: z.string().trim().nullable().optional(),
   tags: z.array(z.string().trim().min(1)).default([]),
+  fileUrl: z.string().nullable().optional(),
+  fileName: z.string().nullable().optional(),
+  fileSize: z.number().int().nonnegative().nullable().optional(),
 });
 
 export type UpdateItemInput = z.infer<typeof UpdateItemSchema>;

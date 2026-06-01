@@ -115,4 +115,38 @@ describe("CreateItemSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.tags).toEqual([]);
   });
+
+  it("requires fileUrl for File type", () => {
+    const result = CreateItemSchema.safeParse({ ...base, typeName: "File", fileUrl: null });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("A file is required");
+  });
+
+  it("requires fileUrl for Image type", () => {
+    const result = CreateItemSchema.safeParse({ ...base, typeName: "Image", fileUrl: null });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("A file is required");
+  });
+
+  it("accepts File type with fileUrl", () => {
+    const result = CreateItemSchema.safeParse({
+      ...base,
+      typeName: "File",
+      fileUrl: "user-1/uuid-doc.pdf",
+      fileName: "doc.pdf",
+      fileSize: 12345,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts Image type with fileUrl", () => {
+    const result = CreateItemSchema.safeParse({
+      ...base,
+      typeName: "Image",
+      fileUrl: "user-1/uuid-photo.png",
+      fileName: "photo.png",
+      fileSize: 500000,
+    });
+    expect(result.success).toBe(true);
+  });
 });
