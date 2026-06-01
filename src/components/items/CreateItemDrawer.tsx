@@ -10,13 +10,16 @@ import { getIcon } from "@/lib/icons";
 import { createItem } from "@/actions/items";
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
+import { FileUpload } from "@/components/ui/FileUpload";
+import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
-const CREATABLE_TYPES = ["Snippet", "Prompt", "Command", "Note", "Link"];
+const CREATABLE_TYPES = ["Snippet", "Prompt", "Command", "Note", "Link", "File", "Image"];
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
 const LANGUAGE_TYPES = ["Snippet", "Command"];
 const CODE_TYPES = ["Snippet", "Command"];
 const MARKDOWN_TYPES = ["Note", "Prompt"];
+const FILE_TYPES = ["File", "Image"];
 
 interface CreateItemDrawerProps {
   open: boolean;
@@ -36,12 +39,14 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
   const [url, setUrl] = useState("");
   const [language, setLanguage] = useState("");
   const [tagsInput, setTagsInput] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [saving, setSaving] = useState(false);
 
   const selectedType = types.find((t) => t.id === selectedTypeId);
   const showContent = selectedType ? CONTENT_TYPES.includes(selectedType.name) : false;
   const showLanguage = selectedType ? LANGUAGE_TYPES.includes(selectedType.name) : false;
   const showUrl = selectedType?.name === "Link";
+  const showFileUpload = selectedType ? FILE_TYPES.includes(selectedType.name) : false;
   const useCodeEditor = selectedType ? CODE_TYPES.includes(selectedType.name) : false;
   const useMarkdownEditor = selectedType ? MARKDOWN_TYPES.includes(selectedType.name) : false;
   const Icon = selectedType ? getIcon(selectedType.icon) : null;
@@ -54,6 +59,7 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
     setUrl("");
     setLanguage("");
     setTagsInput("");
+    setUploadedFile(null);
   }
 
   function handleOpenChange(val: boolean) {
@@ -79,6 +85,9 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
       url: url.trim() || null,
       language: language.trim() || null,
       tags,
+      fileUrl: uploadedFile?.key ?? null,
+      fileName: uploadedFile?.fileName ?? null,
+      fileSize: uploadedFile?.fileSize ?? null,
     });
 
     setSaving(false);
@@ -158,7 +167,7 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
               size="sm"
               className="gap-1.5 text-xs text-primary"
               onClick={save}
-              disabled={saving || !title.trim() || !selectedTypeId}
+              disabled={saving || !title.trim() || !selectedTypeId || (showFileUpload && !uploadedFile)}
             >
               <Check className="size-3.5" />
               {saving ? "Saving…" : "Create"}
@@ -230,6 +239,19 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://"
                   type="url"
+                />
+              </section>
+            )}
+
+            {showFileUpload && (
+              <section>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
+                  File <span className="text-destructive">*</span>
+                </p>
+                <FileUpload
+                  accept={selectedType?.name === "Image" ? "image" : "file"}
+                  value={uploadedFile}
+                  onChange={setUploadedFile}
                 />
               </section>
             )}

@@ -10,11 +10,18 @@ vi.mock("@/lib/db/items", () => ({
   createItem: vi.fn(),
 }));
 
+vi.mock("@/lib/r2", () => ({
+  r2: { send: vi.fn().mockResolvedValue({}) },
+  R2_BUCKET: "test-bucket",
+}));
+
 import { auth } from "@/auth";
+import { r2 } from "@/lib/r2";
 import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem } from "@/lib/db/items";
 import { deleteItem, updateItem, createItem } from "./items";
 
 const mockAuth = vi.mocked(auth);
+const mockR2Send = vi.mocked(r2.send);
 const mockDbDelete = vi.mocked(dbDeleteItem);
 const mockDbUpdate = vi.mocked(dbUpdateItem);
 const mockDbCreate = vi.mocked(dbCreateItem);
@@ -40,18 +47,35 @@ describe("deleteItem action", () => {
 
   it("returns error when db delete fails", async () => {
     mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
-    mockDbDelete.mockResolvedValue(false);
+    mockDbDelete.mockResolvedValue({ ok: false, fileUrl: null } as never);
     const result = await deleteItem("item-1");
     expect(result).toEqual({ success: false, error: "Failed to delete item" });
     expect(mockDbDelete).toHaveBeenCalledWith("item-1", "user-1");
   });
 
-  it("returns success when item is deleted", async () => {
+  it("returns success when item is deleted without a file", async () => {
     mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
-    mockDbDelete.mockResolvedValue(true);
+    mockDbDelete.mockResolvedValue({ ok: true, fileUrl: null } as never);
     const result = await deleteItem("item-1");
     expect(result).toEqual({ success: true });
     expect(mockDbDelete).toHaveBeenCalledWith("item-1", "user-1");
+    expect(mockR2Send).not.toHaveBeenCalled();
+  });
+
+  it("deletes from R2 when item has a fileUrl", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbDelete.mockResolvedValue({ ok: true, fileUrl: "user-1/uuid-file.pdf" } as never);
+    const result = await deleteItem("item-1");
+    expect(result).toEqual({ success: true });
+    expect(mockR2Send).toHaveBeenCalledOnce();
+  });
+
+  it("still returns success if R2 delete fails", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbDelete.mockResolvedValue({ ok: true, fileUrl: "user-1/uuid-img.png" } as never);
+    mockR2Send.mockRejectedValueOnce(new Error("R2 error"));
+    const result = await deleteItem("item-1");
+    expect(result).toEqual({ success: true });
   });
 });
 
