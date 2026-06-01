@@ -1,12 +1,24 @@
-# Current Feature
+# Current Feature: File List View
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- `/items/files` displays as a single-column list (Google Drive/Dropbox style) instead of grid cards
+- Each row shows: file icon (by extension), file name, file size, upload date, download button
+- Row hover highlight
+- Click row opens ItemDrawer
+- Download button triggers direct download (stop propagation)
+- Responsive: stack info vertically on mobile
+
 ## Notes
+
+- Mirror pattern used for Image Gallery View (`/items/images` → `ImageGallery`)
+- File icon should vary by extension (e.g. PDF, ZIP, TXT, etc.)
+- Download should use the existing `/api/files/[...key]` proxy route
+- Keep `ItemDrawer` wired in same as other list pages
 
 ## History
 

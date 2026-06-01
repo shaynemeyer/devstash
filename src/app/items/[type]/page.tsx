@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ItemsGrid } from "@/components/items/ItemsGrid";
 import { ImageGallery } from "@/components/items/ImageGallery";
+import { FileList } from "@/components/items/FileList";
 import { TypePageActions } from "@/components/items/TypePageActions";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
@@ -77,6 +78,8 @@ export default async function ItemsTypePage({ params }: Props) {
         />
         {type === "images" ? (
           <ImageGallery items={items} />
+        ) : type === "files" ? (
+          <FileList items={items} />
         ) : (
           <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
         )}

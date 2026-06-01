@@ -37,6 +37,8 @@ export interface ItemWithMeta {
   title: string;
   description: string | null;
   fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
   isFavorite: boolean;
   isPinned: boolean;
   createdAt: Date;
@@ -406,6 +408,8 @@ function toItemWithMeta(item: {
   title: string;
   description: string | null;
   fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
   isFavorite: boolean;
   isPinned: boolean;
   createdAt: Date;
@@ -417,6 +421,8 @@ function toItemWithMeta(item: {
     title: item.title,
     description: item.description,
     fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
     isFavorite: item.isFavorite,
     isPinned: item.isPinned,
     createdAt: item.createdAt,
