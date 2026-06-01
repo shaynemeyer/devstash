@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ItemsGrid } from "@/components/items/ItemsGrid";
+import { ImageGallery } from "@/components/items/ImageGallery";
 import { TypePageActions } from "@/components/items/TypePageActions";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
@@ -74,7 +75,11 @@ export default async function ItemsTypePage({ params }: Props) {
           itemTypes={sidebarItemTypes}
           defaultTypeId={defaultTypeId}
         />
-        <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
+        {type === "images" ? (
+          <ImageGallery items={items} />
+        ) : (
+          <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
+        )}
       </div>
     </DashboardShell>
   );
