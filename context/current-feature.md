@@ -1,23 +1,12 @@
-# Current Feature: Refactor ItemDrawer
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Extract all edit-mode state and logic into a `useItemEdit()` hook at `src/hooks/useItemEdit.ts`
-- Create `ItemDrawerHeader.tsx` — renders title (editable/plain), type badge, and language badge
-- Create `ItemDrawerActionBar.tsx` — renders action buttons (Favorite/Pin/Copy/Edit/Delete) and the delete `AlertDialog`
-- Create `ItemDrawerContent.tsx` — renders content section based on item type (CodeEditor, MarkdownEditor, file card, image preview) with view/edit mode switching
-- Reduce `ItemDrawer.tsx` to a thin orchestrator (~100 lines) that fetches item detail, composes the above components, and manages open/loading state
-
 ## Notes
-
-- No behavior changes — pure structural refactor
-- All existing external props/callbacks remain the same
-- `useItemEdit` hook enables unit testing of save/cancel logic in isolation
-- `ItemDrawerContent` can eventually be reused for a full-page item view
 
 ## History
 
@@ -56,3 +45,4 @@ In Progress
 - File List View: /items/files replaced standard ItemsGrid with FileList; single-column list with divide-y rows; FileListRow shows extension-aware file icon, file name, file size, upload date, and hover-reveal download button (DOM-appended anchor for Firefox compatibility); click row opens ItemDrawer; responsive via flex-col sm:flex-row; formatBytes extracted to src/lib/utils.ts with 6 Vitest tests; fileName/fileSize added to ItemWithMeta and toItemWithMeta mapper
 - Small Enhancements 1: CopyButton client component added (src/components/items/CopyButton.tsx) with Copy→Check icon toggle (1.5s), stopPropagation, and null guard for File/Image types; ItemCard updated with relative+group classes and CopyButton rendered bottom-right on hover; content and url added to ItemWithMeta interface and toItemWithMeta mapper so cards can copy without opening the drawer
 - Audit Quick Wins: demo account deletion blocked with 403 guard; verify-email token validated as UUID (z.uuid()) before DB lookup; typeName tightened to z.enum in CreateItemSchema; duplicate formatBytes removed from FileUpload.tsx and ItemDrawer.tsx, imported from utils.ts
+- Refactor ItemDrawer: 619-line ItemDrawer.tsx split into useItemEdit hook (src/hooks/useItemEdit.ts) with all edit-mode state and save/cancel/delete logic; ItemDrawerHeader (title, type badge, language badge); ItemDrawerActionBar (action buttons + AlertDialog); ItemDrawerContent (type-switching content rendering); ItemDrawer.tsx reduced to ~90-line orchestrator; no behavior changes
