@@ -26,7 +26,6 @@ export const CreateItemSchema = z.object({
   }
 });
 
-export type CreateItemInput = z.infer<typeof CreateItemSchema>;
 
 export const UpdateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -44,4 +43,3 @@ export const UpdateItemSchema = z.object({
   fileSize: z.number().int().nonnegative().nullable().optional(),
 });
 
-export type UpdateItemInput = z.infer<typeof UpdateItemSchema>;

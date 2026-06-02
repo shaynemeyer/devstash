@@ -52,7 +52,7 @@ export async function getSidebarCollections(userId: string): Promise<SidebarColl
   }
 }
 
-export interface TypeIcon {
+interface TypeIcon {
   icon: string;
   color: string;
 }

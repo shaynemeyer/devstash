@@ -1,3 +1,5 @@
+// Archival reference data — replaced by real Prisma queries. Do not import.
+
 export const mockUser = {
   id: "user_1",
   name: "John Doe",
