@@ -1,0 +1,77 @@
+"use client";
+
+import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { SidebarUserArea } from "./SidebarUserArea";
+import { TypeNavigation } from "./TypeNavigation";
+import { CollectionsList } from "./CollectionsList";
+import type { ItemTypeWithCount } from "@/lib/db/items";
+import type { SidebarCollection } from "@/lib/db/collections";
+
+interface SidebarUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
+interface SidebarContentProps {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  onClose?: () => void;
+  itemTypes: ItemTypeWithCount[];
+  collections: SidebarCollection[];
+  user: SidebarUser;
+}
+
+export function SidebarContent({ collapsed, onToggleCollapse, onClose, itemTypes, collections, user }: SidebarContentProps) {
+  return (
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
+      <div
+        className={cn(
+          "flex items-center h-12 px-3 shrink-0 border-b border-sidebar-border",
+          collapsed ? "justify-center" : "justify-end"
+        )}
+      >
+        {onClose ? (
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent"
+            aria-label="Close sidebar"
+          >
+            <X className="size-4" />
+          </button>
+        ) : (
+          <button
+            onClick={onToggleCollapse}
+            className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="size-4" />
+            ) : (
+              <PanelLeftClose className="size-4" />
+            )}
+          </button>
+        )}
+      </div>
+
+      <TypeNavigation itemTypes={itemTypes} isCollapsed={collapsed} onClose={onClose} />
+
+      {!collapsed && (
+        <>
+          <div className="mx-3 border-t border-sidebar-border" />
+          <CollectionsList collections={collections} onClose={onClose} />
+        </>
+      )}
+
+      {collapsed && <div className="flex-1" />}
+
+      <SidebarUserArea
+        name={user.name}
+        email={user.email}
+        image={user.image}
+        collapsed={collapsed}
+      />
+    </div>
+  );
+}

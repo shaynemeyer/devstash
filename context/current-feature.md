@@ -1,12 +1,22 @@
-# Current Feature
+# Current Feature: Refactor Sidebar
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- Split `Sidebar.tsx` (240 lines) into focused sub-components with no behavior changes
+- Extract `TypeNavigation.tsx` — item type nav with icon, color dot, name, count badge; hides name/count when collapsed
+- Extract `CollectionsList.tsx` — favorites + recent collections sections with "View all" link; hides labels when collapsed
+- Extract `SidebarContent.tsx` — composes TypeNavigation + CollectionsList + user avatar/dropdown; accepts itemTypes, collections, isCollapsed props
+- Reduce `Sidebar.tsx` to ~50-line layout wrapper managing collapse state and rendering desktop/mobile layouts via SidebarContent
+
 ## Notes
+
+- Pure structural refactor — no behavior changes
+- `TypeNavigation` and `CollectionsList` become independently reusable
+- Mobile and desktop layouts remain in `Sidebar.tsx` but delegate body rendering to `SidebarContent`
 
 ## History
 
