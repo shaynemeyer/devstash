@@ -1,22 +1,12 @@
-# Current Feature: Refactor Sidebar
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Split `Sidebar.tsx` (240 lines) into focused sub-components with no behavior changes
-- Extract `TypeNavigation.tsx` — item type nav with icon, color dot, name, count badge; hides name/count when collapsed
-- Extract `CollectionsList.tsx` — favorites + recent collections sections with "View all" link; hides labels when collapsed
-- Extract `SidebarContent.tsx` — composes TypeNavigation + CollectionsList + user avatar/dropdown; accepts itemTypes, collections, isCollapsed props
-- Reduce `Sidebar.tsx` to ~50-line layout wrapper managing collapse state and rendering desktop/mobile layouts via SidebarContent
-
 ## Notes
-
-- Pure structural refactor — no behavior changes
-- `TypeNavigation` and `CollectionsList` become independently reusable
-- Mobile and desktop layouts remain in `Sidebar.tsx` but delegate body rendering to `SidebarContent`
 
 ## History
 
@@ -60,3 +50,4 @@ In Progress
 - Refactor lib/db/items.ts: 441-line file split into item-select.ts (ITEM_SELECT/ITEM_DETAIL_SELECT constants, ItemRow/ItemDetailRow types, mapToItemWithMeta/mapToItemDetail helpers, all shared interfaces), items-queries.ts (6 read-only queries), items-mutations.ts (createItem/updateItem/deleteItem); items.ts becomes a re-export barrel; no behavior changes
 - Refactor CreateItemDrawer: 276-line CreateItemDrawer.tsx split into useCreateItemForm hook (src/hooks/useCreateItemForm.ts) with all 8 form field states, reset(), save(), and tag parsing; ItemTypeSelector (src/components/items/ItemTypeSelector.tsx) standalone reusable type grid; CreateItemForm (src/components/items/CreateItemForm.tsx) with all conditional field rendering (CodeEditor/MarkdownEditor/FileUpload/URL/Tags); CreateItemDrawer reduced to ~120-line orchestrator with no business logic; no behavior changes
 - Refactor FileUpload: 192-line FileUpload.tsx split into useFileUpload hook (src/hooks/useFileUpload.ts) with XHR upload logic, progress tracking, blob URL lifecycle; FilePreview (src/components/ui/FilePreview.tsx) renders uploaded image/file with optional download link, replacing duplicated view-mode rendering in ItemDrawerContent; FileUploadInput (src/components/ui/FileUploadInput.tsx) owns drag-and-drop zone with dragging highlight; FileUpload.tsx reduced to ~60-line orchestrator; UploadedFile type re-exported for backwards compat; no behavior changes
+- Refactor Sidebar: 240-line Sidebar.tsx split into TypeNavigation (src/components/dashboard/TypeNavigation.tsx) with item type nav links, color dots, PRO badges, and collapsed-aware rendering; CollectionsList (src/components/dashboard/CollectionsList.tsx) with favorites/recents split and "View all" link; SidebarContent (src/components/dashboard/SidebarContent.tsx) composing header, TypeNavigation, CollectionsList, and user area; Sidebar.tsx reduced to ~58-line layout wrapper managing desktop and mobile overlay layouts; no behavior changes
