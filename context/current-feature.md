@@ -2,22 +2,11 @@
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-Apply four quick-win fixes identified in the code audit:
-
-1. **Demo user deletion guard** — Block `demo@devstash.io` from being deleted via the delete-account API route
-2. **`formatBytes` deduplication** — Remove duplicate implementations in `FileUpload.tsx` and `ItemDrawer.tsx`; import from `utils.ts`
-3. **`typeName` enum validation** — Change `typeName` in `CreateItemSchema`/`UpdateItemSchema` from `z.string().min(1)` to `z.enum([...])` with all valid system types
-4. **Verify-email token validation** — Add `z.string().uuid()` check on the token query param in the verify-email route
-
 ## Notes
-
-- No schema or migration changes required
-- No new dependencies
-- All changes are confined to existing files
 
 ## History
 
@@ -55,3 +44,4 @@ Apply four quick-win fixes identified in the code audit:
 - Image Gallery View: /items/images replaced standard ItemsGrid with ImageGallery; ImageThumbnailCard shows 16:9 aspect-video thumbnail with object-cover and 5% hover zoom (300ms); ImageGallery is a 3-column responsive grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3) with ItemDrawer wired in; fileUrl added to ItemWithMeta and toItemWithMeta mapper so thumbnail src is available on list queries
 - File List View: /items/files replaced standard ItemsGrid with FileList; single-column list with divide-y rows; FileListRow shows extension-aware file icon, file name, file size, upload date, and hover-reveal download button (DOM-appended anchor for Firefox compatibility); click row opens ItemDrawer; responsive via flex-col sm:flex-row; formatBytes extracted to src/lib/utils.ts with 6 Vitest tests; fileName/fileSize added to ItemWithMeta and toItemWithMeta mapper
 - Small Enhancements 1: CopyButton client component added (src/components/items/CopyButton.tsx) with Copy→Check icon toggle (1.5s), stopPropagation, and null guard for File/Image types; ItemCard updated with relative+group classes and CopyButton rendered bottom-right on hover; content and url added to ItemWithMeta interface and toItemWithMeta mapper so cards can copy without opening the drawer
+- Audit Quick Wins: demo account deletion blocked with 403 guard; verify-email token validated as UUID (z.uuid()) before DB lookup; typeName tightened to z.enum in CreateItemSchema; duplicate formatBytes removed from FileUpload.tsx and ItemDrawer.tsx, imported from utils.ts
