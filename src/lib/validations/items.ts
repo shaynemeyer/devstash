@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const CreateItemSchema = z.object({
   typeId: z.string().min(1, "Type is required"),
-  typeName: z.string().min(1),
+  typeName: z.enum(["Snippet", "Prompt", "Command", "Note", "Link", "File", "Image"]),
   title: z.string().trim().min(1, "Title is required"),
   description: z.string().trim().nullable().optional(),
   content: z.string().nullable().optional(),

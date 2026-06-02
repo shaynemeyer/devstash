@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { formatBytes } from "@/lib/utils";
 import { getIcon } from "@/lib/icons";
 import { updateItem, deleteItem } from "@/actions/items";
 import { CodeEditor } from "@/components/ui/CodeEditor";
@@ -30,12 +31,6 @@ const LANGUAGE_TYPES = ["Snippet", "Command"];
 const CODE_TYPES = ["Snippet", "Command"];
 const MARKDOWN_TYPES = ["Note", "Prompt"];
 const FILE_UPLOAD_TYPES = ["File", "Image"];
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 interface ItemDrawerProps {
   itemId: string | null;
