@@ -1,23 +1,12 @@
-# Current Feature: Refactor FileUpload
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Extract `useFileUpload()` hook to `src/hooks/useFileUpload.ts` with all XHR upload mechanics (state, progress, preview URL, cleanup)
-- Create `FilePreview.tsx` at `src/components/ui/FilePreview.tsx` to render uploaded file/image — reusable in `ItemDrawer` view mode
-- Create `FileUploadInput.tsx` at `src/components/ui/FileUploadInput.tsx` for the drag-and-drop upload zone
-- Reduce `FileUpload.tsx` to a ~40-line orchestrator using the hook and two new components
-- Replace duplicated image/file rendering in `ItemDrawer` view mode with `FilePreview`
-- No behavior changes — pure structural refactor
-
 ## Notes
-
-- `useFileUpload` makes XHR logic unit-testable
-- `FilePreview` eliminates duplicated rendering currently in `ItemDrawer`
-- `FileUploadInput` can be reused for future bulk upload or drag-drop zones
 
 ## History
 
@@ -60,3 +49,4 @@ In Progress
 - Refactor lib/db/collections.ts: extracted private getTypeMeta() helper from duplicated type-counting and dominant-color loops in getSidebarCollections() and getRecentCollections(); shared TypeIcon interface moved to top of file; ~25 lines of duplicate logic removed; no behavior changes
 - Refactor lib/db/items.ts: 441-line file split into item-select.ts (ITEM_SELECT/ITEM_DETAIL_SELECT constants, ItemRow/ItemDetailRow types, mapToItemWithMeta/mapToItemDetail helpers, all shared interfaces), items-queries.ts (6 read-only queries), items-mutations.ts (createItem/updateItem/deleteItem); items.ts becomes a re-export barrel; no behavior changes
 - Refactor CreateItemDrawer: 276-line CreateItemDrawer.tsx split into useCreateItemForm hook (src/hooks/useCreateItemForm.ts) with all 8 form field states, reset(), save(), and tag parsing; ItemTypeSelector (src/components/items/ItemTypeSelector.tsx) standalone reusable type grid; CreateItemForm (src/components/items/CreateItemForm.tsx) with all conditional field rendering (CodeEditor/MarkdownEditor/FileUpload/URL/Tags); CreateItemDrawer reduced to ~120-line orchestrator with no business logic; no behavior changes
+- Refactor FileUpload: 192-line FileUpload.tsx split into useFileUpload hook (src/hooks/useFileUpload.ts) with XHR upload logic, progress tracking, blob URL lifecycle; FilePreview (src/components/ui/FilePreview.tsx) renders uploaded image/file with optional download link, replacing duplicated view-mode rendering in ItemDrawerContent; FileUploadInput (src/components/ui/FileUploadInput.tsx) owns drag-and-drop zone with dragging highlight; FileUpload.tsx reduced to ~60-line orchestrator; UploadedFile type re-exported for backwards compat; no behavior changes
