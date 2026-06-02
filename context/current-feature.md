@@ -1,4 +1,4 @@
-# Current Feature: Refactor lib/db/items.ts
+# Current Feature
 
 ## Status
 
@@ -6,18 +6,7 @@ Completed
 
 ## Goals
 
-- Extract a shared `ITEM_SELECT` Prisma select constant to eliminate repeated select clauses across all read queries
-- Extract a shared `mapToItemWithMeta()` helper to eliminate repeated object-mapping logic
-- Split `src/lib/db/items.ts` into two focused files: `items-queries.ts` (reads) and `items-mutations.ts` (writes)
-- Keep `src/lib/db/items.ts` as a re-export barrel so all existing import paths remain valid without changes
-- No behavior changes — pure structural refactor
-
 ## Notes
-
-- Source file is 441 lines with duplicated Prisma select patterns and object-mapping logic
-- `ITEM_SELECT` constant should be exported from `src/lib/db/item-select.ts` or at the top of the queries file
-- Split makes it easy to audit write operations separately from reads
-- All existing imports of `@/lib/db/items` must continue to work via the barrel re-export
 
 ## History
 
@@ -58,3 +47,4 @@ Completed
 - Audit Quick Wins: demo account deletion blocked with 403 guard; verify-email token validated as UUID (z.uuid()) before DB lookup; typeName tightened to z.enum in CreateItemSchema; duplicate formatBytes removed from FileUpload.tsx and ItemDrawer.tsx, imported from utils.ts
 - Refactor ItemDrawer: 619-line ItemDrawer.tsx split into useItemEdit hook (src/hooks/useItemEdit.ts) with all edit-mode state and save/cancel/delete logic; ItemDrawerHeader (title, type badge, language badge); ItemDrawerActionBar (action buttons + AlertDialog); ItemDrawerContent (type-switching content rendering); ItemDrawer.tsx reduced to ~90-line orchestrator; no behavior changes
 - Refactor lib/db/collections.ts: extracted private getTypeMeta() helper from duplicated type-counting and dominant-color loops in getSidebarCollections() and getRecentCollections(); shared TypeIcon interface moved to top of file; ~25 lines of duplicate logic removed; no behavior changes
+- Refactor lib/db/items.ts: 441-line file split into item-select.ts (ITEM_SELECT/ITEM_DETAIL_SELECT constants, ItemRow/ItemDetailRow types, mapToItemWithMeta/mapToItemDetail helpers, all shared interfaces), items-queries.ts (6 read-only queries), items-mutations.ts (createItem/updateItem/deleteItem); items.ts becomes a re-export barrel; no behavior changes
