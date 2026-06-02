@@ -1,12 +1,23 @@
-# Current Feature
+# Current Feature: Refactor FileUpload
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- Extract `useFileUpload()` hook to `src/hooks/useFileUpload.ts` with all XHR upload mechanics (state, progress, preview URL, cleanup)
+- Create `FilePreview.tsx` at `src/components/ui/FilePreview.tsx` to render uploaded file/image — reusable in `ItemDrawer` view mode
+- Create `FileUploadInput.tsx` at `src/components/ui/FileUploadInput.tsx` for the drag-and-drop upload zone
+- Reduce `FileUpload.tsx` to a ~40-line orchestrator using the hook and two new components
+- Replace duplicated image/file rendering in `ItemDrawer` view mode with `FilePreview`
+- No behavior changes — pure structural refactor
+
 ## Notes
+
+- `useFileUpload` makes XHR logic unit-testable
+- `FilePreview` eliminates duplicated rendering currently in `ItemDrawer`
+- `FileUploadInput` can be reused for future bulk upload or drag-drop zones
 
 ## History
 

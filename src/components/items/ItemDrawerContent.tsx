@@ -1,11 +1,11 @@
 "use client";
 
-import { Tag, FolderOpen, Calendar, FileText, Download } from "lucide-react";
+import { Tag, FolderOpen, Calendar } from "lucide-react";
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import { FileUpload } from "@/components/ui/FileUpload";
-import { formatBytes } from "@/lib/utils";
-import type { UploadedFile } from "@/components/ui/FileUpload";
+import { FilePreview } from "@/components/ui/FilePreview";
+import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
 const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
@@ -196,44 +196,13 @@ export function ItemDrawerContent({
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
               File
             </p>
-            {item.typeName === "Image" ? (
-              <div className="rounded-lg overflow-hidden border border-border bg-[#1e1e1e]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/api/files/${item.fileUrl}`}
-                  alt={item.fileName ?? item.title}
-                  className="w-full max-h-64 object-contain"
-                />
-                {item.fileName && (
-                  <div className="px-3 py-2 flex items-center justify-between gap-2">
-                    <span className="text-xs text-muted-foreground truncate">{item.fileName}</span>
-                    {item.fileSize != null && (
-                      <span className="text-xs text-muted-foreground shrink-0">
-                        {formatBytes(item.fileSize)}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="rounded-lg border border-border bg-muted/50 p-3 flex items-center gap-3">
-                <FileText className="size-8 text-muted-foreground shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">{item.fileName ?? "File"}</p>
-                  {item.fileSize != null && (
-                    <p className="text-xs text-muted-foreground">{formatBytes(item.fileSize)}</p>
-                  )}
-                </div>
-                <a
-                  href={`/api/files/${item.fileUrl}`}
-                  download={item.fileName ?? true}
-                  className="shrink-0 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  aria-label="Download file"
-                >
-                  <Download className="size-4" />
-                </a>
-              </div>
-            )}
+            <FilePreview
+              fileUrl={item.fileUrl}
+              fileName={item.fileName}
+              fileSize={item.fileSize}
+              isImage={item.typeName === "Image"}
+              showDownload
+            />
           </section>
         ) : null)}
 
