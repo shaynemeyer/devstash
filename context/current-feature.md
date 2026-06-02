@@ -1,4 +1,4 @@
-# Current Feature
+# Current Feature: Refactor lib/db/items.ts
 
 ## Status
 
@@ -6,7 +6,18 @@ Completed
 
 ## Goals
 
+- Extract a shared `ITEM_SELECT` Prisma select constant to eliminate repeated select clauses across all read queries
+- Extract a shared `mapToItemWithMeta()` helper to eliminate repeated object-mapping logic
+- Split `src/lib/db/items.ts` into two focused files: `items-queries.ts` (reads) and `items-mutations.ts` (writes)
+- Keep `src/lib/db/items.ts` as a re-export barrel so all existing import paths remain valid without changes
+- No behavior changes — pure structural refactor
+
 ## Notes
+
+- Source file is 441 lines with duplicated Prisma select patterns and object-mapping logic
+- `ITEM_SELECT` constant should be exported from `src/lib/db/item-select.ts` or at the top of the queries file
+- Split makes it easy to audit write operations separately from reads
+- All existing imports of `@/lib/db/items` must continue to work via the barrel re-export
 
 ## History
 
