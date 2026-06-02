@@ -36,6 +36,8 @@ export interface ItemWithMeta {
   id: string;
   title: string;
   description: string | null;
+  content: string | null;
+  url: string | null;
   fileUrl: string | null;
   fileName: string | null;
   fileSize: number | null;
@@ -407,6 +409,8 @@ function toItemWithMeta(item: {
   id: string;
   title: string;
   description: string | null;
+  content: string | null;
+  url: string | null;
   fileUrl: string | null;
   fileName: string | null;
   fileSize: number | null;
@@ -420,6 +424,8 @@ function toItemWithMeta(item: {
     id: item.id,
     title: item.title,
     description: item.description,
+    content: item.content,
+    url: item.url,
     fileUrl: item.fileUrl,
     fileName: item.fileName,
     fileSize: item.fileSize,

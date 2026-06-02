@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { getIcon } from "@/lib/icons";
 import { ItemWithMeta } from "@/lib/db/items";
+import { CopyButton } from "./CopyButton";
 
 interface ItemCardProps {
   item: ItemWithMeta;
@@ -12,7 +13,8 @@ export function ItemCard({ item, onClick }: ItemCardProps) {
   const date = item.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
-    <div className="rounded-xl border border-border bg-card flex items-stretch overflow-hidden hover:bg-card/80 transition-colors cursor-pointer" onClick={onClick}>
+    <div className="relative group rounded-xl border border-border bg-card flex items-stretch overflow-hidden hover:bg-card/80 transition-colors cursor-pointer" onClick={onClick}>
+      <CopyButton value={item.content ?? item.url} />
       <div className="w-1 shrink-0" style={{ backgroundColor: item.typeColor }} />
       <div className="flex items-start gap-3 p-4 flex-1 min-w-0">
         <div
