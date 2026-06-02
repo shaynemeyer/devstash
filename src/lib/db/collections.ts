@@ -1,5 +1,28 @@
 import { db } from "@/lib/db";
 
+interface TypeIcon {
+  icon: string;
+  color: string;
+}
+
+function getTypeMeta(items: { type: { icon: string; color: string } }[]): {
+  dominantColor: string;
+  typeIcons: TypeIcon[];
+} {
+  const counts = new Map<string, { count: number; color: string; icon: string }>();
+  for (const item of items) {
+    const { icon, color } = item.type;
+    const existing = counts.get(icon);
+    if (existing) existing.count++;
+    else counts.set(icon, { count: 1, color, icon });
+  }
+  const sorted = [...counts.values()].sort((a, b) => b.count - a.count);
+  return {
+    dominantColor: sorted[0]?.color ?? "#6b7280",
+    typeIcons: sorted.map((t) => ({ icon: t.icon, color: t.color })),
+  };
+}
+
 export interface SidebarCollection {
   id: string;
   name: string;
@@ -25,36 +48,18 @@ export async function getSidebarCollections(userId: string): Promise<SidebarColl
     });
 
     return collections.map((col) => {
-      const typeCounts = new Map<string, { count: number; color: string }>();
-
-      for (const ic of col.items) {
-        const { icon, color } = ic.item.type;
-        const existing = typeCounts.get(icon);
-        if (existing) {
-          existing.count++;
-        } else {
-          typeCounts.set(icon, { count: 1, color });
-        }
-      }
-
-      const sorted = [...typeCounts.values()].sort((a, b) => b.count - a.count);
-
+      const { dominantColor } = getTypeMeta(col.items.map((ic) => ic.item));
       return {
         id: col.id,
         name: col.name,
         isFavorite: col.isFavorite,
         itemCount: col.items.length,
-        dominantColor: sorted[0]?.color ?? "#6b7280",
+        dominantColor,
       };
     });
   } catch {
     return [];
   }
-}
-
-interface TypeIcon {
-  icon: string;
-  color: string;
 }
 
 export interface CollectionWithMeta {
@@ -88,28 +93,15 @@ export async function getRecentCollections(
     });
 
     return collections.map((col) => {
-      const typeCounts = new Map<string, { count: number; color: string; icon: string }>();
-
-      for (const ic of col.items) {
-        const { icon, color } = ic.item.type;
-        const existing = typeCounts.get(icon);
-        if (existing) {
-          existing.count++;
-        } else {
-          typeCounts.set(icon, { count: 1, color, icon });
-        }
-      }
-
-      const sorted = [...typeCounts.values()].sort((a, b) => b.count - a.count);
-
+      const { dominantColor, typeIcons } = getTypeMeta(col.items.map((ic) => ic.item));
       return {
         id: col.id,
         name: col.name,
         description: col.description,
         isFavorite: col.isFavorite,
         itemCount: col.items.length,
-        dominantColor: sorted[0]?.color ?? "#6b7280",
-        typeIcons: sorted.map((t) => ({ icon: t.icon, color: t.color })),
+        dominantColor,
+        typeIcons,
       };
     });
   } catch {
