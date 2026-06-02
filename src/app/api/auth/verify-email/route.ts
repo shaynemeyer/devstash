@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
 import { db } from "@/lib/db"
+
+const TokenSchema = z.uuid()
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const token = searchParams.get("token")
+  const raw = searchParams.get("token")
+  const result = TokenSchema.safeParse(raw)
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/sign-in?error=missing-token", request.url))
+  if (!result.success) {
+    return NextResponse.redirect(new URL("/sign-in?error=invalid-token", request.url))
   }
+
+  const token = result.data
 
   const record = await db.verificationToken.findUnique({ where: { token } })
 

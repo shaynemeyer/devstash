@@ -2,11 +2,22 @@
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+Apply four quick-win fixes identified in the code audit:
+
+1. **Demo user deletion guard** — Block `demo@devstash.io` from being deleted via the delete-account API route
+2. **`formatBytes` deduplication** — Remove duplicate implementations in `FileUpload.tsx` and `ItemDrawer.tsx`; import from `utils.ts`
+3. **`typeName` enum validation** — Change `typeName` in `CreateItemSchema`/`UpdateItemSchema` from `z.string().min(1)` to `z.enum([...])` with all valid system types
+4. **Verify-email token validation** — Add `z.string().uuid()` check on the token query param in the verify-email route
+
 ## Notes
+
+- No schema or migration changes required
+- No new dependencies
+- All changes are confined to existing files
 
 ## History
 
