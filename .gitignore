@@ -49,4 +49,5 @@ next-env.d.ts
 .playwright-mcp
 
 # Don't expose audit results
-docs/audit-results
+docs/audit-results/
+.claude/agent-memory/

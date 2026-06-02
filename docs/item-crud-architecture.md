@@ -6,7 +6,7 @@ Unified design for creating, reading, updating, and deleting all 7 item types. F
 
 ## File Structure
 
-```
+```text
 src/
 ├── actions/
 │   └── items.ts                    # All item mutations (create, update, delete, toggle)
@@ -41,15 +41,15 @@ src/
 
 The segment `[type]` matches the URL slug for each item type:
 
-| URL                 | Type slug  | DB `ItemType.name` |
-| ------------------- | ---------- | ------------------ |
-| `/items/snippets`   | `snippets` | `snippet`          |
-| `/items/prompts`    | `prompts`  | `prompt`           |
-| `/items/commands`   | `commands` | `command`          |
-| `/items/notes`      | `notes`    | `note`             |
-| `/items/links`      | `links`    | `link`             |
-| `/items/files`      | `files`    | `file`             |
-| `/items/images`     | `images`   | `image`            |
+| URL               | Type slug  | DB `ItemType.name` |
+| ----------------- | ---------- | ------------------ |
+| `/items/snippets` | `snippets` | `snippet`          |
+| `/items/prompts`  | `prompts`  | `prompt`           |
+| `/items/commands` | `commands` | `command`          |
+| `/items/notes`    | `notes`    | `note`             |
+| `/items/links`    | `links`    | `link`             |
+| `/items/files`    | `files`    | `file`             |
+| `/items/images`   | `images`   | `image`            |
 
 `page.tsx` maps the slug to a singular type name, looks up the `ItemType` record, then fetches items filtered by that type. Unknown slugs `notFound()`.
 
@@ -90,13 +90,19 @@ Extend the existing file with item-type queries. All functions are `async`, call
 ```ts
 // New additions to src/lib/db/items.ts
 
-export async function getItemTypeByName(name: string): Promise<ItemType | null>
+export async function getItemTypeByName(name: string): Promise<ItemType | null>;
 
-export async function getItemsByType(userId: string, typeName: string): Promise<ItemDetail[]>
+export async function getItemsByType(
+  userId: string,
+  typeName: string,
+): Promise<ItemDetail[]>;
 
-export async function getItemById(userId: string, itemId: string): Promise<ItemDetail | null>
+export async function getItemById(
+  userId: string,
+  itemId: string,
+): Promise<ItemDetail | null>;
 
-export async function getAllItems(userId: string): Promise<ItemDetail[]>
+export async function getAllItems(userId: string): Promise<ItemDetail[]>;
 ```
 
 `ItemDetail` is a flat, typed shape that includes `content`, `url`, `fileUrl`, `fileName`, `fileSize`, `language`, `tags`, and the flattened type fields (`typeIcon`, `typeColor`, `typeName`).
@@ -106,6 +112,7 @@ export async function getAllItems(userId: string): Promise<ItemDetail[]>
 ## Mutations — `src/actions/items.ts`
 
 One file for all mutations. Each action:
+
 1. Gets session and extracts `userId`
 2. Validates input with Zod `.safeParse()`
 3. Executes the Prisma write
@@ -113,13 +120,16 @@ One file for all mutations. Each action:
 
 ```ts
 // src/actions/items.ts
-"use server";
+'use server';
 
-export async function createItem(formData: FormData): Promise<ActionResult>
-export async function updateItem(itemId: string, formData: FormData): Promise<ActionResult>
-export async function deleteItem(itemId: string): Promise<ActionResult>
-export async function toggleFavorite(itemId: string): Promise<ActionResult>
-export async function togglePinned(itemId: string): Promise<ActionResult>
+export async function createItem(formData: FormData): Promise<ActionResult>;
+export async function updateItem(
+  itemId: string,
+  formData: FormData,
+): Promise<ActionResult>;
+export async function deleteItem(itemId: string): Promise<ActionResult>;
+export async function toggleFavorite(itemId: string): Promise<ActionResult>;
+export async function togglePinned(itemId: string): Promise<ActionResult>;
 ```
 
 No type-specific action files — the `contentType` field in the form determines which Zod schema to apply and which fields to write.
@@ -133,34 +143,34 @@ One schema per `contentType`, matching the `Item` model fields:
 ```ts
 // text types: Snippet, Prompt, Command, Note
 export const TextItemSchema = z.object({
-  title:       z.string().min(1).max(200),
-  typeId:      z.string(),
-  content:     z.string().min(1),
-  language:    z.string().optional(),
+  title: z.string().min(1).max(200),
+  typeId: z.string(),
+  content: z.string().min(1),
+  language: z.string().optional(),
   description: z.string().max(500).optional(),
-  tags:        z.array(z.string()).max(10).optional(),
-  isFavorite:  z.boolean().optional(),
-  isPinned:    z.boolean().optional(),
+  tags: z.array(z.string()).max(10).optional(),
+  isFavorite: z.boolean().optional(),
+  isPinned: z.boolean().optional(),
 });
 
 // file types: File, Image
 export const FileItemSchema = z.object({
-  title:       z.string().min(1).max(200),
-  typeId:      z.string(),
-  fileUrl:     z.string().url(),
-  fileName:    z.string(),
-  fileSize:    z.number().int().positive(),
+  title: z.string().min(1).max(200),
+  typeId: z.string(),
+  fileUrl: z.string().url(),
+  fileName: z.string(),
+  fileSize: z.number().int().positive(),
   description: z.string().max(500).optional(),
-  tags:        z.array(z.string()).max(10).optional(),
+  tags: z.array(z.string()).max(10).optional(),
 });
 
 // url type: Link
 export const LinkItemSchema = z.object({
-  title:       z.string().min(1).max(200),
-  typeId:      z.string(),
-  url:         z.string().url(),
+  title: z.string().min(1).max(200),
+  typeId: z.string(),
+  url: z.string().url(),
   description: z.string().max(500).optional(),
-  tags:        z.array(z.string()).max(10).optional(),
+  tags: z.array(z.string()).max(10).optional(),
 });
 ```
 
@@ -218,15 +228,15 @@ The action reads `contentType` from the form, selects the matching schema, and c
 
 ## Type-Specific Logic Location
 
-| Concern                          | Where it lives                             |
-| -------------------------------- | ------------------------------------------ |
-| Which fields are shown in form   | `TextItemFields`, `FileItemFields`, `LinkItemFields` |
-| Which Zod schema to apply        | `src/actions/items.ts` (reads `contentType`) |
-| How content is rendered (view)   | `ItemDrawer` — switch on `contentType`     |
-| Syntax highlighting language     | `TextItemFields` — language select         |
-| File upload to Cloudflare R2     | `FileItemFields` → API route for upload    |
-| Icon and color                   | `ItemType` record from DB (not hardcoded in components) |
-| Route slug mapping               | `SLUG_TO_TYPE` in `app/items/[type]/page.tsx` |
+| Concern                        | Where it lives                                          |
+| ------------------------------ | ------------------------------------------------------- |
+| Which fields are shown in form | `TextItemFields`, `FileItemFields`, `LinkItemFields`    |
+| Which Zod schema to apply      | `src/actions/items.ts` (reads `contentType`)            |
+| How content is rendered (view) | `ItemDrawer` — switch on `contentType`                  |
+| Syntax highlighting language   | `TextItemFields` — language select                      |
+| File upload to Cloudflare R2   | `FileItemFields` → API route for upload                 |
+| Icon and color                 | `ItemType` record from DB (not hardcoded in components) |
+| Route slug mapping             | `SLUG_TO_TYPE` in `app/items/[type]/page.tsx`           |
 
 The actions file stays type-agnostic. The DB queries stay type-agnostic. Type-specific rendering and field logic is entirely in the leaf components under `components/items/forms/`.
 
