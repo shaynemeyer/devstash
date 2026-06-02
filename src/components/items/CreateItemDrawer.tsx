@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Check } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
@@ -33,11 +33,14 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
     router.refresh();
   });
 
-  function handleOpenChange(val: boolean) {
-    if (!val) {
+  useEffect(() => {
+    if (!open) {
       form.reset();
       setSelectedTypeId(defaultTypeId ?? "");
     }
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleOpenChange(val: boolean) {
     onOpenChange(val);
   }
 
