@@ -1,12 +1,23 @@
-# Current Feature
+# Current Feature: Refactor ItemDrawer
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- Extract all edit-mode state and logic into a `useItemEdit()` hook at `src/hooks/useItemEdit.ts`
+- Create `ItemDrawerHeader.tsx` — renders title (editable/plain), type badge, and language badge
+- Create `ItemDrawerActionBar.tsx` — renders action buttons (Favorite/Pin/Copy/Edit/Delete) and the delete `AlertDialog`
+- Create `ItemDrawerContent.tsx` — renders content section based on item type (CodeEditor, MarkdownEditor, file card, image preview) with view/edit mode switching
+- Reduce `ItemDrawer.tsx` to a thin orchestrator (~100 lines) that fetches item detail, composes the above components, and manages open/loading state
+
 ## Notes
+
+- No behavior changes — pure structural refactor
+- All existing external props/callbacks remain the same
+- `useItemEdit` hook enables unit testing of save/cancel logic in isolation
+- `ItemDrawerContent` can eventually be reused for a full-page item view
 
 ## History
 
