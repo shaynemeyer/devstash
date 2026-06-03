@@ -100,6 +100,22 @@ export async function getItemsByTypeSlug(userId: string, slug: string): Promise<
   }
 }
 
+export async function getItemsByCollectionId(
+  userId: string,
+  collectionId: string
+): Promise<ItemWithMeta[]> {
+  try {
+    const items = await db.item.findMany({
+      where: { userId, collections: { some: { collectionId } } },
+      orderBy: { createdAt: "desc" },
+      select: ITEM_SELECT,
+    });
+    return items.map(mapToItemWithMeta);
+  } catch {
+    return [];
+  }
+}
+
 export async function getItemDetail(id: string, userId: string): Promise<ItemDetail | null> {
   try {
     const item = await db.item.findUnique({
