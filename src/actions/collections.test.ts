@@ -7,15 +7,24 @@ vi.mock("@/auth", () => ({
 vi.mock("@/lib/db/collections", () => ({
   createCollection: vi.fn(),
   getUserCollectionsList: vi.fn(),
+  updateCollection: vi.fn(),
+  deleteCollection: vi.fn(),
 }));
 
 import { auth } from "@/auth";
-import { createCollection as dbCreateCollection, getUserCollectionsList } from "@/lib/db/collections";
-import { createCollection, getUserCollections } from "./collections";
+import {
+  createCollection as dbCreateCollection,
+  getUserCollectionsList,
+  updateCollection as dbUpdateCollection,
+  deleteCollection as dbDeleteCollection,
+} from "@/lib/db/collections";
+import { createCollection, getUserCollections, updateCollection, deleteCollection } from "./collections";
 
 const mockAuth = vi.mocked(auth);
 const mockDbCreate = vi.mocked(dbCreateCollection);
 const mockGetList = vi.mocked(getUserCollectionsList);
+const mockDbUpdate = vi.mocked(dbUpdateCollection);
+const mockDbDelete = vi.mocked(dbDeleteCollection);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -113,5 +122,69 @@ describe("createCollection action", () => {
     expect(mockDbCreate).toHaveBeenCalledWith(
       expect.objectContaining({ name: "Trimmed" })
     );
+  });
+});
+
+describe("updateCollection action", () => {
+  it("returns unauthorized when no session", async () => {
+    mockAuth.mockResolvedValue(null as never);
+    const result = await updateCollection("col-1", { name: "New Name" });
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbUpdate).not.toHaveBeenCalled();
+  });
+
+  it("returns validation error for empty name", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const result = await updateCollection("col-1", { name: "" });
+    expect(result).toEqual({ success: false, error: "Name is required" });
+    expect(mockDbUpdate).not.toHaveBeenCalled();
+  });
+
+  it("returns validation error when name exceeds 100 chars", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const result = await updateCollection("col-1", { name: "a".repeat(101) });
+    expect(result.success).toBe(false);
+    expect(mockDbUpdate).not.toHaveBeenCalled();
+  });
+
+  it("returns error when db update fails", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbUpdate.mockResolvedValue(null);
+    const result = await updateCollection("col-1", { name: "New Name" });
+    expect(result).toEqual({ success: false, error: "Failed to update collection" });
+    expect(mockDbUpdate).toHaveBeenCalledWith("col-1", "user-1", expect.objectContaining({ name: "New Name" }));
+  });
+
+  it("returns updated collection on success", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const updated = { id: "col-1", name: "New Name", description: null };
+    mockDbUpdate.mockResolvedValue(updated);
+    const result = await updateCollection("col-1", { name: "New Name" });
+    expect(result).toEqual({ success: true, data: updated });
+  });
+});
+
+describe("deleteCollection action", () => {
+  it("returns unauthorized when no session", async () => {
+    mockAuth.mockResolvedValue(null as never);
+    const result = await deleteCollection("col-1");
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbDelete).not.toHaveBeenCalled();
+  });
+
+  it("returns error when db delete fails", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbDelete.mockResolvedValue(false);
+    const result = await deleteCollection("col-1");
+    expect(result).toEqual({ success: false, error: "Failed to delete collection" });
+    expect(mockDbDelete).toHaveBeenCalledWith("col-1", "user-1");
+  });
+
+  it("returns success when collection is deleted", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbDelete.mockResolvedValue(true);
+    const result = await deleteCollection("col-1");
+    expect(result).toEqual({ success: true });
+    expect(mockDbDelete).toHaveBeenCalledWith("col-1", "user-1");
   });
 });

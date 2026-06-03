@@ -224,3 +224,28 @@ export async function createCollection(data: {
     return null;
   }
 }
+
+export async function updateCollection(
+  id: string,
+  userId: string,
+  data: { name: string; description?: string | null }
+): Promise<CreatedCollection | null> {
+  try {
+    return await db.collection.update({
+      where: { id, userId },
+      data: { name: data.name, description: data.description ?? null },
+      select: { id: true, name: true, description: true },
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteCollection(id: string, userId: string): Promise<boolean> {
+  try {
+    await db.collection.delete({ where: { id, userId } });
+    return true;
+  } catch {
+    return false;
+  }
+}
