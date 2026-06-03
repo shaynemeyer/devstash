@@ -5,6 +5,7 @@ import { CodeEditor } from "@/components/ui/CodeEditor";
 import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { FilePreview } from "@/components/ui/FilePreview";
+import { CollectionSelector } from "@/components/items/CollectionSelector";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -29,6 +30,9 @@ interface ItemDrawerContentProps {
   onTagsInputChange: (value: string) => void;
   uploadedFile: UploadedFile | null;
   onUploadedFileChange: (value: UploadedFile | null) => void;
+  collections: { id: string; name: string }[];
+  collectionIds: string[];
+  onCollectionIdsChange: (ids: string[]) => void;
 }
 
 export function ItemDrawerContent({
@@ -46,6 +50,9 @@ export function ItemDrawerContent({
   onTagsInputChange,
   uploadedFile,
   onUploadedFileChange,
+  collections,
+  collectionIds,
+  onCollectionIdsChange,
 }: ItemDrawerContentProps) {
   const showContent = CONTENT_TYPES.includes(item.typeName);
   const showLanguage = LANGUAGE_TYPES.includes(item.typeName);
@@ -243,8 +250,17 @@ export function ItemDrawerContent({
         )
       )}
 
-      {/* Collections */}
-      {item.collections.length > 0 && (
+      {/* Collections — edit mode selector */}
+      {editMode && (
+        <CollectionSelector
+          collections={collections}
+          selected={collectionIds}
+          onChange={onCollectionIdsChange}
+        />
+      )}
+
+      {/* Collections — view mode */}
+      {!editMode && item.collections.length > 0 && (
         <section>
           <div className="flex items-center gap-1.5 mb-1.5">
             <FolderOpen className="size-3 text-muted-foreground" />
@@ -254,8 +270,8 @@ export function ItemDrawerContent({
           </div>
           <div className="flex flex-wrap gap-1.5">
             {item.collections.map((col) => (
-              <span key={col} className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
-                {col}
+              <span key={col.id} className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
+                {col.name}
               </span>
             ))}
           </div>

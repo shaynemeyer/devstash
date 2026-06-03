@@ -112,6 +112,30 @@ describe("updateItem action", () => {
     const result = await updateItem("item-1", validInput);
     expect(result).toEqual({ success: true, data: fakeItem });
   });
+
+  it("passes collectionIds to db update when provided", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const fakeItem = { id: "item-1", title: "My Item" };
+    mockDbUpdate.mockResolvedValue(fakeItem as never);
+    await updateItem("item-1", { ...validInput, collectionIds: ["col-1", "col-2"] });
+    expect(mockDbUpdate).toHaveBeenCalledWith(
+      "item-1",
+      "user-1",
+      expect.objectContaining({ collectionIds: ["col-1", "col-2"] })
+    );
+  });
+
+  it("passes empty collectionIds when not provided", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const fakeItem = { id: "item-1", title: "My Item" };
+    mockDbUpdate.mockResolvedValue(fakeItem as never);
+    await updateItem("item-1", validInput);
+    expect(mockDbUpdate).toHaveBeenCalledWith(
+      "item-1",
+      "user-1",
+      expect.objectContaining({ collectionIds: [] })
+    );
+  });
 });
 
 const validCreateInput = {
@@ -165,5 +189,25 @@ describe("createItem action", () => {
     mockDbCreate.mockResolvedValue(fakeItem as never);
     const result = await createItem(validCreateInput);
     expect(result).toEqual({ success: true, data: fakeItem });
+  });
+
+  it("passes collectionIds to db create when provided", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const fakeItem = { id: "item-new", title: "New Snippet" };
+    mockDbCreate.mockResolvedValue(fakeItem as never);
+    await createItem({ ...validCreateInput, collectionIds: ["col-1"] });
+    expect(mockDbCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ collectionIds: ["col-1"] })
+    );
+  });
+
+  it("passes empty collectionIds by default", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const fakeItem = { id: "item-new", title: "New Snippet" };
+    mockDbCreate.mockResolvedValue(fakeItem as never);
+    await createItem(validCreateInput);
+    expect(mockDbCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ collectionIds: [] })
+    );
   });
 });

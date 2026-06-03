@@ -14,6 +14,7 @@ export function useCreateItemForm(onSuccess: () => void) {
   const [language, setLanguage] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [collectionIds, setCollectionIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
   function reset() {
@@ -24,6 +25,7 @@ export function useCreateItemForm(onSuccess: () => void) {
     setLanguage("");
     setTagsInput("");
     setUploadedFile(null);
+    setCollectionIds([]);
   }
 
   async function save(selectedType: ItemTypeWithCount) {
@@ -46,6 +48,7 @@ export function useCreateItemForm(onSuccess: () => void) {
       fileUrl: uploadedFile?.key ?? null,
       fileName: uploadedFile?.fileName ?? null,
       fileSize: uploadedFile?.fileSize ?? null,
+      collectionIds,
     });
 
     setSaving(false);
@@ -74,6 +77,8 @@ export function useCreateItemForm(onSuccess: () => void) {
     setTagsInput,
     uploadedFile,
     setUploadedFile,
+    collectionIds,
+    setCollectionIds,
     saving,
     reset,
     save,

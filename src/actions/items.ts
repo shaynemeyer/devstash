@@ -24,7 +24,7 @@ export async function createItem(input: unknown): Promise<ActionResult> {
     return { success: false, error: result.error.issues[0].message };
   }
 
-  const { typeId, title, description, content, url, language, tags, fileUrl, fileName, fileSize } = result.data;
+  const { typeId, title, description, content, url, language, tags, fileUrl, fileName, fileSize, collectionIds } = result.data;
 
   const created = await dbCreateItem({
     typeId,
@@ -38,6 +38,7 @@ export async function createItem(input: unknown): Promise<ActionResult> {
     fileUrl: fileUrl ?? null,
     fileName: fileName ?? null,
     fileSize: fileSize ?? null,
+    collectionIds,
   });
 
   if (!created) {
@@ -69,6 +70,7 @@ export async function updateItem(itemId: string, input: unknown): Promise<Action
     fileUrl: data.fileUrl ?? null,
     fileName: data.fileName ?? null,
     fileSize: data.fileSize ?? null,
+    collectionIds: data.collectionIds,
   });
 
   if (!updated) {

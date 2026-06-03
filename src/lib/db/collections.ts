@@ -109,6 +109,20 @@ export async function getRecentCollections(
   }
 }
 
+export async function getUserCollectionsList(
+  userId: string
+): Promise<{ id: string; name: string }[]> {
+  try {
+    return await db.collection.findMany({
+      where: { userId },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    });
+  } catch {
+    return [];
+  }
+}
+
 export interface CreatedCollection {
   id: string;
   name: string;

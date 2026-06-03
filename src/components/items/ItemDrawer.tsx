@@ -6,6 +6,7 @@ import { useItemEdit } from "@/hooks/useItemEdit";
 import { ItemDrawerHeader } from "@/components/items/ItemDrawerHeader";
 import { ItemDrawerActionBar } from "@/components/items/ItemDrawerActionBar";
 import { ItemDrawerContent } from "@/components/items/ItemDrawerContent";
+import { getUserCollections } from "@/actions/collections";
 import type { ItemDetail } from "@/lib/db/items";
 
 interface ItemDrawerProps {
@@ -17,6 +18,7 @@ interface ItemDrawerProps {
 export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const [item, setItem] = useState<ItemDetail | null>(null);
   const [loading, setLoading] = useState(false);
+  const [collections, setCollections] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     if (!open || !itemId) return;
@@ -26,6 +28,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => setItem(data))
       .finally(() => setLoading(false));
+    getUserCollections().then(setCollections);
   }, [open, itemId]);
 
   return (
@@ -33,7 +36,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
         {loading && <DrawerSkeleton />}
         {!loading && item && (
-          <DrawerBody item={item} onItemChange={setItem} onClose={() => onOpenChange(false)} />
+          <DrawerBody item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} />
         )}
       </SheetContent>
     </Sheet>
@@ -42,10 +45,12 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
 
 function DrawerBody({
   item,
+  collections,
   onItemChange,
   onClose,
 }: {
   item: ItemDetail;
+  collections: { id: string; name: string }[];
   onItemChange: (item: ItemDetail) => void;
   onClose: () => void;
 }) {
@@ -91,6 +96,9 @@ function DrawerBody({
         onTagsInputChange={edit.setTagsInput}
         uploadedFile={edit.uploadedFile}
         onUploadedFileChange={edit.setUploadedFile}
+        collections={collections}
+        collectionIds={edit.collectionIds}
+        onCollectionIdsChange={edit.setCollectionIds}
       />
     </div>
   );

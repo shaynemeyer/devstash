@@ -9,6 +9,7 @@ import { getIcon } from "@/lib/icons";
 import { useCreateItemForm } from "@/hooks/useCreateItemForm";
 import { ItemTypeSelector } from "@/components/items/ItemTypeSelector";
 import { CreateItemForm } from "@/components/items/CreateItemForm";
+import { getUserCollections } from "@/actions/collections";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
 const CREATABLE_TYPES = ["Snippet", "Prompt", "Command", "Note", "Link", "File", "Image"];
@@ -27,6 +28,7 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
 
   const [selectedTypeId, setSelectedTypeId] = useState<string>(defaultTypeId ?? "");
   const selectedType = types.find((t) => t.id === selectedTypeId);
+  const [collections, setCollections] = useState<{ id: string; name: string }[]>([]);
 
   const form = useCreateItemForm(() => {
     onOpenChange(false);
@@ -34,7 +36,9 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
   });
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      getUserCollections().then(setCollections);
+    } else {
       form.reset();
       setSelectedTypeId(defaultTypeId ?? "");
     }
@@ -102,6 +106,7 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
 
           <CreateItemForm
             selectedType={selectedType}
+            collections={collections}
             fields={{
               description: form.description,
               setDescription: form.setDescription,
@@ -115,6 +120,8 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
               setTagsInput: form.setTagsInput,
               uploadedFile: form.uploadedFile,
               setUploadedFile: form.setUploadedFile,
+              collectionIds: form.collectionIds,
+              setCollectionIds: form.setCollectionIds,
             }}
           />
         </div>

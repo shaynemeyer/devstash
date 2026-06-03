@@ -28,6 +28,7 @@ export function useItemEdit(
   const [language, setLanguage] = useState(item.language ?? "");
   const [tagsInput, setTagsInput] = useState(item.tags.join(", "));
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(toUploadedFile(item));
+  const [collectionIds, setCollectionIds] = useState<string[]>(item.collections.map((c) => c.id));
 
   useEffect(() => {
     setEditMode(false);
@@ -38,6 +39,7 @@ export function useItemEdit(
     setLanguage(item.language ?? "");
     setTagsInput(item.tags.join(", "));
     setUploadedFile(toUploadedFile(item));
+    setCollectionIds(item.collections.map((c) => c.id));
   }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function enterEdit() {
@@ -48,6 +50,7 @@ export function useItemEdit(
     setLanguage(item.language ?? "");
     setTagsInput(item.tags.join(", "));
     setUploadedFile(toUploadedFile(item));
+    setCollectionIds(item.collections.map((c) => c.id));
     setEditMode(true);
   }
 
@@ -72,6 +75,7 @@ export function useItemEdit(
       fileUrl: uploadedFile?.key ?? null,
       fileName: uploadedFile?.fileName ?? null,
       fileSize: uploadedFile?.fileSize ?? null,
+      collectionIds,
     });
 
     setSaving(false);
@@ -118,6 +122,8 @@ export function useItemEdit(
     setTagsInput,
     uploadedFile,
     setUploadedFile,
+    collectionIds,
+    setCollectionIds,
     enterEdit,
     cancelEdit,
     save,

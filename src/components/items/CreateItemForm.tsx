@@ -3,6 +3,7 @@
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import { FileUpload } from "@/components/ui/FileUpload";
+import { CollectionSelector } from "@/components/items/CollectionSelector";
 import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
@@ -25,15 +26,18 @@ interface FormFields {
   setTagsInput: (v: string) => void;
   uploadedFile: UploadedFile | null;
   setUploadedFile: (f: UploadedFile | null) => void;
+  collectionIds: string[];
+  setCollectionIds: (ids: string[]) => void;
 }
 
 interface CreateItemFormProps {
   selectedType: ItemTypeWithCount | undefined;
   fields: FormFields;
+  collections: { id: string; name: string }[];
 }
 
-export function CreateItemForm({ selectedType, fields }: CreateItemFormProps) {
-  const { description, setDescription, content, setContent, url, setUrl, language, setLanguage, tagsInput, setTagsInput, uploadedFile, setUploadedFile } = fields;
+export function CreateItemForm({ selectedType, fields, collections }: CreateItemFormProps) {
+  const { description, setDescription, content, setContent, url, setUrl, language, setLanguage, tagsInput, setTagsInput, uploadedFile, setUploadedFile, collectionIds, setCollectionIds } = fields;
 
   const showContent = selectedType ? CONTENT_TYPES.includes(selectedType.name) : false;
   const showLanguage = selectedType ? LANGUAGE_TYPES.includes(selectedType.name) : false;
@@ -132,6 +136,12 @@ export function CreateItemForm({ selectedType, fields }: CreateItemFormProps) {
         />
         <p className="text-xs text-muted-foreground mt-1">Comma-separated</p>
       </section>
+
+      <CollectionSelector
+        collections={collections}
+        selected={collectionIds}
+        onChange={setCollectionIds}
+      />
     </div>
   );
 }
