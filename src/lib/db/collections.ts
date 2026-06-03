@@ -108,3 +108,29 @@ export async function getRecentCollections(
     return [];
   }
 }
+
+export interface CreatedCollection {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+export async function createCollection(data: {
+  name: string;
+  description?: string | null;
+  userId: string;
+}): Promise<CreatedCollection | null> {
+  try {
+    const collection = await db.collection.create({
+      data: {
+        name: data.name,
+        description: data.description ?? null,
+        userId: data.userId,
+      },
+      select: { id: true, name: true, description: true },
+    });
+    return collection;
+  } catch {
+    return null;
+  }
+}
