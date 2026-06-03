@@ -109,6 +109,82 @@ export async function getRecentCollections(
   }
 }
 
+export async function getAllCollections(userId: string): Promise<CollectionWithMeta[]> {
+  try {
+    const collections = await db.collection.findMany({
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        items: {
+          include: {
+            item: {
+              select: { type: { select: { icon: true, color: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    return collections.map((col) => {
+      const { dominantColor, typeIcons } = getTypeMeta(col.items.map((ic) => ic.item));
+      return {
+        id: col.id,
+        name: col.name,
+        description: col.description,
+        isFavorite: col.isFavorite,
+        itemCount: col.items.length,
+        dominantColor,
+        typeIcons,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export interface CollectionDetail {
+  id: string;
+  name: string;
+  description: string | null;
+  isFavorite: boolean;
+  dominantColor: string;
+  typeIcons: TypeIcon[];
+}
+
+export async function getCollectionDetail(
+  userId: string,
+  collectionId: string
+): Promise<CollectionDetail | null> {
+  try {
+    const col = await db.collection.findUnique({
+      where: { id: collectionId, userId },
+      include: {
+        items: {
+          include: {
+            item: {
+              select: { type: { select: { icon: true, color: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    if (!col) return null;
+
+    const { dominantColor, typeIcons } = getTypeMeta(col.items.map((ic) => ic.item));
+    return {
+      id: col.id,
+      name: col.name,
+      description: col.description,
+      isFavorite: col.isFavorite,
+      dominantColor,
+      typeIcons,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getUserCollectionsList(
   userId: string
 ): Promise<{ id: string; name: string }[]> {

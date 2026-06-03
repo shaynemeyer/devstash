@@ -11,6 +11,7 @@ export {
   getRecentItems,
   getDashboardStats,
   getItemsByTypeSlug,
+  getItemsByCollectionId,
   getItemDetail,
 } from "./items-queries";
 
