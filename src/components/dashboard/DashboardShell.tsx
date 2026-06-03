@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { CreateItemDrawer } from "@/components/items/CreateItemDrawer";
+import { CreateCollectionDrawer } from "@/components/collections/CreateCollectionDrawer";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
 
@@ -24,10 +25,15 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <TopBar onMobileMenuClick={() => setMobileOpen(true)} onNewItem={() => setCreateOpen(true)} />
+      <TopBar
+        onMobileMenuClick={() => setMobileOpen(true)}
+        onNewItem={() => setCreateOpen(true)}
+        onNewCollection={() => setCreateCollectionOpen(true)}
+      />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           collapsed={collapsed}
@@ -45,6 +51,10 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         onOpenChange={setCreateOpen}
         itemTypes={itemTypes}
         defaultTypeId={itemTypes.find((t) => t.name === "Snippet")?.id ?? ""}
+      />
+      <CreateCollectionDrawer
+        open={createCollectionOpen}
+        onOpenChange={setCreateCollectionOpen}
       />
     </div>
   );
