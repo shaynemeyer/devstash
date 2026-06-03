@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ItemsGrid } from "@/components/items/ItemsGrid";
+import { CollectionActions } from "@/components/collections/CollectionActions";
 import { getCollectionDetail, getSidebarCollections } from "@/lib/db/collections";
 import { getItemsByCollectionId, getItemTypesWithCounts } from "@/lib/db/items";
 
@@ -41,12 +42,15 @@ export default async function CollectionDetailPage({ params }: Props) {
   return (
     <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">{collection.name}</h1>
-          {collection.description && (
-            <p className="text-sm text-muted-foreground mt-1">{collection.description}</p>
-          )}
-          <p className="text-sm text-muted-foreground mt-0.5">{items.length} items</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold text-foreground">{collection.name}</h1>
+            {collection.description && (
+              <p className="text-sm text-muted-foreground mt-1">{collection.description}</p>
+            )}
+            <p className="text-sm text-muted-foreground mt-0.5">{items.length} items</p>
+          </div>
+          <CollectionActions collection={collection} />
         </div>
         <ItemsGrid items={items} emptyLabel="items in this collection" />
       </div>
