@@ -1,21 +1,12 @@
-# Current Feature: Collections Pages
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Create `/collections` page listing all user collections in a card grid
-- Create `/collections/[id]` page showing items in a specific collection
-- Link sidebar "View all collections" and collection cards to the correct routes (links already exist in code)
-
 ## Notes
-
-- Reuse existing `CollectionWithMeta` type and card design from `RecentCollections`
-- Extract a `CollectionCard` component to avoid duplication
-- Use `ItemsGrid` on the detail page (same as `/items/[type]`)
-- New DB queries needed: `getAllCollections` and `getCollectionDetail`
 
 ## History
 
@@ -62,3 +53,4 @@ In Progress
 - Refactor Sidebar: 240-line Sidebar.tsx split into TypeNavigation (src/components/dashboard/TypeNavigation.tsx) with item type nav links, color dots, PRO badges, and collapsed-aware rendering; CollectionsList (src/components/dashboard/CollectionsList.tsx) with favorites/recents split and "View all" link; SidebarContent (src/components/dashboard/SidebarContent.tsx) composing header, TypeNavigation, CollectionsList, and user area; Sidebar.tsx reduced to ~58-line layout wrapper managing desktop and mobile overlay layouts; no behavior changes
 - Create Collection: "New Collection" button in TopBar opens a right-side Sheet drawer; CreateCollectionSchema (Zod) in src/lib/validations/collections.ts; createCollection DB mutation in collections.ts; createCollection server action in src/actions/collections.ts with auth + Zod validation; useCreateCollectionForm hook with save/reset/toast logic; CreateCollectionDrawer component with name input (required) + ShadCN Textarea for description (optional); DashboardShell wires state and renders drawer; router.refresh() on success; ShadCN textarea.tsx component added; 8 Vitest tests added
 - Add Items to Collections: CollectionSelector toggle-pill component added; multi-select Collections field wired into Create Item and Edit Item drawers; getUserCollections server action fetches user's collections on drawer open; collectionIds added to CreateItemSchema and UpdateItemSchema (Zod); createItem and updateItem DB mutations handle ItemCollection rows inside interactive Prisma transactions; ItemDetail.collections upgraded from string[] to { id, name }[] to support edit-mode pre-selection; 7 new Vitest tests added
+- Collections Pages: /collections page lists all user collections in a 3-column card grid; /collections/[id] page shows items in a specific collection via ItemsGrid; CollectionCard component extracted from RecentCollections to avoid duplication; getAllCollections and getCollectionDetail DB queries added to collections.ts; getItemsByCollectionId added to items-queries.ts; invalid collection IDs return 404 via notFound()
