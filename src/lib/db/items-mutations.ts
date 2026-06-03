@@ -12,6 +12,7 @@ export interface UpdateItemData {
   fileUrl?: string | null;
   fileName?: string | null;
   fileSize?: number | null;
+  collectionIds?: string[];
 }
 
 export interface CreateItemData {
@@ -26,6 +27,7 @@ export interface CreateItemData {
   fileUrl?: string | null;
   fileName?: string | null;
   fileSize?: number | null;
+  collectionIds?: string[];
 }
 
 const CONTENT_TYPE_MAP: Record<string, ContentType> = {
@@ -48,29 +50,41 @@ export async function createItem(data: CreateItemData): Promise<ItemDetail | nul
 
     const contentType = CONTENT_TYPE_MAP[type.name] ?? ContentType.text;
 
-    const item = await db.item.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        content: data.content,
-        url: data.url,
-        language: data.language,
-        fileUrl: data.fileUrl ?? null,
-        fileName: data.fileName ?? null,
-        fileSize: data.fileSize ?? null,
-        contentType,
-        userId: data.userId,
-        typeId: data.typeId,
-        tags: {
-          create: data.tags.map((name) => ({
-            tag: { connectOrCreate: { where: { name }, create: { name } } },
-          })),
+    const result = await db.$transaction(async (tx) => {
+      const item = await tx.item.create({
+        data: {
+          title: data.title,
+          description: data.description,
+          content: data.content,
+          url: data.url,
+          language: data.language,
+          fileUrl: data.fileUrl ?? null,
+          fileName: data.fileName ?? null,
+          fileSize: data.fileSize ?? null,
+          contentType,
+          userId: data.userId,
+          typeId: data.typeId,
+          tags: {
+            create: data.tags.map((name) => ({
+              tag: { connectOrCreate: { where: { name }, create: { name } } },
+            })),
+          },
         },
-      },
-      select: ITEM_DETAIL_SELECT,
+        select: ITEM_DETAIL_SELECT,
+      });
+
+      if (data.collectionIds && data.collectionIds.length > 0) {
+        await tx.itemCollection.createMany({
+          data: data.collectionIds.map((collectionId) => ({ itemId: item.id, collectionId })),
+          skipDuplicates: true,
+        });
+        return tx.item.findUnique({ where: { id: item.id }, select: ITEM_DETAIL_SELECT });
+      }
+
+      return item;
     });
 
-    return mapToItemDetail(item);
+    return result ? mapToItemDetail(result) : null;
   } catch {
     return null;
   }
@@ -82,33 +96,48 @@ export async function updateItem(
   data: UpdateItemData
 ): Promise<ItemDetail | null> {
   try {
-    const item = await db.item.update({
-      where: { id, userId },
-      data: {
-        title: data.title,
-        description: data.description,
-        content: data.content,
-        url: data.url,
-        language: data.language,
-        ...(data.fileUrl !== undefined && { fileUrl: data.fileUrl }),
-        ...(data.fileName !== undefined && { fileName: data.fileName }),
-        ...(data.fileSize !== undefined && { fileSize: data.fileSize }),
-        tags: {
-          deleteMany: {},
-          create: data.tags.map((name) => ({
-            tag: {
-              connectOrCreate: {
-                where: { name },
-                create: { name },
+    const result = await db.$transaction(async (tx) => {
+      const item = await tx.item.update({
+        where: { id, userId },
+        data: {
+          title: data.title,
+          description: data.description,
+          content: data.content,
+          url: data.url,
+          language: data.language,
+          ...(data.fileUrl !== undefined && { fileUrl: data.fileUrl }),
+          ...(data.fileName !== undefined && { fileName: data.fileName }),
+          ...(data.fileSize !== undefined && { fileSize: data.fileSize }),
+          tags: {
+            deleteMany: {},
+            create: data.tags.map((name) => ({
+              tag: {
+                connectOrCreate: {
+                  where: { name },
+                  create: { name },
+                },
               },
-            },
-          })),
+            })),
+          },
         },
-      },
-      select: ITEM_DETAIL_SELECT,
+        select: ITEM_DETAIL_SELECT,
+      });
+
+      if (data.collectionIds !== undefined) {
+        await tx.itemCollection.deleteMany({ where: { itemId: id } });
+        if (data.collectionIds.length > 0) {
+          await tx.itemCollection.createMany({
+            data: data.collectionIds.map((collectionId) => ({ itemId: id, collectionId })),
+            skipDuplicates: true,
+          });
+        }
+        return tx.item.findUnique({ where: { id }, select: ITEM_DETAIL_SELECT });
+      }
+
+      return item;
     });
 
-    return mapToItemDetail(item);
+    return result ? mapToItemDetail(result) : null;
   } catch {
     return null;
   }

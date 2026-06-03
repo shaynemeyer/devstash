@@ -1,9 +1,15 @@
 "use server";
 
 import { auth } from "@/auth";
-import { createCollection as dbCreateCollection } from "@/lib/db/collections";
+import { createCollection as dbCreateCollection, getUserCollectionsList } from "@/lib/db/collections";
 import { CreateCollectionSchema } from "@/lib/validations/collections";
 import type { CreatedCollection } from "@/lib/db/collections";
+
+export async function getUserCollections(): Promise<{ id: string; name: string }[]> {
+  const session = await auth();
+  if (!session?.user?.id) return [];
+  return getUserCollectionsList(session.user.id);
+}
 
 interface ActionResult {
   success: boolean;

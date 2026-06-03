@@ -12,6 +12,7 @@ export const CreateItemSchema = z.object({
   fileUrl: z.string().nullable().optional(),
   fileName: z.string().nullable().optional(),
   fileSize: z.number().int().nonnegative().nullable().optional(),
+  collectionIds: z.array(z.string()).default([]),
 }).superRefine((data, ctx) => {
   if (data.typeName === "Link" && !data.url?.trim()) {
     ctx.addIssue({ code: "custom", message: "URL is required for links", path: ["url"] });
@@ -41,5 +42,6 @@ export const UpdateItemSchema = z.object({
   fileUrl: z.string().nullable().optional(),
   fileName: z.string().nullable().optional(),
   fileSize: z.number().int().nonnegative().nullable().optional(),
+  collectionIds: z.array(z.string()).default([]),
 });
 

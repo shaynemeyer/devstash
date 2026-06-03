@@ -6,17 +6,44 @@ vi.mock("@/auth", () => ({
 
 vi.mock("@/lib/db/collections", () => ({
   createCollection: vi.fn(),
+  getUserCollectionsList: vi.fn(),
 }));
 
 import { auth } from "@/auth";
-import { createCollection as dbCreateCollection } from "@/lib/db/collections";
-import { createCollection } from "./collections";
+import { createCollection as dbCreateCollection, getUserCollectionsList } from "@/lib/db/collections";
+import { createCollection, getUserCollections } from "./collections";
 
 const mockAuth = vi.mocked(auth);
 const mockDbCreate = vi.mocked(dbCreateCollection);
+const mockGetList = vi.mocked(getUserCollectionsList);
 
 beforeEach(() => {
   vi.clearAllMocks();
+});
+
+describe("getUserCollections action", () => {
+  it("returns empty array when no session", async () => {
+    mockAuth.mockResolvedValue(null as never);
+    const result = await getUserCollections();
+    expect(result).toEqual([]);
+    expect(mockGetList).not.toHaveBeenCalled();
+  });
+
+  it("returns empty array when session has no user id", async () => {
+    mockAuth.mockResolvedValue({ user: {} } as never);
+    const result = await getUserCollections();
+    expect(result).toEqual([]);
+    expect(mockGetList).not.toHaveBeenCalled();
+  });
+
+  it("returns collections for authenticated user", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    const fakeCollections = [{ id: "col-1", name: "React Patterns" }, { id: "col-2", name: "DevOps" }];
+    mockGetList.mockResolvedValue(fakeCollections);
+    const result = await getUserCollections();
+    expect(result).toEqual(fakeCollections);
+    expect(mockGetList).toHaveBeenCalledWith("user-1");
+  });
 });
 
 const validInput = { name: "My Collection" };

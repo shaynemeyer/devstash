@@ -28,7 +28,7 @@ export interface ItemDetail extends ItemWithMeta {
   contentType: string;
   language: string | null;
   updatedAt: Date;
-  collections: string[];
+  collections: { id: string; name: string }[];
 }
 
 export interface DashboardStats {
@@ -72,7 +72,7 @@ export const ITEM_DETAIL_SELECT = {
   updatedAt: true,
   type: { select: { name: true, icon: true, color: true } },
   tags: { select: { tag: { select: { name: true } } } },
-  collections: { select: { collection: { select: { name: true } } } },
+  collections: { select: { collection: { select: { id: true, name: true } } } },
 } as const;
 
 type ItemRow = {
@@ -95,7 +95,7 @@ type ItemRow = {
 type ItemDetailRow = ItemRow & {
   contentType: string;
   updatedAt: Date;
-  collections: { collection: { name: string } }[];
+  collections: { collection: { id: string; name: string } }[];
 };
 
 export function mapToItemWithMeta(item: ItemRow): ItemWithMeta {
@@ -124,6 +124,6 @@ export function mapToItemDetail(item: ItemDetailRow): ItemDetail {
     contentType: item.contentType,
     language: item.language,
     updatedAt: item.updatedAt,
-    collections: item.collections.map((c) => c.collection.name),
+    collections: item.collections.map((c) => ({ id: c.collection.id, name: c.collection.name })),
   };
 }
