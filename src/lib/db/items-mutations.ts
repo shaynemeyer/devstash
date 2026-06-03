@@ -31,13 +31,13 @@ export interface CreateItemData {
 }
 
 const CONTENT_TYPE_MAP: Record<string, ContentType> = {
-  Snippet: ContentType.text,
-  Prompt: ContentType.text,
-  Command: ContentType.text,
-  Note: ContentType.text,
-  Link: ContentType.url,
-  File: ContentType.file,
-  Image: ContentType.file,
+  snippet: ContentType.text,
+  prompt: ContentType.text,
+  command: ContentType.text,
+  note: ContentType.text,
+  link: ContentType.url,
+  file: ContentType.file,
+  image: ContentType.file,
 };
 
 export async function createItem(data: CreateItemData): Promise<ItemDetail | null> {
@@ -48,7 +48,7 @@ export async function createItem(data: CreateItemData): Promise<ItemDetail | nul
     });
     if (!type) return null;
 
-    const contentType = CONTENT_TYPE_MAP[type.name] ?? ContentType.text;
+    const contentType = CONTENT_TYPE_MAP[type.name.toLowerCase()] ?? ContentType.text;
 
     const result = await db.$transaction(async (tx) => {
       const item = await tx.item.create({

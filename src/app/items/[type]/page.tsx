@@ -65,7 +65,7 @@ export default async function ItemsTypePage({ params }: Props) {
 
   const label = SLUG_LABELS[type];
   const typeName = SLUG_TYPE_NAMES[type];
-  const defaultTypeId = sidebarItemTypes.find((t) => t.name === typeName)?.id ?? "";
+  const defaultTypeId = sidebarItemTypes.find((t) => t.name.toLowerCase() === typeName.toLowerCase())?.id ?? "";
 
   return (
     <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>

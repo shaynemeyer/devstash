@@ -12,8 +12,8 @@ import { CreateItemForm } from "@/components/items/CreateItemForm";
 import { getUserCollections } from "@/actions/collections";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
-const CREATABLE_TYPES = ["Snippet", "Prompt", "Command", "Note", "Link", "File", "Image"];
-const FILE_TYPES = ["File", "Image"];
+const CREATABLE_TYPES = ["snippet", "prompt", "command", "note", "link", "file", "image"];
+const FILE_TYPES = ["file", "image"];
 
 interface CreateItemDrawerProps {
   open: boolean;
@@ -24,7 +24,7 @@ interface CreateItemDrawerProps {
 
 export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId }: CreateItemDrawerProps) {
   const router = useRouter();
-  const types = itemTypes.filter((t) => CREATABLE_TYPES.includes(t.name));
+  const types = itemTypes.filter((t) => CREATABLE_TYPES.includes(t.name.toLowerCase()));
 
   const [selectedTypeId, setSelectedTypeId] = useState<string>(defaultTypeId ?? "");
   const selectedType = types.find((t) => t.id === selectedTypeId);
@@ -48,7 +48,7 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
     onOpenChange(val);
   }
 
-  const showFileUpload = selectedType ? FILE_TYPES.includes(selectedType.name) : false;
+  const showFileUpload = selectedType ? FILE_TYPES.includes(selectedType.name.toLowerCase()) : false;
   const Icon = selectedType ? getIcon(selectedType.icon) : null;
 
   return (

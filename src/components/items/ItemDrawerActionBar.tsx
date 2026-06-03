@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { ItemDetail } from "@/lib/db/items";
 
-const FILE_UPLOAD_TYPES = ["File", "Image"];
+const FILE_UPLOAD_TYPES = ["file", "image"];
 
 interface ItemDrawerActionBarProps {
   item: ItemDetail;
@@ -42,7 +42,7 @@ export function ItemDrawerActionBar({
   onDelete,
   onCopyContent,
 }: ItemDrawerActionBarProps) {
-  const showFileSection = FILE_UPLOAD_TYPES.includes(item.typeName);
+  const showFileSection = FILE_UPLOAD_TYPES.includes(item.typeName.toLowerCase());
 
   return (
     <div className="flex items-center gap-1 px-4 py-2 border-b border-border">

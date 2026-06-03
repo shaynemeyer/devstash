@@ -50,7 +50,7 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         open={createOpen}
         onOpenChange={setCreateOpen}
         itemTypes={itemTypes}
-        defaultTypeId={itemTypes.find((t) => t.name === "Snippet")?.id ?? ""}
+        defaultTypeId={itemTypes.find((t) => t.name.toLowerCase() === "snippet")?.id ?? ""}
       />
       <CreateCollectionDrawer
         open={createCollectionOpen}

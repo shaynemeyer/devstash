@@ -7,11 +7,11 @@ import { CollectionSelector } from "@/components/items/CollectionSelector";
 import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
-const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
-const LANGUAGE_TYPES = ["Snippet", "Command"];
-const CODE_TYPES = ["Snippet", "Command"];
-const MARKDOWN_TYPES = ["Note", "Prompt"];
-const FILE_TYPES = ["File", "Image"];
+const CONTENT_TYPES = ["snippet", "prompt", "command", "note"];
+const LANGUAGE_TYPES = ["snippet", "command"];
+const CODE_TYPES = ["snippet", "command"];
+const MARKDOWN_TYPES = ["note", "prompt"];
+const FILE_TYPES = ["file", "image"];
 
 interface FormFields {
   description: string;
@@ -39,12 +39,13 @@ interface CreateItemFormProps {
 export function CreateItemForm({ selectedType, fields, collections }: CreateItemFormProps) {
   const { description, setDescription, content, setContent, url, setUrl, language, setLanguage, tagsInput, setTagsInput, uploadedFile, setUploadedFile, collectionIds, setCollectionIds } = fields;
 
-  const showContent = selectedType ? CONTENT_TYPES.includes(selectedType.name) : false;
-  const showLanguage = selectedType ? LANGUAGE_TYPES.includes(selectedType.name) : false;
-  const showUrl = selectedType?.name === "Link";
-  const showFileUpload = selectedType ? FILE_TYPES.includes(selectedType.name) : false;
-  const useCodeEditor = selectedType ? CODE_TYPES.includes(selectedType.name) : false;
-  const useMarkdownEditor = selectedType ? MARKDOWN_TYPES.includes(selectedType.name) : false;
+  const typeName = selectedType?.name.toLowerCase() ?? "";
+  const showContent = CONTENT_TYPES.includes(typeName);
+  const showLanguage = LANGUAGE_TYPES.includes(typeName);
+  const showUrl = typeName === "link";
+  const showFileUpload = FILE_TYPES.includes(typeName);
+  const useCodeEditor = CODE_TYPES.includes(typeName);
+  const useMarkdownEditor = MARKDOWN_TYPES.includes(typeName);
 
   return (
     <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
@@ -117,7 +118,7 @@ export function CreateItemForm({ selectedType, fields, collections }: CreateItem
             File <span className="text-destructive">*</span>
           </p>
           <FileUpload
-            accept={selectedType?.name === "Image" ? "image" : "file"}
+            accept={typeName === "image" ? "image" : "file"}
             value={uploadedFile}
             onChange={setUploadedFile}
           />

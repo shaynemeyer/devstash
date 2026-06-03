@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { getIcon } from "@/lib/icons";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
-const PRO_TYPE_NAMES = new Set(["File", "Image"]);
+const PRO_TYPE_NAMES = new Set(["file", "image"]);
 
 function typeSlug(name: string): string {
   return name.toLowerCase() + "s";
@@ -45,7 +45,7 @@ export function TypeNavigation({ itemTypes, isCollapsed, onClose }: TypeNavigati
               {!isCollapsed && (
                 <>
                   <span className="flex-1">{type.name}s</span>
-                  {PRO_TYPE_NAMES.has(type.name) && (
+                  {PRO_TYPE_NAMES.has(type.name.toLowerCase()) && (
                     <Badge variant="outline" className="h-4 px-1 text-[10px] font-semibold tracking-wide text-muted-foreground border-muted-foreground/30">
                       PRO
                     </Badge>

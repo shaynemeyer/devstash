@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const CreateItemSchema = z.object({
   typeId: z.string().min(1, "Type is required"),
-  typeName: z.enum(["Snippet", "Prompt", "Command", "Note", "Link", "File", "Image"]),
+  typeName: z.string().transform((v) => v.toLowerCase()).pipe(z.enum(["snippet", "prompt", "command", "note", "link", "file", "image"])),
   title: z.string().trim().min(1, "Title is required"),
   description: z.string().trim().nullable().optional(),
   content: z.string().nullable().optional(),
@@ -14,7 +14,7 @@ export const CreateItemSchema = z.object({
   fileSize: z.number().int().nonnegative().nullable().optional(),
   collectionIds: z.array(z.string()).default([]),
 }).superRefine((data, ctx) => {
-  if (data.typeName === "Link" && !data.url?.trim()) {
+  if (data.typeName === "link" && !data.url?.trim()) {
     ctx.addIssue({ code: "custom", message: "URL is required for links", path: ["url"] });
   }
   if (data.url?.trim()) {
@@ -22,7 +22,7 @@ export const CreateItemSchema = z.object({
       ctx.addIssue({ code: "custom", message: "Must be a valid URL", path: ["url"] });
     }
   }
-  if ((data.typeName === "File" || data.typeName === "Image") && !data.fileUrl) {
+  if ((data.typeName === "file" || data.typeName === "image") && !data.fileUrl) {
     ctx.addIssue({ code: "custom", message: "A file is required", path: ["fileUrl"] });
   }
 });

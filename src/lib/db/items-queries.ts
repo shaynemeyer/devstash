@@ -90,7 +90,7 @@ export async function getItemsByTypeSlug(userId: string, slug: string): Promise<
 
   try {
     const items = await db.item.findMany({
-      where: { userId, type: { name: typeName, isSystem: true } },
+      where: { userId, type: { name: { equals: typeName, mode: "insensitive" }, isSystem: true } },
       orderBy: { createdAt: "desc" },
       select: ITEM_SELECT,
     });

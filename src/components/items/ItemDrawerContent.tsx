@@ -9,11 +9,11 @@ import { CollectionSelector } from "@/components/items/CollectionSelector";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
-const CONTENT_TYPES = ["Snippet", "Prompt", "Command", "Note"];
-const LANGUAGE_TYPES = ["Snippet", "Command"];
-const CODE_TYPES = ["Snippet", "Command"];
-const MARKDOWN_TYPES = ["Note", "Prompt"];
-const FILE_UPLOAD_TYPES = ["File", "Image"];
+const CONTENT_TYPES = ["snippet", "prompt", "command", "note"];
+const LANGUAGE_TYPES = ["snippet", "command"];
+const CODE_TYPES = ["snippet", "command"];
+const MARKDOWN_TYPES = ["note", "prompt"];
+const FILE_UPLOAD_TYPES = ["file", "image"];
 
 interface ItemDrawerContentProps {
   item: ItemDetail;
@@ -54,12 +54,13 @@ export function ItemDrawerContent({
   collectionIds,
   onCollectionIdsChange,
 }: ItemDrawerContentProps) {
-  const showContent = CONTENT_TYPES.includes(item.typeName);
-  const showLanguage = LANGUAGE_TYPES.includes(item.typeName);
-  const showUrl = item.typeName === "Link";
-  const showFileSection = FILE_UPLOAD_TYPES.includes(item.typeName);
-  const useCodeEditor = CODE_TYPES.includes(item.typeName);
-  const useMarkdownEditor = MARKDOWN_TYPES.includes(item.typeName);
+  const typeName = item.typeName.toLowerCase();
+  const showContent = CONTENT_TYPES.includes(typeName);
+  const showLanguage = LANGUAGE_TYPES.includes(typeName);
+  const showUrl = typeName === "link";
+  const showFileSection = FILE_UPLOAD_TYPES.includes(typeName);
+  const useCodeEditor = CODE_TYPES.includes(typeName);
+  const useMarkdownEditor = MARKDOWN_TYPES.includes(typeName);
 
   const created = new Date(item.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -193,7 +194,7 @@ export function ItemDrawerContent({
               File
             </p>
             <FileUpload
-              accept={item.typeName === "Image" ? "image" : "file"}
+              accept={typeName === "image" ? "image" : "file"}
               value={uploadedFile}
               onChange={onUploadedFileChange}
             />
@@ -207,7 +208,7 @@ export function ItemDrawerContent({
               fileUrl={item.fileUrl}
               fileName={item.fileName}
               fileSize={item.fileSize}
-              isImage={item.typeName === "Image"}
+              isImage={typeName === "image"}
               showDownload
             />
           </section>
