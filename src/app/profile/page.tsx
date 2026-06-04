@@ -6,8 +6,6 @@ import { getSidebarCollections } from "@/lib/db/collections";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { getIcon } from "@/lib/icons";
-import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
-import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -41,7 +39,7 @@ export default async function ProfilePage() {
       <div className="p-6 max-w-3xl mx-auto space-y-10">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Profile</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage your account</p>
+          <p className="text-muted-foreground text-sm mt-1">Your account info and usage stats</p>
         </div>
 
         {/* User info */}
@@ -94,31 +92,6 @@ export default async function ProfilePage() {
           </div>
         </section>
 
-        {/* Change password — email users only */}
-        {profileUser.hasPassword && (
-          <section className="space-y-4">
-            <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
-              Change password
-            </h2>
-            <ChangePasswordForm />
-          </section>
-        )}
-
-        {/* Danger zone */}
-        <section className="space-y-4">
-          <h2 className="text-base font-semibold text-destructive border-b border-border pb-2">
-            Danger zone
-          </h2>
-          <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-            <div>
-              <p className="text-sm font-medium text-foreground">Delete account</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Permanently remove your account and all its data.
-              </p>
-            </div>
-            <DeleteAccountDialog />
-          </div>
-        </section>
       </div>
     </DashboardShell>
   );
