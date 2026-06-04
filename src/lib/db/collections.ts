@@ -241,6 +241,19 @@ export async function updateCollection(
   }
 }
 
+export async function setCollectionFavorite(
+  id: string,
+  userId: string,
+  isFavorite: boolean
+): Promise<boolean> {
+  try {
+    await db.collection.update({ where: { id, userId }, data: { isFavorite } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function deleteCollection(id: string, userId: string): Promise<boolean> {
   try {
     await db.collection.delete({ where: { id, userId } });

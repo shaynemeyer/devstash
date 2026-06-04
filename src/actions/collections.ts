@@ -6,6 +6,7 @@ import {
   getUserCollectionsList,
   updateCollection as dbUpdateCollection,
   deleteCollection as dbDeleteCollection,
+  setCollectionFavorite,
 } from "@/lib/db/collections";
 import { CreateCollectionSchema, UpdateCollectionSchema } from "@/lib/validations/collections";
 import type { CreatedCollection } from "@/lib/db/collections";
@@ -79,6 +80,23 @@ export async function deleteCollection(id: string): Promise<{ success: boolean; 
   const ok = await dbDeleteCollection(id, session.user.id);
   if (!ok) {
     return { success: false, error: "Failed to delete collection" };
+  }
+
+  return { success: true };
+}
+
+export async function toggleFavoriteCollection(
+  id: string,
+  isFavorite: boolean
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const ok = await setCollectionFavorite(id, session.user.id, !isFavorite);
+  if (!ok) {
+    return { success: false, error: "Failed to update collection" };
   }
 
   return { success: true };

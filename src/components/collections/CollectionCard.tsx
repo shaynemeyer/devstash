@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Star, MoreHorizontal, Pencil, Trash2, Heart } from "lucide-react";
+import { Star, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { getIcon } from "@/lib/icons";
 import { CollectionWithMeta } from "@/lib/db/collections";
+import { toggleFavoriteCollection } from "@/actions/collections";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +24,23 @@ interface Props {
 export function CollectionCard({ collection: col }: Props) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(col.isFavorite);
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
+  function handleToggleFavorite() {
+    startTransition(async () => {
+      const prev = isFavorite;
+      setIsFavorite(!prev);
+      const result = await toggleFavoriteCollection(col.id, prev);
+      if (!result.success) {
+        setIsFavorite(prev);
+        toast.error("Failed to update favorite");
+      } else {
+        router.refresh();
+      }
+    });
+  }
 
   return (
     <>
@@ -28,7 +48,7 @@ export function CollectionCard({ collection: col }: Props) {
         <div className="w-1 shrink-0" style={{ backgroundColor: col.dominantColor }} />
         <Link href={`/collections/${col.id}`} className="flex flex-col gap-2 p-4 flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            {col.isFavorite && (
+            {isFavorite && (
               <Star className="size-3.5 text-amber-400 fill-amber-400 shrink-0" />
             )}
             <p className="text-sm font-semibold text-foreground truncate">{col.name}</p>
@@ -52,20 +72,20 @@ export function CollectionCard({ collection: col }: Props) {
               <span className="sr-only">Collection options</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>
                 <Pencil className="size-4 mr-2" />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                onSelect={() => setDeleteOpen(true)}
+                onClick={() => setDeleteOpen(true)}
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="size-4 mr-2" />
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Heart className="size-4 mr-2" />
-                Favorite
+              <DropdownMenuItem onClick={handleToggleFavorite} disabled={pending}>
+                <Star className={`size-4 mr-2 ${isFavorite ? "text-amber-400 fill-amber-400" : ""}`} />
+                {isFavorite ? "Unfavorite" : "Favorite"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
