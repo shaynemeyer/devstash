@@ -1,12 +1,24 @@
-# Current Feature
+# Current Feature: User Settings Page
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Add a `/settings` route that is auth-protected
+- Add a **Settings** link in the sidebar user-icon dropdown (alongside Profile and Sign out)
+- Move **Account actions** from `/profile` to `/settings`:
+  - Delete account (`DeleteAccountDialog`)
+  - Change password (`ChangePasswordForm`, email users only)
+
 ## Notes
+
+- New `src/app/settings/page.tsx` — auth-protected, uses `getProfileUser`, renders inside `DashboardShell`
+- `/profile` keeps: account info (avatar, name, email, member since) and usage stats
+- `/settings` contains: Change password (email users only, gated on `profileUser.hasPassword`) + Danger zone (delete account)
+- Add Settings link to `SidebarUserArea.tsx` dropdown (between Profile and Sign out), icon: `Settings` from lucide-react
+- No new DB queries, migrations, or server actions needed — reuse `getProfileUser`
 
 ## History
 

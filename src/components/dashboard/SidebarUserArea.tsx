@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { LogOut, User } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { signOutAction } from "@/actions/auth";
 
@@ -52,6 +52,14 @@ export function SidebarUserArea({ name, email, image, collapsed }: SidebarUserAr
           >
             <User className="size-4 text-muted-foreground" />
             Profile
+          </Link>
+          <Link
+            href="/settings"
+            onClick={() => setOpen(false)}
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-foreground hover:bg-accent transition-colors"
+          >
+            <Settings className="size-4 text-muted-foreground" />
+            Settings
           </Link>
           <form action={signOutAction}>
             <button
