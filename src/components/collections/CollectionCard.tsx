@@ -33,7 +33,7 @@ export function CollectionCard({ collection: col }: Props) {
             )}
             <p className="text-sm font-semibold text-foreground truncate">{col.name}</p>
           </div>
-          <p className="text-xs text-muted-foreground">{col.itemCount} items</p>
+          <p className="text-xs text-muted-foreground">{col.itemCount} {col.itemCount === 1 ? "item" : "items"}</p>
           <p className="text-xs text-muted-foreground line-clamp-2 flex-1">{col.description}</p>
           <div className="flex items-center gap-1.5 pt-1">
             {col.typeIcons.slice(0, 4).map(({ icon, color }) => {
