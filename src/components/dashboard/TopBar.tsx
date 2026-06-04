@@ -17,9 +17,10 @@ interface TopBarProps {
   onMobileMenuClick?: () => void;
   onNewItem?: () => void;
   onNewCollection?: () => void;
+  onSearchClick?: () => void;
 }
 
-export function TopBar({ onMobileMenuClick, onNewItem, onNewCollection }: TopBarProps) {
+export function TopBar({ onMobileMenuClick, onNewItem, onNewCollection, onSearchClick }: TopBarProps) {
   return (
     <header className="flex items-center px-4 h-12 border-b border-border bg-background shrink-0">
       <div className="w-52 shrink-0 flex items-center gap-2">
@@ -36,9 +37,10 @@ export function TopBar({ onMobileMenuClick, onNewItem, onNewCollection }: TopBar
         <div className="relative w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search items..."
-            className="pl-9 pr-14 bg-muted/40 border-border text-sm"
+            placeholder="Search items... ⌘K"
+            className="pl-9 pr-14 bg-muted/40 border-border text-sm cursor-pointer"
             readOnly
+            onClick={onSearchClick}
           />
           <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
             ⌘K

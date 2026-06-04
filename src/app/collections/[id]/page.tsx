@@ -48,7 +48,7 @@ export default async function CollectionDetailPage({ params }: Props) {
             {collection.description && (
               <p className="text-sm text-muted-foreground mt-1">{collection.description}</p>
             )}
-            <p className="text-sm text-muted-foreground mt-0.5">{items.length} items</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{items.length} {items.length === 1 ? "item" : "items"}</p>
           </div>
           <CollectionActions collection={collection} />
         </div>

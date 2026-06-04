@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { CreateItemDrawer } from "@/components/items/CreateItemDrawer";
 import { CreateCollectionDrawer } from "@/components/collections/CreateCollectionDrawer";
+import { CommandPalette } from "@/components/search/CommandPalette";
+import { ItemDrawer } from "@/components/items/ItemDrawer";
+import { getSearchData } from "@/actions/search";
+import type { SearchData } from "@/actions/search";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
 
@@ -26,6 +30,30 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
   const [mobileOpen, setMobileOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [searchData, setSearchData] = useState<SearchData>({ items: [], collections: [] });
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [itemDrawerOpen, setItemDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    getSearchData().then(setSearchData);
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  function handleSelectItem(itemId: string) {
+    setSelectedItemId(itemId);
+    setItemDrawerOpen(true);
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -33,6 +61,7 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         onMobileMenuClick={() => setMobileOpen(true)}
         onNewItem={() => setCreateOpen(true)}
         onNewCollection={() => setCreateCollectionOpen(true)}
+        onSearchClick={() => setPaletteOpen(true)}
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
@@ -55,6 +84,17 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
       <CreateCollectionDrawer
         open={createCollectionOpen}
         onOpenChange={setCreateCollectionOpen}
+      />
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        searchData={searchData}
+        onSelectItem={handleSelectItem}
+      />
+      <ItemDrawer
+        itemId={selectedItemId}
+        open={itemDrawerOpen}
+        onOpenChange={setItemDrawerOpen}
       />
     </div>
   );
