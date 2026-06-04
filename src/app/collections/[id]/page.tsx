@@ -4,8 +4,11 @@ import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ItemsGrid } from "@/components/items/ItemsGrid";
 import { CollectionActions } from "@/components/collections/CollectionActions";
+import { PaginationControls } from "@/components/ui/PaginationControls";
 import { getCollectionDetail, getSidebarCollections } from "@/lib/db/collections";
 import { getItemsByCollectionId, getItemTypesWithCounts } from "@/lib/db/items";
+import type { ItemWithMeta } from "@/lib/db/items";
+import { COLLECTIONS_PER_PAGE } from "@/lib/constants";
 
 async function getDemoUserId(): Promise<string | null> {
   const user = await db.user.findUnique({
@@ -17,16 +20,23 @@ async function getDemoUserId(): Promise<string | null> {
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export default async function CollectionDetailPage({ params }: Props) {
+export default async function CollectionDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { page: pageParam } = await searchParams;
+
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
   const session = await auth();
   const userId = session?.user?.id ?? (await getDemoUserId());
 
-  const [collection, items, sidebarItemTypes, sidebarCollections] = await Promise.all([
+  const emptyItems: { items: ItemWithMeta[]; total: number } = { items: [], total: 0 };
+
+  const [collection, { items, total }, sidebarItemTypes, sidebarCollections] = await Promise.all([
     userId ? getCollectionDetail(userId, id) : Promise.resolve(null),
-    userId ? getItemsByCollectionId(userId, id) : Promise.resolve([]),
+    userId ? getItemsByCollectionId(userId, id, page) : Promise.resolve(emptyItems),
     userId ? getItemTypesWithCounts(userId) : Promise.resolve([]),
     userId ? getSidebarCollections(userId) : Promise.resolve([]),
   ]);
@@ -39,6 +49,8 @@ export default async function CollectionDetailPage({ params }: Props) {
     image: session?.user?.image ?? null,
   };
 
+  const totalPages = Math.ceil(total / COLLECTIONS_PER_PAGE);
+
   return (
     <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -48,11 +60,16 @@ export default async function CollectionDetailPage({ params }: Props) {
             {collection.description && (
               <p className="text-sm text-muted-foreground mt-1">{collection.description}</p>
             )}
-            <p className="text-sm text-muted-foreground mt-0.5">{items.length} {items.length === 1 ? "item" : "items"}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{total} {total === 1 ? "item" : "items"}</p>
           </div>
           <CollectionActions collection={collection} />
         </div>
         <ItemsGrid items={items} emptyLabel="items in this collection" />
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          buildHref={(p) => `/collections/${id}?page=${p}`}
+        />
       </div>
     </DashboardShell>
   );

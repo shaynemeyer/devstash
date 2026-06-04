@@ -6,8 +6,11 @@ import { ItemsGrid } from "@/components/items/ItemsGrid";
 import { ImageGallery } from "@/components/items/ImageGallery";
 import { FileList } from "@/components/items/FileList";
 import { TypePageActions } from "@/components/items/TypePageActions";
+import { PaginationControls } from "@/components/ui/PaginationControls";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
+import type { ItemWithMeta } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
+import { ITEMS_PER_PAGE } from "@/lib/constants";
 
 const VALID_SLUGS = ["snippets", "prompts", "commands", "notes", "files", "images", "links"];
 
@@ -41,18 +44,22 @@ async function getDemoUserId(): Promise<string | null> {
 
 interface Props {
   params: Promise<{ type: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export default async function ItemsTypePage({ params }: Props) {
+export default async function ItemsTypePage({ params, searchParams }: Props) {
   const { type } = await params;
+  const { page: pageParam } = await searchParams;
 
   if (!VALID_SLUGS.includes(type)) notFound();
+
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
   const session = await auth();
   const userId = session?.user?.id ?? (await getDemoUserId());
 
-  const [items, sidebarItemTypes, sidebarCollections] = await Promise.all([
-    userId ? getItemsByTypeSlug(userId, type) : Promise.resolve([]),
+  const [{ items, total }, sidebarItemTypes, sidebarCollections] = await Promise.all([
+    userId ? getItemsByTypeSlug(userId, type, page) : Promise.resolve({ items: [] as ItemWithMeta[], total: 0 }),
     userId ? getItemTypesWithCounts(userId) : Promise.resolve([]),
     userId ? getSidebarCollections(userId) : Promise.resolve([]),
   ]);
@@ -66,13 +73,14 @@ export default async function ItemsTypePage({ params }: Props) {
   const label = SLUG_LABELS[type];
   const typeName = SLUG_TYPE_NAMES[type];
   const defaultTypeId = sidebarItemTypes.find((t) => t.name.toLowerCase() === typeName.toLowerCase())?.id ?? "";
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   return (
     <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
         <TypePageActions
           label={label}
-          count={items.length}
+          count={total}
           itemTypes={sidebarItemTypes}
           defaultTypeId={defaultTypeId}
         />
@@ -83,6 +91,11 @@ export default async function ItemsTypePage({ params }: Props) {
         ) : (
           <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
         )}
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          buildHref={(p) => `/items/${type}?page=${p}`}
+        />
       </div>
     </DashboardShell>
   );
