@@ -7,7 +7,7 @@ const { auth } = NextAuth(authConfig)
 export const proxy = auth((req) => {
   const { pathname } = req.nextUrl
 
-  if ((pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) && !req.auth) {
+  if ((pathname.startsWith("/dashboard") || pathname.startsWith("/profile") || pathname.startsWith("/settings")) && !req.auth) {
     const signInUrl = new URL("/sign-in", req.url)
     return NextResponse.redirect(signInUrl)
   }

@@ -110,7 +110,7 @@ describe("CreateItemSchema", () => {
   });
 
   it("defaults tags to empty array when omitted", () => {
-    const { tags: _, ...noTags } = base;
+    const { tags: _, ...noTags } = base; // eslint-disable-line @typescript-eslint/no-unused-vars
     const result = CreateItemSchema.safeParse(noTags);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.tags).toEqual([]);
