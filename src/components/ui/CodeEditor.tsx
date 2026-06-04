@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import MonacoEditor from "@monaco-editor/react";
+import MonacoEditor, { type BeforeMount } from "@monaco-editor/react";
 import { Copy, Check } from "lucide-react";
+import { useEditorPreferences } from "@/contexts/EditorPreferencesContext";
 
 interface CodeEditorProps {
   value: string;
@@ -21,8 +22,53 @@ function calcHeight(value: string): number {
   return Math.min(Math.max(lines * LINE_HEIGHT + PADDING, MIN_HEIGHT), MAX_HEIGHT);
 }
 
+const defineCustomThemes: BeforeMount = (monaco) => {
+  monaco.editor.defineTheme("monokai", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [
+      { token: "comment", foreground: "75715e", fontStyle: "italic" },
+      { token: "keyword", foreground: "f92672" },
+      { token: "string", foreground: "e6db74" },
+      { token: "number", foreground: "ae81ff" },
+      { token: "type", foreground: "66d9ef", fontStyle: "italic" },
+      { token: "function", foreground: "a6e22e" },
+      { token: "variable", foreground: "f8f8f2" },
+    ],
+    colors: {
+      "editor.background": "#272822",
+      "editor.foreground": "#f8f8f2",
+      "editor.lineHighlightBackground": "#3e3d32",
+      "editorCursor.foreground": "#f8f8f0",
+      "editor.selectionBackground": "#49483e",
+    },
+  });
+
+  monaco.editor.defineTheme("github-dark", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [
+      { token: "comment", foreground: "8b949e", fontStyle: "italic" },
+      { token: "keyword", foreground: "ff7b72" },
+      { token: "string", foreground: "a5d6ff" },
+      { token: "number", foreground: "79c0ff" },
+      { token: "type", foreground: "ffa657" },
+      { token: "function", foreground: "d2a8ff" },
+      { token: "variable", foreground: "e6edf3" },
+    ],
+    colors: {
+      "editor.background": "#0d1117",
+      "editor.foreground": "#e6edf3",
+      "editor.lineHighlightBackground": "#161b22",
+      "editorCursor.foreground": "#e6edf3",
+      "editor.selectionBackground": "#264f78",
+    },
+  });
+};
+
 export function CodeEditor({ value, onChange, language = "plaintext", readOnly = false }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
+  const { preferences } = useEditorPreferences();
 
   function handleCopy() {
     navigator.clipboard.writeText(value);
@@ -35,7 +81,6 @@ export function CodeEditor({ value, onChange, language = "plaintext", readOnly =
 
   return (
     <div className="rounded-lg overflow-hidden border border-border bg-[#1e1e1e]">
-      {/* macOS window chrome */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#2d2d2d] border-b border-[#3a3a3a]">
         <div className="flex items-center gap-1.5">
           <span className="size-3 rounded-full bg-[#ff5f57]" />
@@ -55,15 +100,17 @@ export function CodeEditor({ value, onChange, language = "plaintext", readOnly =
         value={value}
         height={height}
         language={displayLang.toLowerCase()}
-        theme="vs-dark"
+        theme={preferences.theme}
+        beforeMount={defineCustomThemes}
         options={{
           readOnly,
-          minimap: { enabled: false },
+          minimap: { enabled: preferences.minimap },
           scrollBeyondLastLine: false,
-          fontSize: 13,
+          fontSize: preferences.fontSize,
+          tabSize: preferences.tabSize,
           lineHeight: LINE_HEIGHT,
           padding: { top: 12, bottom: 12 },
-          wordWrap: "on",
+          wordWrap: preferences.wordWrap ? "on" : "off",
           scrollbar: {
             verticalScrollbarSize: 6,
             horizontalScrollbarSize: 6,
@@ -72,10 +119,10 @@ export function CodeEditor({ value, onChange, language = "plaintext", readOnly =
           overviewRulerLanes: 0,
           renderLineHighlight: readOnly ? "none" : "line",
           folding: false,
-          lineNumbers: readOnly ? "off" : "on",
+          lineNumbers: readOnly || !preferences.lineNumbers ? "off" : "on",
           glyphMargin: false,
-          lineDecorationsWidth: readOnly ? 0 : 4,
-          lineNumbersMinChars: readOnly ? 0 : 3,
+          lineDecorationsWidth: readOnly || !preferences.lineNumbers ? 0 : 4,
+          lineNumbersMinChars: readOnly || !preferences.lineNumbers ? 0 : 3,
         }}
         onChange={(val) => onChange?.(val ?? "")}
       />
