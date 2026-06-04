@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { ITEMS_PER_PAGE } from "@/lib/constants";
 import {
   ITEM_SELECT,
   ITEM_DETAIL_SELECT,
@@ -84,35 +85,54 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   }
 }
 
-export async function getItemsByTypeSlug(userId: string, slug: string): Promise<ItemWithMeta[]> {
+export async function getItemsByTypeSlug(
+  userId: string,
+  slug: string,
+  page = 1
+): Promise<{ items: ItemWithMeta[]; total: number }> {
   const typeName = SLUG_TO_NAME[slug];
-  if (!typeName) return [];
+  if (!typeName) return { items: [], total: 0 };
+
+  const where = { userId, type: { name: { equals: typeName, mode: "insensitive" as const }, isSystem: true } };
 
   try {
-    const items = await db.item.findMany({
-      where: { userId, type: { name: { equals: typeName, mode: "insensitive" }, isSystem: true } },
-      orderBy: { createdAt: "desc" },
-      select: ITEM_SELECT,
-    });
-    return items.map(mapToItemWithMeta);
+    const [items, total] = await Promise.all([
+      db.item.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * ITEMS_PER_PAGE,
+        take: ITEMS_PER_PAGE,
+        select: ITEM_SELECT,
+      }),
+      db.item.count({ where }),
+    ]);
+    return { items: items.map(mapToItemWithMeta), total };
   } catch {
-    return [];
+    return { items: [], total: 0 };
   }
 }
 
 export async function getItemsByCollectionId(
   userId: string,
-  collectionId: string
-): Promise<ItemWithMeta[]> {
+  collectionId: string,
+  page = 1
+): Promise<{ items: ItemWithMeta[]; total: number }> {
+  const where = { userId, collections: { some: { collectionId } } };
+
   try {
-    const items = await db.item.findMany({
-      where: { userId, collections: { some: { collectionId } } },
-      orderBy: { createdAt: "desc" },
-      select: ITEM_SELECT,
-    });
-    return items.map(mapToItemWithMeta);
+    const [items, total] = await Promise.all([
+      db.item.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * ITEMS_PER_PAGE,
+        take: ITEMS_PER_PAGE,
+        select: ITEM_SELECT,
+      }),
+      db.item.count({ where }),
+    ]);
+    return { items: items.map(mapToItemWithMeta), total };
   } catch {
-    return [];
+    return { items: [], total: 0 };
   }
 }
 
