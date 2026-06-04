@@ -1,10 +1,18 @@
-# Current Feature
+# Current Feature: Add Client-Side Sorting to Favorites
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
+
+- Sort control (ShadCN Select) in favorites page header with "Sort by" label
+- Sort options: Name (alpha), Date (updatedAt), Type (items only)
+- Direction toggle: asc/desc per sort field
+- Default: Date descending (preserves current behavior)
+- Sorting applied independently to items list and collections list
+- Type sort option disabled/hidden for the collections section
+- No server round-trip — pure client-side with `useState` + `useMemo`
 
 ## Notes
 

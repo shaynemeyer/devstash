@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Folder } from "lucide-react";
+import { Folder, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { ItemDrawer } from "@/components/items/ItemDrawer";
 import { getIcon } from "@/lib/icons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { FavoriteItem, FavoriteCollection } from "@/lib/db/favorites";
+
+type SortField = "name" | "date" | "type";
+type SortDir = "asc" | "desc";
 
 interface FavoritesListProps {
   items: FavoriteItem[];
@@ -20,20 +30,76 @@ function formatDate(date: Date): string {
   });
 }
 
+function sortItems(items: FavoriteItem[], field: SortField, dir: SortDir): FavoriteItem[] {
+  return [...items].sort((a, b) => {
+    let cmp = 0;
+    if (field === "name") cmp = a.title.localeCompare(b.title);
+    else if (field === "date") cmp = new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    else if (field === "type") cmp = a.typeName.localeCompare(b.typeName);
+    return dir === "asc" ? cmp : -cmp;
+  });
+}
+
+function sortCollections(collections: FavoriteCollection[], field: SortField, dir: SortDir): FavoriteCollection[] {
+  const effectiveField = field === "type" ? "name" : field;
+  return [...collections].sort((a, b) => {
+    let cmp = 0;
+    if (effectiveField === "name") cmp = a.name.localeCompare(b.name);
+    else if (effectiveField === "date") cmp = new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    return dir === "asc" ? cmp : -cmp;
+  });
+}
+
 export function FavoritesList({ items, collections }: FavoritesListProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sortField, setSortField] = useState<SortField>("date");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   function openItem(id: string) {
     setSelectedItemId(id);
     setDrawerOpen(true);
   }
 
+  function toggleDir() {
+    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+  }
+
+  const sortedItems = useMemo(() => sortItems(items, sortField, sortDir), [items, sortField, sortDir]);
+  const sortedCollections = useMemo(() => sortCollections(collections, sortField, sortDir), [collections, sortField, sortDir]);
+
+  const DirIcon = sortDir === "asc" ? ArrowUp : ArrowDown;
+
   return (
     <>
       <div className="space-y-8">
-        <FavoritesSection title="Items" count={items.length}>
-          {items.map((item) => {
+        <div className="flex items-center gap-2 justify-end">
+          <span className="text-xs font-mono text-muted-foreground">Sort by</span>
+          <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
+            <SelectTrigger className="h-7 w-28 text-xs font-mono">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date" className="text-xs font-mono">Date</SelectItem>
+              <SelectItem value="name" className="text-xs font-mono">Name</SelectItem>
+              <SelectItem value="type" className="text-xs font-mono">Type</SelectItem>
+            </SelectContent>
+          </Select>
+          <button
+            onClick={toggleDir}
+            className="flex items-center justify-center size-7 rounded border border-input bg-background hover:bg-muted transition-colors"
+            title={sortDir === "asc" ? "Ascending" : "Descending"}
+          >
+            {sortField === "date" && sortDir === "desc" ? (
+              <ArrowUpDown className="size-3.5 text-muted-foreground" />
+            ) : (
+              <DirIcon className="size-3.5 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+
+        <FavoritesSection title="Items" count={sortedItems.length}>
+          {sortedItems.map((item) => {
             const Icon = getIcon(item.typeIcon);
             return (
               <button
@@ -57,8 +123,8 @@ export function FavoritesList({ items, collections }: FavoritesListProps) {
           })}
         </FavoritesSection>
 
-        <FavoritesSection title="Collections" count={collections.length}>
-          {collections.map((col) => (
+        <FavoritesSection title="Collections" count={sortedCollections.length}>
+          {sortedCollections.map((col) => (
             <Link
               key={col.id}
               href={`/collections/${col.id}`}
