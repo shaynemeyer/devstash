@@ -8,9 +8,12 @@ import { CreateCollectionDrawer } from "@/components/collections/CreateCollectio
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { ItemDrawer } from "@/components/items/ItemDrawer";
 import { getSearchData } from "@/actions/search";
+import { getEditorPreferences } from "@/actions/settings";
+import { EditorPreferencesProvider } from "@/contexts/EditorPreferencesContext";
 import type { SearchData } from "@/actions/search";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollection } from "@/lib/db/collections";
+import type { EditorPreferences } from "@/lib/validations/settings";
 
 interface ShellUser {
   name?: string | null;
@@ -34,9 +37,11 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
   const [searchData, setSearchData] = useState<SearchData>({ items: [], collections: [] });
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [itemDrawerOpen, setItemDrawerOpen] = useState(false);
+  const [editorPreferences, setEditorPreferences] = useState<EditorPreferences | null>(null);
 
   useEffect(() => {
     getSearchData().then(setSearchData);
+    getEditorPreferences().then(setEditorPreferences);
   }, []);
 
   useEffect(() => {
@@ -56,6 +61,7 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
   }
 
   return (
+    <EditorPreferencesProvider initialPreferences={editorPreferences}>
     <div className="flex flex-col h-screen bg-background">
       <TopBar
         onMobileMenuClick={() => setMobileOpen(true)}
@@ -97,5 +103,6 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         onOpenChange={setItemDrawerOpen}
       />
     </div>
+    </EditorPreferencesProvider>
   );
 }

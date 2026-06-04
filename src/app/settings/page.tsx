@@ -6,6 +6,7 @@ import { getSidebarCollections } from "@/lib/db/collections";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
 import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
+import { EditorPreferencesForm } from "@/components/settings/EditorPreferencesForm";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -34,6 +35,13 @@ export default async function SettingsPage() {
           <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
           <p className="text-muted-foreground text-sm mt-1">Manage your account settings</p>
         </div>
+
+        <section className="space-y-4">
+          <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
+            Editor preferences
+          </h2>
+          <EditorPreferencesForm />
+        </section>
 
         {profileUser.hasPassword && (
           <section className="space-y-4">
