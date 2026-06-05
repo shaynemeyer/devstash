@@ -99,7 +99,7 @@ export async function getItemsByTypeSlug(
     const [items, total] = await Promise.all([
       db.item.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * ITEMS_PER_PAGE,
         take: ITEMS_PER_PAGE,
         select: ITEM_SELECT,
@@ -123,7 +123,7 @@ export async function getItemsByCollectionId(
     const [items, total] = await Promise.all([
       db.item.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * ITEMS_PER_PAGE,
         take: ITEMS_PER_PAGE,
         select: ITEM_SELECT,

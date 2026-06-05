@@ -8,6 +8,7 @@ vi.mock("@/lib/db/items", () => ({
   deleteItem: vi.fn(),
   updateItem: vi.fn(),
   createItem: vi.fn(),
+  setItemPinned: vi.fn(),
 }));
 
 vi.mock("@/lib/r2", () => ({
@@ -17,14 +18,15 @@ vi.mock("@/lib/r2", () => ({
 
 import { auth } from "@/auth";
 import { r2 } from "@/lib/r2";
-import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem } from "@/lib/db/items";
-import { deleteItem, updateItem, createItem } from "./items";
+import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem, setItemPinned as dbSetItemPinned } from "@/lib/db/items";
+import { deleteItem, updateItem, createItem, toggleItemPin } from "./items";
 
 const mockAuth = vi.mocked(auth);
 const mockR2Send = vi.mocked(r2.send);
 const mockDbDelete = vi.mocked(dbDeleteItem);
 const mockDbUpdate = vi.mocked(dbUpdateItem);
 const mockDbCreate = vi.mocked(dbCreateItem);
+const mockDbSetPinned = vi.mocked(dbSetItemPinned);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -209,5 +211,44 @@ describe("createItem action", () => {
     expect(mockDbCreate).toHaveBeenCalledWith(
       expect.objectContaining({ collectionIds: [] })
     );
+  });
+});
+
+describe("toggleItemPin action", () => {
+  it("returns unauthorized when no session", async () => {
+    mockAuth.mockResolvedValue(null as never);
+    const result = await toggleItemPin("item-1", false);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbSetPinned).not.toHaveBeenCalled();
+  });
+
+  it("returns unauthorized when session has no user id", async () => {
+    mockAuth.mockResolvedValue({ user: {} } as never);
+    const result = await toggleItemPin("item-1", false);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbSetPinned).not.toHaveBeenCalled();
+  });
+
+  it("calls setItemPinned with negated isPinned (pin)", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbSetPinned.mockResolvedValue(true);
+    const result = await toggleItemPin("item-1", false);
+    expect(result).toEqual({ success: true });
+    expect(mockDbSetPinned).toHaveBeenCalledWith("item-1", "user-1", true);
+  });
+
+  it("calls setItemPinned with negated isPinned (unpin)", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbSetPinned.mockResolvedValue(true);
+    const result = await toggleItemPin("item-1", true);
+    expect(result).toEqual({ success: true });
+    expect(mockDbSetPinned).toHaveBeenCalledWith("item-1", "user-1", false);
+  });
+
+  it("returns error when db update fails", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbSetPinned.mockResolvedValue(false);
+    const result = await toggleItemPin("item-1", false);
+    expect(result).toEqual({ success: false, error: "Failed to update pin" });
   });
 });

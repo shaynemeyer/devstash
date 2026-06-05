@@ -23,11 +23,14 @@ interface ItemDrawerActionBarProps {
   saving: boolean;
   deleting: boolean;
   titleEmpty: boolean;
+  isPinned: boolean;
+  pinPending: boolean;
   onEnterEdit: () => void;
   onCancelEdit: () => void;
   onSave: () => void;
   onDelete: () => void;
   onCopyContent: () => void;
+  onTogglePin: () => void;
 }
 
 export function ItemDrawerActionBar({
@@ -36,11 +39,14 @@ export function ItemDrawerActionBar({
   saving,
   deleting,
   titleEmpty,
+  isPinned,
+  pinPending,
   onEnterEdit,
   onCancelEdit,
   onSave,
   onDelete,
   onCopyContent,
+  onTogglePin,
 }: ItemDrawerActionBarProps) {
   const showFileSection = FILE_UPLOAD_TYPES.includes(item.typeName.toLowerCase());
 
@@ -81,10 +87,12 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className={`gap-1.5 text-xs ${item.isPinned ? "text-foreground" : "text-muted-foreground"}`}
+            className={`gap-1.5 text-xs ${isPinned ? "text-foreground" : "text-muted-foreground"}`}
+            onClick={onTogglePin}
+            disabled={pinPending}
           >
-            <Pin className="size-3.5" />
-            Pin
+            <Pin className={`size-3.5 ${isPinned ? "fill-current" : ""}`} />
+            {isPinned ? "Unpin" : "Pin"}
           </Button>
           {!showFileSection && (
             <Button

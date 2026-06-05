@@ -19,3 +19,5 @@ See [context/feature-history.md](feature-history.md) for the full archive of com
 - Favorites Page: /favorites route (auth-protected) with star icon in TopBar; compact VS Code-style list view of favorited items and collections; ItemDrawer on item click; collection navigation on collection row click; empty state; sorted by updatedAt desc
 
 - Client-Side Sorting on Favorites: ShadCN Select (Name/Date/Type) + asc/desc toggle in FavoritesList; useMemo-derived sorted lists for items and collections; Type sort falls back to Name for collections; default Date desc
+
+- Pinned Items: toggleItemPin server action; Pin button wired in ItemDrawer with useTransition optimistic UI; pinned items sort to top of type and collection listings; static pin icon on ItemCard; 5 Vitest tests

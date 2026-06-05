@@ -17,4 +17,4 @@ export {
 
 export type { UpdateItemData, CreateItemData } from "./items-mutations";
 
-export { createItem, updateItem, deleteItem } from "./items-mutations";
+export { createItem, updateItem, deleteItem, setItemPinned } from "./items-mutations";
