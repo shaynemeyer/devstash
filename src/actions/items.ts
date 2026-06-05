@@ -2,7 +2,7 @@
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/auth";
-import { createItem as dbCreateItem, updateItem as dbUpdateItem, deleteItem as dbDeleteItem, setItemPinned } from "@/lib/db/items";
+import { createItem as dbCreateItem, updateItem as dbUpdateItem, deleteItem as dbDeleteItem, setItemPinned, setItemFavorite } from "@/lib/db/items";
 import { CreateItemSchema, UpdateItemSchema } from "@/lib/validations/items";
 import { r2, R2_BUCKET } from "@/lib/r2";
 import type { ItemDetail } from "@/lib/db/items";
@@ -92,6 +92,23 @@ export async function toggleItemPin(
   const ok = await setItemPinned(itemId, session.user.id, !isPinned);
   if (!ok) {
     return { success: false, error: "Failed to update pin" };
+  }
+
+  return { success: true };
+}
+
+export async function toggleFavoriteItem(
+  itemId: string,
+  isFavorite: boolean
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const ok = await setItemFavorite(itemId, session.user.id, !isFavorite);
+  if (!ok) {
+    return { success: false, error: "Failed to update favorite" };
   }
 
   return { success: true };

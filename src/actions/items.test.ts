@@ -9,6 +9,7 @@ vi.mock("@/lib/db/items", () => ({
   updateItem: vi.fn(),
   createItem: vi.fn(),
   setItemPinned: vi.fn(),
+  setItemFavorite: vi.fn(),
 }));
 
 vi.mock("@/lib/r2", () => ({
@@ -18,8 +19,8 @@ vi.mock("@/lib/r2", () => ({
 
 import { auth } from "@/auth";
 import { r2 } from "@/lib/r2";
-import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem, setItemPinned as dbSetItemPinned } from "@/lib/db/items";
-import { deleteItem, updateItem, createItem, toggleItemPin } from "./items";
+import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem, setItemPinned as dbSetItemPinned, setItemFavorite as dbSetItemFavorite } from "@/lib/db/items";
+import { deleteItem, updateItem, createItem, toggleItemPin, toggleFavoriteItem } from "./items";
 
 const mockAuth = vi.mocked(auth);
 const mockR2Send = vi.mocked(r2.send);
@@ -27,6 +28,7 @@ const mockDbDelete = vi.mocked(dbDeleteItem);
 const mockDbUpdate = vi.mocked(dbUpdateItem);
 const mockDbCreate = vi.mocked(dbCreateItem);
 const mockDbSetPinned = vi.mocked(dbSetItemPinned);
+const mockDbSetFavorite = vi.mocked(dbSetItemFavorite);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -250,5 +252,44 @@ describe("toggleItemPin action", () => {
     mockDbSetPinned.mockResolvedValue(false);
     const result = await toggleItemPin("item-1", false);
     expect(result).toEqual({ success: false, error: "Failed to update pin" });
+  });
+});
+
+describe("toggleFavoriteItem action", () => {
+  it("returns unauthorized when no session", async () => {
+    mockAuth.mockResolvedValue(null as never);
+    const result = await toggleFavoriteItem("item-1", false);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbSetFavorite).not.toHaveBeenCalled();
+  });
+
+  it("returns unauthorized when session has no user id", async () => {
+    mockAuth.mockResolvedValue({ user: {} } as never);
+    const result = await toggleFavoriteItem("item-1", false);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbSetFavorite).not.toHaveBeenCalled();
+  });
+
+  it("calls setItemFavorite with negated isFavorite (favorite)", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbSetFavorite.mockResolvedValue(true);
+    const result = await toggleFavoriteItem("item-1", false);
+    expect(result).toEqual({ success: true });
+    expect(mockDbSetFavorite).toHaveBeenCalledWith("item-1", "user-1", true);
+  });
+
+  it("calls setItemFavorite with negated isFavorite (unfavorite)", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbSetFavorite.mockResolvedValue(true);
+    const result = await toggleFavoriteItem("item-1", true);
+    expect(result).toEqual({ success: true });
+    expect(mockDbSetFavorite).toHaveBeenCalledWith("item-1", "user-1", false);
+  });
+
+  it("returns error when db update fails", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockDbSetFavorite.mockResolvedValue(false);
+    const result = await toggleFavoriteItem("item-1", false);
+    expect(result).toEqual({ success: false, error: "Failed to update favorite" });
   });
 });
