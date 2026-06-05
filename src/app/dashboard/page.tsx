@@ -37,7 +37,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
-      <div className="p-6 max-w-6xl mx-auto space-y-8">
+      <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground text-sm mt-1">Your developer knowledge hub</p>

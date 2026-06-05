@@ -17,7 +17,7 @@ export default function HeroSection() {
         <span className="inline-block px-3 py-1 mb-6 text-xs tracking-widest text-indigo-300 rounded-full border border-indigo-500/30 bg-indigo-500/10">
           Developer Knowledge Hub
         </span>
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight tracking-tighter mb-5 bg-linear-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tighter mb-5 bg-linear-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
           Stop Losing Your<br />Developer Knowledge
         </h1>
         <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-8">
@@ -26,13 +26,13 @@ export default function HeroSection() {
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <Link
             href="/register"
-            className="px-7 py-3.5 text-base font-semibold rounded-xl bg-linear-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 hover:-translate-y-px transition-all"
+            className="px-7 py-3.5 text-base font-semibold rounded-xl bg-linear-to-r from-blue-500 to-indigo-500 text-white hover:opacity-90 hover:-translate-y-px transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
           >
             Get Started Free
           </Link>
           <a
             href="#features"
-            className="px-7 py-3.5 text-base font-medium rounded-xl border border-white/10 text-foreground hover:bg-white/5 hover:border-white/20 transition-all"
+            className="px-7 py-3.5 text-base font-medium rounded-xl border border-white/10 text-foreground hover:bg-white/5 hover:border-white/20 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
           >
             See Features
           </a>

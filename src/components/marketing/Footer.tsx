@@ -44,7 +44,7 @@ export default function Footer() {
               <ul className="flex flex-col gap-2.5">
                 {col.links.map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-sm text-muted-foreground/60 hover:text-foreground transition-colors">
+                    <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-sm">
                       {link}
                     </a>
                   </li>
@@ -54,7 +54,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 pt-6 border-t border-border text-xs text-muted-foreground/50">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 pt-6 border-t border-border text-xs text-muted-foreground/70">
           <span>© {new Date().getFullYear()} DevStash. All rights reserved.</span>
           <span>Made for developers, by developers.</span>
         </div>
