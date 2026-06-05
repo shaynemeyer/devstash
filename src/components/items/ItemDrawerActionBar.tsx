@@ -25,12 +25,15 @@ interface ItemDrawerActionBarProps {
   titleEmpty: boolean;
   isPinned: boolean;
   pinPending: boolean;
+  isFavorite: boolean;
+  favoritePending: boolean;
   onEnterEdit: () => void;
   onCancelEdit: () => void;
   onSave: () => void;
   onDelete: () => void;
   onCopyContent: () => void;
   onTogglePin: () => void;
+  onToggleFavorite: () => void;
 }
 
 export function ItemDrawerActionBar({
@@ -41,12 +44,15 @@ export function ItemDrawerActionBar({
   titleEmpty,
   isPinned,
   pinPending,
+  isFavorite,
+  favoritePending,
   onEnterEdit,
   onCancelEdit,
   onSave,
   onDelete,
   onCopyContent,
   onTogglePin,
+  onToggleFavorite,
 }: ItemDrawerActionBarProps) {
   const showFileSection = FILE_UPLOAD_TYPES.includes(item.typeName.toLowerCase());
 
@@ -79,10 +85,12 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className={`gap-1.5 text-xs ${item.isFavorite ? "text-amber-400" : "text-muted-foreground"}`}
+            className={`gap-1.5 text-xs ${isFavorite ? "text-amber-400" : "text-muted-foreground"}`}
+            onClick={onToggleFavorite}
+            disabled={favoritePending}
           >
-            <Star className={`size-3.5 ${item.isFavorite ? "fill-amber-400" : ""}`} />
-            Favorite
+            <Star className={`size-3.5 ${isFavorite ? "fill-amber-400" : ""}`} />
+            {isFavorite ? "Unfavorite" : "Favorite"}
           </Button>
           <Button
             variant="ghost"

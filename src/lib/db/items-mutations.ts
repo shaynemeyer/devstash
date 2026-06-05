@@ -156,6 +156,19 @@ export async function setItemPinned(
   }
 }
 
+export async function setItemFavorite(
+  id: string,
+  userId: string,
+  isFavorite: boolean
+): Promise<boolean> {
+  try {
+    await db.item.update({ where: { id, userId }, data: { isFavorite } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function deleteItem(
   id: string,
   userId: string

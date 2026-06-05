@@ -9,7 +9,7 @@ import { ItemDrawerHeader } from "@/components/items/ItemDrawerHeader";
 import { ItemDrawerActionBar } from "@/components/items/ItemDrawerActionBar";
 import { ItemDrawerContent } from "@/components/items/ItemDrawerContent";
 import { getUserCollections } from "@/actions/collections";
-import { toggleItemPin } from "@/actions/items";
+import { toggleItemPin, toggleFavoriteItem } from "@/actions/items";
 import type { ItemDetail } from "@/lib/db/items";
 
 interface ItemDrawerProps {
@@ -60,11 +60,28 @@ function DrawerBody({
   const edit = useItemEdit(item, onItemChange, onClose);
   const [isPinned, setIsPinned] = useState(item.isPinned);
   const [pinPending, startPinTransition] = useTransition();
+  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
+  const [favoritePending, startFavoriteTransition] = useTransition();
   const router = useRouter();
 
   function copyContent() {
     const text = item.content ?? item.url ?? item.fileUrl ?? item.title;
     navigator.clipboard.writeText(text ?? "");
+  }
+
+  function handleToggleFavorite() {
+    startFavoriteTransition(async () => {
+      const prev = isFavorite;
+      setIsFavorite(!prev);
+      const result = await toggleFavoriteItem(item.id, prev);
+      if (!result.success) {
+        setIsFavorite(prev);
+        toast.error("Failed to update favorite");
+      } else {
+        toast.success(prev ? "Removed from favorites" : "Added to favorites");
+        router.refresh();
+      }
+    });
   }
 
   function handleTogglePin() {
@@ -98,12 +115,15 @@ function DrawerBody({
         titleEmpty={!edit.title.trim()}
         isPinned={isPinned}
         pinPending={pinPending}
+        isFavorite={isFavorite}
+        favoritePending={favoritePending}
         onEnterEdit={edit.enterEdit}
         onCancelEdit={edit.cancelEdit}
         onSave={edit.save}
         onDelete={edit.handleDelete}
         onCopyContent={copyContent}
         onTogglePin={handleTogglePin}
+        onToggleFavorite={handleToggleFavorite}
       />
       <ItemDrawerContent
         item={item}
