@@ -104,6 +104,7 @@ export default function ChaosArena() {
       {ICONS.map((icon) => (
         <div
           key={icon.label}
+          role="img"
           aria-label={icon.label}
           className="absolute top-0 left-0 w-11 h-11 flex items-center justify-center text-zinc-400"
           style={{ animation: `${icon.anim} ${icon.duration} ease-in-out infinite` }}

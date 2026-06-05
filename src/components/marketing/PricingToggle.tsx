@@ -35,8 +35,7 @@ export default function PricingToggle() {
           role="switch"
           aria-checked={yearly}
           onClick={() => setYearly((v) => !v)}
-          className="relative w-12 h-6 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          style={{ background: yearly ? "#3b82f6" : "hsl(var(--border))" }}
+          className={`relative w-12 h-6 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${yearly ? "bg-blue-500" : "bg-border"}`}
         >
           <span
             className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200 ${yearly ? "translate-x-6" : "translate-x-0"}`}

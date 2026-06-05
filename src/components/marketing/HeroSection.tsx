@@ -1,10 +1,11 @@
 import Link from "next/link"
 import FadeIn from "./FadeIn"
 import ChaosArena from "./ChaosArena"
+import { MARKETING_ITEM_TYPES } from "./constants"
 
 export default function HeroSection() {
   return (
-    <section className="relative pt-28 pb-20 px-6 text-center overflow-hidden">
+    <section className="relative pt-28 pb-24 px-6 text-center overflow-hidden">
       {/* Background gradient */}
       <div
         className="absolute inset-0 pointer-events-none opacity-15"
@@ -78,37 +79,27 @@ export default function HeroSection() {
           <div className="flex h-70">
             {/* Sidebar */}
             <div className="w-24 border-r border-border p-2 flex flex-col gap-1">
-              {[
-                { label: "Snippets", color: "#3b82f6", active: true },
-                { label: "Prompts", color: "#8b5cf6" },
-                { label: "Commands", color: "#f97316" },
-                { label: "Notes", color: "#fde047" },
-                { label: "Links", color: "#10b981" },
-                { label: "Images", color: "#ec4899" },
-              ].map((item) => (
+              {MARKETING_ITEM_TYPES.map((item, i) => (
                 <div
                   key={item.label}
                   className={`flex items-center gap-1.5 px-1.5 py-1 rounded-md text-[0.6rem] ${
-                    item.active ? "bg-indigo-500/15 text-indigo-300" : "text-muted-foreground"
+                    i === 0 ? "bg-indigo-500/15 text-indigo-300" : "text-muted-foreground"
                   }`}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: item.color }} />
                   {item.label}
                 </div>
               ))}
             </div>
             {/* Cards grid */}
             <div className="flex-1 p-2 grid grid-cols-2 grid-rows-3 gap-1.5 overflow-hidden">
-              {[
-                "#3b82f6", "#8b5cf6", "#f97316",
-                "#fde047", "#10b981", "#ec4899",
-              ].map((color) => (
+              {MARKETING_ITEM_TYPES.map((item) => (
                 <div
-                  key={color}
+                  key={item.color}
                   className="rounded-md p-1.5"
-                  style={{ background: "hsl(var(--card))", borderTop: `2px solid ${color}` }}
+                  style={{ background: "hsl(var(--card))", borderTop: `2px solid ${item.color}` }}
                 >
-                  <div className="h-1 rounded-sm mb-1 w-3/4" style={{ background: `${color}40` }} />
+                  <div className="h-1 rounded-sm mb-1 w-3/4" style={{ background: `${item.color}40` }} />
                   <div className="h-1 rounded-sm w-11/12 bg-white/5" />
                 </div>
               ))}
