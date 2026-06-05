@@ -152,3 +152,94 @@
   padding: 0;
   color: #d4d4d4;
 }
+
+/* ===== Marketing page ===== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.marketing-fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.marketing-fade-in.marketing-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes pulse-arrow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.animate-pulse-arrow {
+  animation: pulse-arrow 2s ease-in-out infinite;
+}
+
+@keyframes chaos-1 {
+  0%   { transform: translate(10px, 20px) rotate(0deg) scale(1); }
+  20%  { transform: translate(200px, 50px) rotate(-12deg) scale(1.05); }
+  40%  { transform: translate(230px, 180px) rotate(8deg) scale(0.95); }
+  60%  { transform: translate(110px, 210px) rotate(-15deg) scale(1.04); }
+  80%  { transform: translate(30px, 120px) rotate(10deg) scale(0.97); }
+  100% { transform: translate(10px, 20px) rotate(0deg) scale(1); }
+}
+
+@keyframes chaos-2 {
+  0%   { transform: translate(230px, 10px) rotate(5deg) scale(1); }
+  25%  { transform: translate(50px, 80px) rotate(-8deg) scale(1.06); }
+  50%  { transform: translate(190px, 150px) rotate(14deg) scale(0.94); }
+  75%  { transform: translate(10px, 200px) rotate(-6deg) scale(1.03); }
+  100% { transform: translate(230px, 10px) rotate(5deg) scale(1); }
+}
+
+@keyframes chaos-3 {
+  0%   { transform: translate(120px, 5px) rotate(-3deg) scale(1); }
+  30%  { transform: translate(250px, 95px) rotate(11deg) scale(1.05); }
+  55%  { transform: translate(70px, 195px) rotate(-14deg) scale(0.96); }
+  80%  { transform: translate(220px, 215px) rotate(7deg) scale(1.04); }
+  100% { transform: translate(120px, 5px) rotate(-3deg) scale(1); }
+}
+
+@keyframes chaos-4 {
+  0%   { transform: translate(5px, 140px) rotate(8deg) scale(1); }
+  20%  { transform: translate(170px, 15px) rotate(-10deg) scale(0.95); }
+  45%  { transform: translate(245px, 190px) rotate(13deg) scale(1.06); }
+  70%  { transform: translate(55px, 225px) rotate(-5deg) scale(0.97); }
+  100% { transform: translate(5px, 140px) rotate(8deg) scale(1); }
+}
+
+@keyframes chaos-5 {
+  0%   { transform: translate(195px, 195px) rotate(-6deg) scale(1); }
+  25%  { transform: translate(10px, 115px) rotate(12deg) scale(1.05); }
+  50%  { transform: translate(235px, 55px) rotate(-9deg) scale(0.94); }
+  75%  { transform: translate(95px, 225px) rotate(7deg) scale(1.04); }
+  100% { transform: translate(195px, 195px) rotate(-6deg) scale(1); }
+}
+
+@keyframes chaos-6 {
+  0%   { transform: translate(25px, 230px) rotate(4deg) scale(1); }
+  30%  { transform: translate(205px, 170px) rotate(-13deg) scale(0.96); }
+  55%  { transform: translate(55px, 75px) rotate(9deg) scale(1.05); }
+  80%  { transform: translate(245px, 25px) rotate(-7deg) scale(0.97); }
+  100% { transform: translate(25px, 230px) rotate(4deg) scale(1); }
+}
+
+@keyframes chaos-7 {
+  0%   { transform: translate(135px, 95px) rotate(-11deg) scale(1); }
+  25%  { transform: translate(25px, 25px) rotate(6deg) scale(1.06); }
+  50%  { transform: translate(215px, 215px) rotate(-8deg) scale(0.95); }
+  75%  { transform: translate(245px, 75px) rotate(14deg) scale(1.03); }
+  100% { transform: translate(135px, 95px) rotate(-11deg) scale(1); }
+}
+
+@keyframes chaos-8 {
+  0%   { transform: translate(255px, 75px) rotate(7deg) scale(1); }
+  25%  { transform: translate(95px, 10px) rotate(-12deg) scale(0.96); }
+  50%  { transform: translate(10px, 195px) rotate(10deg) scale(1.05); }
+  75%  { transform: translate(195px, 235px) rotate(-6deg) scale(0.97); }
+  100% { transform: translate(255px, 75px) rotate(7deg) scale(1); }
+}
