@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useItemEdit } from "@/hooks/useItemEdit";
 import { ItemDrawerHeader } from "@/components/items/ItemDrawerHeader";
 import { ItemDrawerActionBar } from "@/components/items/ItemDrawerActionBar";
 import { ItemDrawerContent } from "@/components/items/ItemDrawerContent";
 import { getUserCollections } from "@/actions/collections";
+import { toggleItemPin } from "@/actions/items";
 import type { ItemDetail } from "@/lib/db/items";
 
 interface ItemDrawerProps {
@@ -55,10 +58,28 @@ function DrawerBody({
   onClose: () => void;
 }) {
   const edit = useItemEdit(item, onItemChange, onClose);
+  const [isPinned, setIsPinned] = useState(item.isPinned);
+  const [pinPending, startPinTransition] = useTransition();
+  const router = useRouter();
 
   function copyContent() {
     const text = item.content ?? item.url ?? item.fileUrl ?? item.title;
     navigator.clipboard.writeText(text ?? "");
+  }
+
+  function handleTogglePin() {
+    startPinTransition(async () => {
+      const prev = isPinned;
+      setIsPinned(!prev);
+      const result = await toggleItemPin(item.id, prev);
+      if (!result.success) {
+        setIsPinned(prev);
+        toast.error("Failed to update pin");
+      } else {
+        toast.success(prev ? "Unpinned" : "Pinned");
+        router.refresh();
+      }
+    });
   }
 
   return (
@@ -75,11 +96,14 @@ function DrawerBody({
         saving={edit.saving}
         deleting={edit.deleting}
         titleEmpty={!edit.title.trim()}
+        isPinned={isPinned}
+        pinPending={pinPending}
         onEnterEdit={edit.enterEdit}
         onCancelEdit={edit.cancelEdit}
         onSave={edit.save}
         onDelete={edit.handleDelete}
         onCopyContent={copyContent}
+        onTogglePin={handleTogglePin}
       />
       <ItemDrawerContent
         item={item}

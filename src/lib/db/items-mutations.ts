@@ -143,6 +143,19 @@ export async function updateItem(
   }
 }
 
+export async function setItemPinned(
+  id: string,
+  userId: string,
+  isPinned: boolean
+): Promise<boolean> {
+  try {
+    await db.item.update({ where: { id, userId }, data: { isPinned } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function deleteItem(
   id: string,
   userId: string
