@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input";
 function BrandLogo() {
   return (
     <div className="flex items-center gap-2">
-      <div className="size-7 rounded-md bg-indigo-600 flex items-center justify-center shrink-0">
-        <span className="text-white text-sm font-bold leading-none">S</span>
-      </div>
-      <span className="text-foreground font-semibold text-base tracking-tight hidden sm:block">DevStash</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" width={24} height={24} aria-label="DevStash" role="img">
+        <polygon points="28,8 16,14 16,26 28,20" fill="#1e40af" />
+        <polygon points="4,8 16,14 16,26 4,20" fill="#2563eb" />
+        <polygon points="16,2 28,8 16,14 4,8" fill="#60a5fa" />
+        <polygon points="14.5,2.75 17.5,2.75 17.5,13.25 14.5,13.25" fill="white" opacity="0.22" />
+      </svg>
+      <span className="font-semibold text-base tracking-tight bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent hidden sm:block">DevStash</span>
     </div>
   );
 }

@@ -27,10 +27,7 @@ export function SidebarContent({ collapsed, onToggleCollapse, onClose, itemTypes
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       <div
-        className={cn(
-          "flex items-center h-12 px-3 shrink-0 border-b border-sidebar-border",
-          collapsed ? "justify-center" : "justify-end"
-        )}
+        className={cn("flex items-center h-12 px-3 shrink-0 border-b border-sidebar-border", collapsed ? "justify-center" : "justify-end")}
       >
         {onClose ? (
           <button
@@ -46,11 +43,7 @@ export function SidebarContent({ collapsed, onToggleCollapse, onClose, itemTypes
             className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? (
-              <PanelLeftOpen className="size-4" />
-            ) : (
-              <PanelLeftClose className="size-4" />
-            )}
+            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
           </button>
         )}
       </div>

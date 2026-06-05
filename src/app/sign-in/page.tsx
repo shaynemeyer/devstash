@@ -2,6 +2,7 @@ import { SignInForm } from "@/components/auth/SignInForm";
 import { RegistrationToast } from "@/components/auth/RegistrationToast";
 import { VerifiedToast } from "@/components/auth/VerifiedToast";
 import { PasswordResetToast } from "@/components/auth/PasswordResetToast";
+import NavBar from "@/components/marketing/NavBar";
 
 interface SignInPageProps {
   searchParams: Promise<{ registered?: string; verified?: string; reset?: string }>;
@@ -11,7 +12,8 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const { registered, verified, reset } = await searchParams;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 pt-16">
+      <NavBar />
       <div className="w-full max-w-sm space-y-6">
         {registered === "true" && <RegistrationToast />}
         {verified === "true" && <VerifiedToast />}
