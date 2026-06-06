@@ -3,10 +3,12 @@ import { auth } from "@/auth";
 import { getProfileUser } from "@/lib/db/profile";
 import { getItemTypesWithCounts } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
+import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
 import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
 import { EditorPreferencesForm } from "@/components/settings/EditorPreferencesForm";
+import { BillingSection } from "@/components/settings/BillingSection";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -14,10 +16,11 @@ export default async function SettingsPage() {
 
   const userId = session.user.id;
 
-  const [profileUser, sidebarItemTypes, sidebarCollections] = await Promise.all([
+  const [profileUser, sidebarItemTypes, sidebarCollections, dbUser] = await Promise.all([
     getProfileUser(userId),
     getItemTypesWithCounts(userId),
     getSidebarCollections(userId),
+    db.user.findUnique({ where: { id: userId }, select: { isPro: true } }),
   ]);
 
   if (!profileUser) redirect("/sign-in");
@@ -35,6 +38,13 @@ export default async function SettingsPage() {
           <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
           <p className="text-muted-foreground text-sm mt-1">Manage your account settings</p>
         </div>
+
+        <section className="space-y-4">
+          <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
+            Billing
+          </h2>
+          <BillingSection isPro={dbUser?.isPro ?? false} />
+        </section>
 
         <section className="space-y-4">
           <h2 className="text-base font-semibold text-foreground border-b border-border pb-2">
