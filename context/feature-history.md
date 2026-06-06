@@ -3,6 +3,7 @@
 Full archive of completed features. See [current-feature.md](current-feature.md) for the active feature.
 
 - Project setup and boilerplate cleanup
+- Stripe Phase 1: installed Stripe SDK; exposed isPro on NextAuth session; added free-tier item/collection limits; wired limit checks into createItem and createCollection; 10 unit tests
 - Editor Preferences Settings: EditorPreferencesContext + EditorPreferencesProvider in DashboardShell; EditorPreferencesForm on /settings with font size, tab size, theme (vs-dark/monokai/github-dark), word wrap, minimap, line numbers; auto-save via updateEditorPreferences server action; editorPreferences Json? column on User with migration; applied live to Monaco CodeEditor; 11 Vitest tests for schema validation
 - Initial Next.js setup with React 19, TypeScript, Tailwind CSS v4, ESLint; all package versions locked
 - Dashboard Phase 1: ShadCN UI initialized (base-nova preset), /dashboard route created, dark mode by default, TopBar with branded logo, centered search with ⌘K hint, New Collection/New Item buttons, Sidebar and Main placeholders
