@@ -4,6 +4,7 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/auth";
 import { createItem as dbCreateItem, updateItem as dbUpdateItem, deleteItem as dbDeleteItem, setItemPinned, setItemFavorite } from "@/lib/db/items";
 import { CreateItemSchema, UpdateItemSchema } from "@/lib/validations/items";
+import { checkItemLimit } from "@/lib/subscription";
 import { r2, R2_BUCKET } from "@/lib/r2";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -18,6 +19,9 @@ export async function createItem(input: unknown): Promise<ActionResult> {
   if (!session?.user?.id) {
     return { success: false, error: "Unauthorized" };
   }
+
+  const limitError = await checkItemLimit(session.user.id);
+  if (limitError) return { success: false, error: limitError };
 
   const result = CreateItemSchema.safeParse(input);
   if (!result.success) {

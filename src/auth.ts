@@ -54,11 +54,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         token.sessionStart = Math.floor(Date.now() / 1000)
       }
 
-      // Invalidate the session if the password was changed after this token was issued
+      // Invalidate the session if the password was changed after this token was issued; also sync isPro
       if (token.id && token.sessionStart) {
         const dbUser = await db.user.findUnique({
           where: { id: token.id as string },
-          select: { passwordChangedAt: true },
+          select: { passwordChangedAt: true, isPro: true },
         })
         if (dbUser?.passwordChangedAt) {
           const changedAt = Math.floor(dbUser.passwordChangedAt.getTime() / 1000)
@@ -66,12 +66,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             return null
           }
         }
+        token.isPro = dbUser?.isPro ?? false
       }
 
       return token
     },
     session({ session, token }) {
       if (token.id) session.user.id = token.id as string
+      session.user.isPro = (token.isPro as boolean) ?? false
       return session
     },
   },
