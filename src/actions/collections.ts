@@ -9,6 +9,7 @@ import {
   setCollectionFavorite,
 } from "@/lib/db/collections";
 import { CreateCollectionSchema, UpdateCollectionSchema } from "@/lib/validations/collections";
+import { checkCollectionLimit } from "@/lib/subscription";
 import type { CreatedCollection } from "@/lib/db/collections";
 
 export async function getUserCollections(): Promise<{ id: string; name: string }[]> {
@@ -28,6 +29,9 @@ export async function createCollection(input: unknown): Promise<ActionResult> {
   if (!session?.user?.id) {
     return { success: false, error: "Unauthorized" };
   }
+
+  const limitError = await checkCollectionLimit(session.user.id);
+  if (limitError) return { success: false, error: limitError };
 
   const result = CreateCollectionSchema.safeParse(input);
   if (!result.success) {

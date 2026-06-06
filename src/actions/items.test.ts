@@ -17,9 +17,14 @@ vi.mock("@/lib/r2", () => ({
   R2_BUCKET: "test-bucket",
 }));
 
+vi.mock("@/lib/subscription", () => ({
+  checkItemLimit: vi.fn().mockResolvedValue(null),
+}));
+
 import { auth } from "@/auth";
 import { r2 } from "@/lib/r2";
 import { deleteItem as dbDeleteItem, updateItem as dbUpdateItem, createItem as dbCreateItem, setItemPinned as dbSetItemPinned, setItemFavorite as dbSetItemFavorite } from "@/lib/db/items";
+import { checkItemLimit } from "@/lib/subscription";
 import { deleteItem, updateItem, createItem, toggleItemPin, toggleFavoriteItem } from "./items";
 
 const mockAuth = vi.mocked(auth);
@@ -29,6 +34,7 @@ const mockDbUpdate = vi.mocked(dbUpdateItem);
 const mockDbCreate = vi.mocked(dbCreateItem);
 const mockDbSetPinned = vi.mocked(dbSetItemPinned);
 const mockDbSetFavorite = vi.mocked(dbSetItemFavorite);
+const mockCheckItemLimit = vi.mocked(checkItemLimit);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -154,6 +160,14 @@ describe("createItem action", () => {
     mockAuth.mockResolvedValue(null as never);
     const result = await createItem(validCreateInput);
     expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns error when free-tier item limit is reached", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockCheckItemLimit.mockResolvedValueOnce("Free plan is limited to 50 items. Upgrade to Pro for unlimited items.");
+    const result = await createItem(validCreateInput);
+    expect(result).toEqual({ success: false, error: "Free plan is limited to 50 items. Upgrade to Pro for unlimited items." });
     expect(mockDbCreate).not.toHaveBeenCalled();
   });
 

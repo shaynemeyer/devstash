@@ -11,6 +11,10 @@ vi.mock("@/lib/db/collections", () => ({
   deleteCollection: vi.fn(),
 }));
 
+vi.mock("@/lib/subscription", () => ({
+  checkCollectionLimit: vi.fn().mockResolvedValue(null),
+}));
+
 import { auth } from "@/auth";
 import {
   createCollection as dbCreateCollection,
@@ -18,6 +22,7 @@ import {
   updateCollection as dbUpdateCollection,
   deleteCollection as dbDeleteCollection,
 } from "@/lib/db/collections";
+import { checkCollectionLimit } from "@/lib/subscription";
 import { createCollection, getUserCollections, updateCollection, deleteCollection } from "./collections";
 
 const mockAuth = vi.mocked(auth);
@@ -25,6 +30,7 @@ const mockDbCreate = vi.mocked(dbCreateCollection);
 const mockGetList = vi.mocked(getUserCollectionsList);
 const mockDbUpdate = vi.mocked(dbUpdateCollection);
 const mockDbDelete = vi.mocked(dbDeleteCollection);
+const mockCheckCollectionLimit = vi.mocked(checkCollectionLimit);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -62,6 +68,14 @@ describe("createCollection action", () => {
     mockAuth.mockResolvedValue(null as never);
     const result = await createCollection(validInput);
     expect(result).toEqual({ success: false, error: "Unauthorized" });
+    expect(mockDbCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns error when free-tier collection limit is reached", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
+    mockCheckCollectionLimit.mockResolvedValueOnce("Free plan is limited to 3 collections. Upgrade to Pro for unlimited collections.");
+    const result = await createCollection(validInput);
+    expect(result).toEqual({ success: false, error: "Free plan is limited to 3 collections. Upgrade to Pro for unlimited collections." });
     expect(mockDbCreate).not.toHaveBeenCalled();
   });
 
