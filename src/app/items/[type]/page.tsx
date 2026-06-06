@@ -6,6 +6,7 @@ import { ItemsGrid } from "@/components/items/ItemsGrid";
 import { ImageGallery } from "@/components/items/ImageGallery";
 import { FileList } from "@/components/items/FileList";
 import { TypePageActions } from "@/components/items/TypePageActions";
+import { ProUpgradeGate } from "@/components/items/ProUpgradeGate";
 import { PaginationControls } from "@/components/ui/PaginationControls";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
 import type { ItemWithMeta } from "@/lib/db/items";
@@ -56,7 +57,28 @@ export default async function ItemsTypePage({ params, searchParams }: Props) {
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
   const session = await auth();
+  const isPro = session?.user?.isPro ?? false;
   const userId = session?.user?.id ?? (await getDemoUserId());
+
+  const PRO_ONLY_SLUGS = ["files", "images"];
+  if (PRO_ONLY_SLUGS.includes(type) && !isPro) {
+    const [sidebarItemTypes, sidebarCollections] = await Promise.all([
+      userId ? getItemTypesWithCounts(userId) : Promise.resolve([]),
+      userId ? getSidebarCollections(userId) : Promise.resolve([]),
+    ]);
+    const user = {
+      name: session?.user?.name ?? "Demo User",
+      email: session?.user?.email ?? "demo@devstash.io",
+      image: session?.user?.image ?? null,
+    };
+    return (
+      <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
+        <div className="p-6 max-w-6xl mx-auto">
+          <ProUpgradeGate feature={SLUG_LABELS[type]} />
+        </div>
+      </DashboardShell>
+    );
+  }
 
   const [{ items, total }, sidebarItemTypes, sidebarCollections] = await Promise.all([
     userId ? getItemsByTypeSlug(userId, type, page) : Promise.resolve({ items: [] as ItemWithMeta[], total: 0 }),

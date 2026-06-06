@@ -23,7 +23,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           <TriangleAlertIcon className="size-4" />
         ),
         error: (
-          <OctagonXIcon className="size-4" />
+          <OctagonXIcon className="size-4 text-red-400" />
         ),
         loading: (
           <Loader2Icon className="size-4 animate-spin" />
@@ -34,6 +34,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
+          "--success-bg": "oklch(0.22 0.06 150)",
+          "--success-text": "oklch(0.85 0.12 150)",
+          "--success-border": "oklch(0.42 0.16 150)",
+          "--error-bg": "oklch(0.25 0.08 15)",
+          "--error-text": "oklch(0.85 0.12 15)",
+          "--error-border": "oklch(0.45 0.18 15)",
           "--border-radius": "var(--radius)",
         } as React.CSSProperties
       }
