@@ -51,7 +51,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id
         // Record when this session started so we can compare against passwordChangedAt
-        token.sessionStart = Math.floor(Date.now() / 1000)
+        token.sessionStart = Date.now()
       }
 
       // Invalidate the session if the password was changed after this token was issued; also sync isPro
@@ -61,7 +61,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           select: { passwordChangedAt: true, isPro: true },
         })
         if (dbUser?.passwordChangedAt) {
-          const changedAt = Math.floor(dbUser.passwordChangedAt.getTime() / 1000)
+          const changedAt = dbUser.passwordChangedAt.getTime()
           if ((token.sessionStart as number) < changedAt) {
             return null
           }

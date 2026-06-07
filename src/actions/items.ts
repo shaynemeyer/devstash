@@ -130,7 +130,9 @@ export async function deleteItem(itemId: string): Promise<{ success: boolean; er
   }
 
   if (fileUrl) {
-    await r2.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: fileUrl })).catch(() => {});
+    await r2.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: fileUrl })).catch((err) => {
+      console.error("R2 delete failed for key:", fileUrl, err);
+    });
   }
 
   return { success: true };

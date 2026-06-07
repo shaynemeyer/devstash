@@ -74,6 +74,13 @@ export async function createItem(data: CreateItemData): Promise<ItemDetail | nul
       });
 
       if (data.collectionIds && data.collectionIds.length > 0) {
+        const owned = await tx.collection.findMany({
+          where: { id: { in: data.collectionIds }, userId: data.userId },
+          select: { id: true },
+        });
+        if (owned.length !== data.collectionIds.length) {
+          throw new Error("One or more collections do not belong to the user");
+        }
         await tx.itemCollection.createMany({
           data: data.collectionIds.map((collectionId) => ({ itemId: item.id, collectionId })),
           skipDuplicates: true,
@@ -124,6 +131,15 @@ export async function updateItem(
       });
 
       if (data.collectionIds !== undefined) {
+        if (data.collectionIds.length > 0) {
+          const owned = await tx.collection.findMany({
+            where: { id: { in: data.collectionIds }, userId },
+            select: { id: true },
+          });
+          if (owned.length !== data.collectionIds.length) {
+            throw new Error("One or more collections do not belong to the user");
+          }
+        }
         await tx.itemCollection.deleteMany({ where: { itemId: id } });
         if (data.collectionIds.length > 0) {
           await tx.itemCollection.createMany({

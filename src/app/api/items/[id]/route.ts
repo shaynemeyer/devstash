@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { db } from "@/lib/db";
 import { getItemDetail } from "@/lib/db/items";
-
-async function getDemoUserId(): Promise<string | null> {
-  const user = await db.user.findUnique({
-    where: { email: "demo@devstash.io" },
-    select: { id: true },
-  });
-  return user?.id ?? null;
-}
 
 export async function GET(
   _req: NextRequest,
@@ -17,7 +8,7 @@ export async function GET(
 ) {
   const { id } = await params;
   const session = await auth();
-  const userId = session?.user?.id ?? (await getDemoUserId());
+  const userId = session?.user?.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

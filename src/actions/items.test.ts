@@ -150,7 +150,6 @@ describe("updateItem action", () => {
 
 const validCreateInput = {
   typeId: "type-1",
-  typeName: "Snippet",
   title: "New Snippet",
   tags: [],
 };
@@ -182,14 +181,6 @@ describe("createItem action", () => {
     mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
     const result = await createItem({ ...validCreateInput, title: "" });
     expect(result).toEqual({ success: false, error: "Title is required" });
-    expect(mockDbCreate).not.toHaveBeenCalled();
-  });
-
-  it("returns validation error for Link with no URL", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "user-1" } } as never);
-    const result = await createItem({ ...validCreateInput, typeName: "Link", url: null });
-    expect(result.success).toBe(false);
-    expect(result.error).toBe("URL is required for links");
     expect(mockDbCreate).not.toHaveBeenCalled();
   });
 

@@ -36,13 +36,14 @@ export async function getSidebarCollections(userId: string): Promise<SidebarColl
     const collections = await db.collection.findMany({
       where: { userId },
       orderBy: { updatedAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        isFavorite: true,
+        _count: { select: { items: true } },
         items: {
-          include: {
-            item: {
-              select: { type: { select: { icon: true, color: true } } },
-            },
-          },
+          take: 20,
+          select: { item: { select: { type: { select: { icon: true, color: true } } } } },
         },
       },
     });
@@ -53,7 +54,7 @@ export async function getSidebarCollections(userId: string): Promise<SidebarColl
         id: col.id,
         name: col.name,
         isFavorite: col.isFavorite,
-        itemCount: col.items.length,
+        itemCount: col._count.items,
         dominantColor,
       };
     });
@@ -81,13 +82,15 @@ export async function getRecentCollections(
       where: { userId },
       orderBy: { updatedAt: "desc" },
       take: limit,
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        isFavorite: true,
+        _count: { select: { items: true } },
         items: {
-          include: {
-            item: {
-              select: { type: { select: { icon: true, color: true } } },
-            },
-          },
+          take: 20,
+          select: { item: { select: { type: { select: { icon: true, color: true } } } } },
         },
       },
     });
@@ -99,7 +102,7 @@ export async function getRecentCollections(
         name: col.name,
         description: col.description,
         isFavorite: col.isFavorite,
-        itemCount: col.items.length,
+        itemCount: col._count.items,
         dominantColor,
         typeIcons,
       };
@@ -114,13 +117,15 @@ export async function getAllCollections(userId: string): Promise<CollectionWithM
     const collections = await db.collection.findMany({
       where: { userId },
       orderBy: { updatedAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        isFavorite: true,
+        _count: { select: { items: true } },
         items: {
-          include: {
-            item: {
-              select: { type: { select: { icon: true, color: true } } },
-            },
-          },
+          take: 20,
+          select: { item: { select: { type: { select: { icon: true, color: true } } } } },
         },
       },
     });
@@ -132,7 +137,7 @@ export async function getAllCollections(userId: string): Promise<CollectionWithM
         name: col.name,
         description: col.description,
         isFavorite: col.isFavorite,
-        itemCount: col.items.length,
+        itemCount: col._count.items,
         dominantColor,
         typeIcons,
       };

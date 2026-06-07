@@ -38,7 +38,6 @@ export function useCreateItemForm(onSuccess: () => void) {
 
     const result = await createItem({
       typeId: selectedType.id,
-      typeName: selectedType.name,
       title: title.trim(),
       description: description.trim() || null,
       content: content || null,
