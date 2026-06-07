@@ -21,6 +21,7 @@ export function ItemDrawerHeader({ item, editMode, title, onTitleChange }: ItemD
           className="size-9 rounded-md flex items-center justify-center shrink-0"
           style={{ backgroundColor: item.typeColor + "22" }}
         >
+          {/* eslint-disable-next-line react-hooks/static-components -- getIcon returns a stable reference from a static map */}
           <Icon className="size-4" style={{ color: item.typeColor }} />
         </div>
         {editMode ? (

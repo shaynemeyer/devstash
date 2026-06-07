@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import {
   DEFAULT_EDITOR_PREFERENCES,
   type EditorPreferences,
@@ -26,12 +26,6 @@ export function EditorPreferencesProvider({
   const [preferences, setPreferences] = useState<EditorPreferences>(
     initialPreferences ?? DEFAULT_EDITOR_PREFERENCES
   );
-
-  useEffect(() => {
-    if (initialPreferences) {
-      setPreferences(initialPreferences);
-    }
-  }, [initialPreferences]);
 
   return (
     <EditorPreferencesContext.Provider value={{ preferences, setPreferences }}>

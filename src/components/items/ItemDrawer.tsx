@@ -25,8 +25,8 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
 
   useEffect(() => {
     if (!open || !itemId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
-    setItem(null);
     fetch(`/api/items/${itemId}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => setItem(data))
@@ -39,7 +39,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
         {loading && <DrawerSkeleton />}
         {!loading && item && (
-          <DrawerBody item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} />
+          <DrawerBody key={item.id} item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} />
         )}
       </SheetContent>
     </Sheet>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateItem, deleteItem } from "@/actions/items";
@@ -29,18 +29,6 @@ export function useItemEdit(
   const [tagsInput, setTagsInput] = useState(item.tags.join(", "));
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(toUploadedFile(item));
   const [collectionIds, setCollectionIds] = useState<string[]>(item.collections.map((c) => c.id));
-
-  useEffect(() => {
-    setEditMode(false);
-    setTitle(item.title);
-    setDescription(item.description ?? "");
-    setContent(item.content ?? "");
-    setUrl(item.url ?? "");
-    setLanguage(item.language ?? "");
-    setTagsInput(item.tags.join(", "));
-    setUploadedFile(toUploadedFile(item));
-    setCollectionIds(item.collections.map((c) => c.id));
-  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function enterEdit() {
     setTitle(item.title);
