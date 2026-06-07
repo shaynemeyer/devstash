@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Copy, Check } from "lucide-react";
@@ -22,6 +22,10 @@ function calcHeight(value: string): number {
 export function MarkdownEditor({ value, onChange, readOnly = false }: MarkdownEditorProps) {
   const [tab, setTab] = useState<"write" | "preview">(readOnly ? "preview" : "write");
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setTab(readOnly ? "preview" : "write");
+  }, [readOnly]);
 
   function handleCopy() {
     navigator.clipboard.writeText(value);

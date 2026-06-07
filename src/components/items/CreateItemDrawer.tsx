@@ -60,7 +60,9 @@ function DrawerContent({
   });
 
   useEffect(() => {
-    getUserCollections().then(setCollections);
+    let cancelled = false;
+    getUserCollections().then((data) => { if (!cancelled) setCollections(data); });
+    return () => { cancelled = true; };
   }, []);
 
   const showFileUpload = selectedType ? FILE_TYPES.includes(selectedType.name.toLowerCase()) : false;
