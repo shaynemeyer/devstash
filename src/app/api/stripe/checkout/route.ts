@@ -37,8 +37,8 @@ export async function POST(req: Request) {
 
   const priceId =
     plan === "monthly"
-      ? process.env.STRIPE_PRICE_MONTHLY!
-      : process.env.STRIPE_PRICE_YEARLY!;
+      ? process.env.STRIPE_PRICE_ID_MONTHLY!
+      : process.env.STRIPE_PRICE_ID_YEARLY!;
 
   const checkoutSession = await stripe.checkout.sessions.create({
     customer: customerId,
