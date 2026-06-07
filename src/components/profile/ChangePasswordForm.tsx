@@ -38,7 +38,7 @@ export function ChangePasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
+    <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-card p-4 space-y-4">
       <div className="space-y-1.5">
         <label htmlFor="currentPassword" className="text-sm font-medium text-foreground">
           Current password

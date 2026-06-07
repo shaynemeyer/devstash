@@ -36,7 +36,7 @@ export function EditorPreferencesForm() {
   }
 
   return (
-    <div className="space-y-5 max-w-sm">
+    <div className="rounded-lg border border-border bg-card p-4 space-y-5">
       <div className="flex items-center justify-between">
         <Label htmlFor="fontSize" className="text-sm font-medium text-foreground">
           Font size
@@ -133,3 +133,4 @@ export function EditorPreferencesForm() {
     </div>
   );
 }
+
