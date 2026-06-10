@@ -4,6 +4,7 @@ import { CodeEditor } from "@/components/ui/CodeEditor";
 import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
+import { LanguageSelect } from "@/components/items/LanguageSelect";
 import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
@@ -62,6 +63,15 @@ export function CreateItemForm({ selectedType, fields, collections }: CreateItem
         />
       </section>
 
+      {showLanguage && (
+        <section>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
+            Language
+          </p>
+          <LanguageSelect value={language} onChange={setLanguage} />
+        </section>
+      )}
+
       {showContent && (
         <section>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
@@ -80,20 +90,6 @@ export function CreateItemForm({ selectedType, fields, collections }: CreateItem
               placeholder="Content"
             />
           )}
-        </section>
-      )}
-
-      {showLanguage && (
-        <section>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
-            Language
-          </p>
-          <input
-            className="w-full rounded-md bg-muted px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            placeholder="e.g. TypeScript"
-          />
         </section>
       )}
 

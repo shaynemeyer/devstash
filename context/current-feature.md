@@ -1,12 +1,23 @@
-# Current Feature
+# Current Feature: Language Select Dropdown
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Replace the plain text language input with a dropdown that sits above the content editor
+- Selecting a language immediately updates Monaco syntax highlighting as the user types
+- Applies to both the Create item drawer and the Edit item drawer (snippet, command types)
+
 ## Notes
+
+- New `LanguageSelect` component: `src/components/items/LanguageSelect.tsx` — thin shadcn `Select` wrapper, controlled, no internal state
+- Languages list: plaintext, typescript, javascript, python, rust, go, java, c, cpp, csharp, html, css, json, yaml, toml, sql, bash, dockerfile, markdown, ruby, php, swift, kotlin, graphql, xml
+- Default to `plaintext` when language is empty/undefined
+- No schema or action changes needed — `language` already stored on `Item`
+- No new dependencies — use existing shadcn `Select` and Monaco's built-in language support
+- View mode unchanged — language shown in CodeEditor header bar
 
 ## History
 
