@@ -26,9 +26,10 @@ interface DashboardShellProps {
   itemTypes: ItemTypeWithCount[];
   collections: SidebarCollection[];
   user: ShellUser;
+  isPro: boolean;
 }
 
-export function DashboardShell({ children, itemTypes, collections, user }: DashboardShellProps) {
+export function DashboardShell({ children, itemTypes, collections, user, isPro }: DashboardShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -86,6 +87,7 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         onOpenChange={setCreateOpen}
         itemTypes={itemTypes}
         defaultTypeId={itemTypes.find((t) => t.name.toLowerCase() === "snippet")?.id ?? ""}
+        isPro={isPro}
       />
       <CreateCollectionDrawer
         open={createCollectionOpen}
@@ -101,6 +103,7 @@ export function DashboardShell({ children, itemTypes, collections, user }: Dashb
         itemId={selectedItemId}
         open={itemDrawerOpen}
         onOpenChange={setItemDrawerOpen}
+        isPro={isPro}
       />
     </div>
     </EditorPreferencesProvider>

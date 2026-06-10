@@ -16,9 +16,10 @@ interface ItemDrawerProps {
   itemId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isPro?: boolean;
 }
 
-export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
+export function ItemDrawer({ itemId, open, onOpenChange, isPro = false }: ItemDrawerProps) {
   const [item, setItem] = useState<ItemDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [collections, setCollections] = useState<{ id: string; name: string }[]>([]);
@@ -39,7 +40,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
         {loading && <DrawerSkeleton />}
         {!loading && item && (
-          <DrawerBody key={item.id} item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} />
+          <DrawerBody key={item.id} item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} isPro={isPro} />
         )}
       </SheetContent>
     </Sheet>
@@ -51,11 +52,13 @@ function DrawerBody({
   collections,
   onItemChange,
   onClose,
+  isPro,
 }: {
   item: ItemDetail;
   collections: { id: string; name: string }[];
   onItemChange: (item: ItemDetail) => void;
   onClose: () => void;
+  isPro: boolean;
 }) {
   const edit = useItemEdit(item, onItemChange, onClose);
   const [isPinned, setIsPinned] = useState(item.isPinned);
@@ -143,6 +146,7 @@ function DrawerBody({
         collections={collections}
         collectionIds={edit.collectionIds}
         onCollectionIdsChange={edit.setCollectionIds}
+        isPro={isPro}
       />
     </div>
   );

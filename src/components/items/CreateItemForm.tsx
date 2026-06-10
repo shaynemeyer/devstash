@@ -5,6 +5,7 @@ import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
+import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
@@ -35,9 +36,11 @@ interface CreateItemFormProps {
   selectedType: ItemTypeWithCount | undefined;
   fields: FormFields;
   collections: { id: string; name: string }[];
+  title: string;
+  isPro: boolean;
 }
 
-export function CreateItemForm({ selectedType, fields, collections }: CreateItemFormProps) {
+export function CreateItemForm({ selectedType, fields, collections, title, isPro }: CreateItemFormProps) {
   const { description, setDescription, content, setContent, url, setUrl, language, setLanguage, tagsInput, setTagsInput, uploadedFile, setUploadedFile, collectionIds, setCollectionIds } = fields;
 
   const typeName = selectedType?.name.toLowerCase() ?? "";
@@ -132,6 +135,17 @@ export function CreateItemForm({ selectedType, fields, collections }: CreateItem
           placeholder="react, hooks, typescript"
         />
         <p className="text-xs text-muted-foreground mt-1">Comma-separated</p>
+        <SuggestTagsButton
+          title={title}
+          content={content}
+          isPro={isPro}
+          onAcceptTag={(tag) => {
+            const existing = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+            if (!existing.includes(tag)) {
+              setTagsInput(existing.length > 0 ? `${tagsInput.trim()}, ${tag}` : tag);
+            }
+          }}
+        />
       </section>
 
       <CollectionSelector

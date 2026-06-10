@@ -21,6 +21,7 @@ export const registerLimiter = slidingWindow(3, "1 h")
 export const forgotPasswordLimiter = slidingWindow(3, "1 h")
 export const resetPasswordLimiter = slidingWindow(5, "15 m")
 export const resendVerificationLimiter = slidingWindow(3, "15 m")
+export const aiLimiter = slidingWindow(20, "1 h")
 
 export function getIp(request: Request): string {
   return (
