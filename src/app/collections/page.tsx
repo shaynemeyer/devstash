@@ -30,7 +30,7 @@ export default async function CollectionsPage() {
   };
 
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user} isPro={session?.user?.isPro ?? false}>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>

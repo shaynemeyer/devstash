@@ -7,6 +7,7 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { FilePreview } from "@/components/ui/FilePreview";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
+import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -34,6 +35,7 @@ interface ItemDrawerContentProps {
   collections: { id: string; name: string }[];
   collectionIds: string[];
   onCollectionIdsChange: (ids: string[]) => void;
+  isPro: boolean;
 }
 
 export function ItemDrawerContent({
@@ -54,6 +56,7 @@ export function ItemDrawerContent({
   collections,
   collectionIds,
   onCollectionIdsChange,
+  isPro,
 }: ItemDrawerContentProps) {
   const typeName = item.typeName.toLowerCase();
   const showContent = CONTENT_TYPES.includes(typeName);
@@ -224,6 +227,17 @@ export function ItemDrawerContent({
             placeholder="react, hooks, typescript"
           />
           <p className="text-xs text-muted-foreground mt-1">Comma-separated</p>
+          <SuggestTagsButton
+            title={item.title}
+            content={content}
+            isPro={isPro}
+            onAcceptTag={(tag) => {
+              const existing = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+              if (!existing.includes(tag)) {
+                onTagsInputChange(existing.length > 0 ? `${tagsInput.trim()}, ${tag}` : tag);
+              }
+            }}
+          />
         </section>
       ) : (
         item.tags.length > 0 && (

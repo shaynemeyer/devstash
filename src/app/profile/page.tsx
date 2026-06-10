@@ -35,7 +35,7 @@ export default async function ProfilePage() {
   }).format(profileUser.createdAt);
 
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={shellUser}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={shellUser} isPro={session.user.isPro}>
       <div className="p-6 max-w-3xl mx-auto space-y-10">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Profile</h1>

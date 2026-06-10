@@ -20,9 +20,10 @@ interface CreateItemDrawerProps {
   onOpenChange: (open: boolean) => void;
   itemTypes: ItemTypeWithCount[];
   defaultTypeId?: string;
+  isPro?: boolean;
 }
 
-export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId }: CreateItemDrawerProps) {
+export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId, isPro = false }: CreateItemDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
@@ -31,6 +32,7 @@ export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId 
             onOpenChange={onOpenChange}
             itemTypes={itemTypes}
             defaultTypeId={defaultTypeId}
+            isPro={isPro}
           />
         )}
       </SheetContent>
@@ -42,10 +44,12 @@ function DrawerContent({
   onOpenChange,
   itemTypes,
   defaultTypeId,
+  isPro,
 }: {
   onOpenChange: (open: boolean) => void;
   itemTypes: ItemTypeWithCount[];
   defaultTypeId?: string;
+  isPro: boolean;
 }) {
   const router = useRouter();
   const types = itemTypes.filter((t) => CREATABLE_TYPES.includes(t.name.toLowerCase()));
@@ -123,6 +127,8 @@ function DrawerContent({
       <CreateItemForm
         selectedType={selectedType}
         collections={collections}
+        title={form.title}
+        isPro={isPro}
         fields={{
           description: form.description,
           setDescription: form.setDescription,

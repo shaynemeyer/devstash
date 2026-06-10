@@ -29,6 +29,7 @@ export default async function DashboardPage() {
     userId ? getSidebarCollections(userId) : Promise.resolve([]),
   ]);
 
+  const isPro = session?.user?.isPro ?? false;
   const user = {
     name: session?.user?.name ?? "Demo User",
     email: session?.user?.email ?? "demo@devstash.io",
@@ -36,7 +37,7 @@ export default async function DashboardPage() {
   };
 
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user} isPro={isPro}>
       <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>

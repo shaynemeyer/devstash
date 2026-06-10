@@ -32,7 +32,7 @@ export default async function SettingsPage() {
   };
 
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={shellUser}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={shellUser} isPro={dbUser?.isPro ?? false}>
       <div className="p-6 max-w-3xl mx-auto space-y-10">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Settings</h1>

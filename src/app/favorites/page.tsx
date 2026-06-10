@@ -29,7 +29,7 @@ export default async function FavoritesPage() {
   const totalFavorites = favoriteItems.length + favoriteCollections.length;
 
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user} isPro={session.user.isPro}>
       <div className="p-6 max-w-3xl mx-auto space-y-6">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Favorites</h1>

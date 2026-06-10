@@ -72,7 +72,7 @@ export default async function ItemsTypePage({ params, searchParams }: Props) {
       image: session?.user?.image ?? null,
     };
     return (
-      <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
+      <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user} isPro={isPro}>
         <div className="p-6 max-w-6xl mx-auto">
           <ProUpgradeGate feature={SLUG_LABELS[type]} />
         </div>
@@ -98,7 +98,7 @@ export default async function ItemsTypePage({ params, searchParams }: Props) {
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   return (
-    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user}>
+    <DashboardShell itemTypes={sidebarItemTypes} collections={sidebarCollections} user={user} isPro={isPro}>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
         <TypePageActions
           label={label}
