@@ -6,6 +6,7 @@ import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { FilePreview } from "@/components/ui/FilePreview";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
+import { LanguageSelect } from "@/components/items/LanguageSelect";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -100,6 +101,16 @@ export function ItemDrawerContent({
         )
       )}
 
+      {/* Language — edit mode, above content */}
+      {editMode && showLanguage && (
+        <section>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
+            Language
+          </p>
+          <LanguageSelect value={language} onChange={onLanguageChange} />
+        </section>
+      )}
+
       {/* Content */}
       {editMode && showContent ? (
         <section>
@@ -137,21 +148,6 @@ export function ItemDrawerContent({
             )}
           </section>
         )
-      )}
-
-      {/* Language */}
-      {editMode && showLanguage && (
-        <section>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
-            Language
-          </p>
-          <input
-            className="w-full rounded-md bg-muted px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-            value={language}
-            onChange={(e) => onLanguageChange(e.target.value)}
-            placeholder="e.g. TypeScript"
-          />
-        </section>
       )}
 
       {/* URL */}
