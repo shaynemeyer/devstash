@@ -147,6 +147,7 @@ function DrawerBody({
         collectionIds={edit.collectionIds}
         onCollectionIdsChange={edit.setCollectionIds}
         isPro={isPro}
+        onApplyOptimized={edit.applyOptimized}
       />
     </div>
   );

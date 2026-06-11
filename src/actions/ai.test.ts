@@ -30,7 +30,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { openai } from "@/lib/openai";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { generateAutoTags, generateDescription, explainCode } from "./ai";
+import { generateAutoTags, generateDescription, explainCode, optimizePrompt } from "./ai";
 
 const mockAuth = vi.mocked(auth);
 const mockFindUnique = vi.mocked(db.user.findUnique);
@@ -241,5 +241,73 @@ describe("explainCode", () => {
     const callArg = mockResponsesCreate.mock.calls[0][0] as { input: string };
     expect(callArg.input).toContain("x".repeat(3000));
     expect(callArg.input).not.toContain("x".repeat(3001));
+  });
+});
+
+describe("optimizePrompt", () => {
+  it("returns Unauthorized when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+    const result = await optimizePrompt({ content: "Write a function that..." });
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+  });
+
+  it("returns Pro error for free users", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: false } as never);
+    const result = await optimizePrompt({ content: "Write a function that..." });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/Pro/);
+  });
+
+  it("returns rate limit error when limit exceeded", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockCheckRateLimit.mockResolvedValue(false);
+    const result = await optimizePrompt({ content: "Write a function that..." });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/Rate limit/);
+  });
+
+  it("returns validation error when content is empty", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    const result = await optimizePrompt({ content: "" });
+    expect(result.success).toBe(false);
+    expect(result.error).toBeTruthy();
+  });
+
+  it("returns validation error when content exceeds 5000 chars", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    const result = await optimizePrompt({ content: "x".repeat(5001) });
+    expect(result.success).toBe(false);
+    expect(result.error).toBeTruthy();
+  });
+
+  it("returns optimized prompt on success", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockResponsesCreate.mockResolvedValue({ output_text: "Refined prompt text." } as never);
+    const result = await optimizePrompt({ content: "make a function" });
+    expect(result.success).toBe(true);
+    expect(result.optimizedPrompt).toBe("Refined prompt text.");
+  });
+
+  it("returns error when API returns empty text", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockResponsesCreate.mockResolvedValue({ output_text: "   " } as never);
+    const result = await optimizePrompt({ content: "make a function" });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/empty/);
+  });
+
+  it("returns error when API throws", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockResponsesCreate.mockRejectedValue(new Error("network error"));
+    const result = await optimizePrompt({ content: "make a function" });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/AI service error/);
   });
 });

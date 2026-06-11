@@ -9,7 +9,7 @@ import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { GenerateDescriptionButton } from "@/components/items/GenerateDescriptionButton";
-import { explainCode } from "@/actions/ai";
+import { explainCode, optimizePrompt } from "@/actions/ai";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -38,6 +38,7 @@ interface ItemDrawerContentProps {
   collectionIds: string[];
   onCollectionIdsChange: (ids: string[]) => void;
   isPro: boolean;
+  onApplyOptimized?: (text: string) => void;
 }
 
 export function ItemDrawerContent({
@@ -59,6 +60,7 @@ export function ItemDrawerContent({
   collectionIds,
   onCollectionIdsChange,
   isPro,
+  onApplyOptimized,
 }: ItemDrawerContentProps) {
   const typeName = item.typeName.toLowerCase();
   const showContent = CONTENT_TYPES.includes(typeName);
@@ -160,7 +162,13 @@ export function ItemDrawerContent({
                 onExplain={() => explainCode({ content: item.content ?? "", language: item.language ?? undefined, itemType: typeName })}
               />
             ) : useMarkdownEditor ? (
-              <MarkdownEditor value={item.content} readOnly />
+              <MarkdownEditor
+                value={item.content}
+                readOnly
+                isPro={isPro}
+                onOptimize={typeName === "prompt" ? () => optimizePrompt({ content: item.content ?? "" }) : undefined}
+                onApplyOptimized={typeName === "prompt" ? onApplyOptimized : undefined}
+              />
             ) : (
               <pre className="rounded-lg bg-muted p-4 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
                 <code>{item.content}</code>

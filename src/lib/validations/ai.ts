@@ -22,3 +22,9 @@ export const ExplainCodeSchema = z.object({
 });
 
 export type ExplainCodeInput = z.infer<typeof ExplainCodeSchema>;
+
+export const OptimizePromptSchema = z.object({
+  content: z.string().min(1, "Content is required").max(5000),
+});
+
+export type OptimizePromptInput = z.infer<typeof OptimizePromptSchema>;

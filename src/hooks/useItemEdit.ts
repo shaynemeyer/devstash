@@ -42,6 +42,18 @@ export function useItemEdit(
     setEditMode(true);
   }
 
+  function applyOptimized(text: string) {
+    setTitle(item.title);
+    setDescription(item.description ?? "");
+    setContent(text);
+    setUrl(item.url ?? "");
+    setLanguage(item.language ?? "");
+    setTagsInput(item.tags.join(", "));
+    setUploadedFile(toUploadedFile(item));
+    setCollectionIds(item.collections.map((c) => c.id));
+    setEditMode(true);
+  }
+
   function cancelEdit() {
     setEditMode(false);
   }
@@ -113,6 +125,7 @@ export function useItemEdit(
     collectionIds,
     setCollectionIds,
     enterEdit,
+    applyOptimized,
     cancelEdit,
     save,
     handleDelete,

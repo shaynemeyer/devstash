@@ -3,12 +3,22 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, Crown } from "lucide-react";
+import { toast } from "sonner";
+
+interface OptimizeResult {
+  success: boolean;
+  optimizedPrompt?: string;
+  error?: string;
+}
 
 interface MarkdownEditorProps {
   value: string;
   onChange?: (value: string) => void;
   readOnly?: boolean;
+  isPro?: boolean;
+  onOptimize?: () => Promise<OptimizeResult>;
+  onApplyOptimized?: (text: string) => void;
 }
 
 const MIN_HEIGHT = 80;
@@ -19,9 +29,18 @@ function calcHeight(value: string): number {
   return Math.min(Math.max(lines * 20 + 24, MIN_HEIGHT), MAX_HEIGHT);
 }
 
-export function MarkdownEditor({ value, onChange, readOnly = false }: MarkdownEditorProps) {
+export function MarkdownEditor({
+  value,
+  onChange,
+  readOnly = false,
+  isPro,
+  onOptimize,
+  onApplyOptimized,
+}: MarkdownEditorProps) {
   const [tab, setTab] = useState<"write" | "preview">(readOnly ? "preview" : "write");
   const [copied, setCopied] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
+  const [optimizedText, setOptimizedText] = useState<string | null>(null);
 
   useEffect(() => {
     setTab(readOnly ? "preview" : "write");
@@ -33,7 +52,27 @@ export function MarkdownEditor({ value, onChange, readOnly = false }: MarkdownEd
     setTimeout(() => setCopied(false), 1500);
   }
 
+  async function handleOptimize() {
+    if (!onOptimize) return;
+    setOptimizing(true);
+    const result = await onOptimize();
+    setOptimizing(false);
+    if (!result.success) {
+      toast.error(result.error ?? "Failed to optimize prompt");
+      return;
+    }
+    setOptimizedText(result.optimizedPrompt ?? "");
+  }
+
+  function handleApply() {
+    if (!optimizedText) return;
+    onApplyOptimized?.(optimizedText);
+    toast.success("Prompt updated — review and save");
+    setOptimizedText(null);
+  }
+
   const height = calcHeight(value);
+  const showOptimizeControl = readOnly && !!onOptimize;
 
   return (
     <div className="rounded-lg overflow-hidden border border-border bg-[#1e1e1e]">
@@ -65,13 +104,35 @@ export function MarkdownEditor({ value, onChange, readOnly = false }: MarkdownEd
           )}
           {readOnly && <span className="text-xs text-[#858585]">Markdown</span>}
         </div>
-        <button
-          onClick={handleCopy}
-          className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors"
-        >
-          {copied ? <Check className="size-3.5 text-green-400" /> : <Copy className="size-3.5" />}
-          <span>{copied ? "Copied" : "Copy"}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {showOptimizeControl && (
+            isPro ? (
+              <button
+                onClick={handleOptimize}
+                disabled={optimizing}
+                className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors disabled:opacity-50"
+              >
+                {optimizing ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+                <span>{optimizing ? "Optimizing…" : "Optimize"}</span>
+              </button>
+            ) : (
+              <span
+                title="AI features require Pro subscription"
+                className="flex items-center gap-1 text-xs text-[#858585] opacity-50 cursor-default"
+              >
+                <Crown className="size-3.5" />
+                <span>Optimize</span>
+              </span>
+            )
+          )}
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors"
+          >
+            {copied ? <Check className="size-3.5 text-green-400" /> : <Copy className="size-3.5" />}
+            <span>{copied ? "Copied" : "Copy"}</span>
+          </button>
+        </div>
       </div>
 
       {tab === "write" && !readOnly ? (
@@ -93,6 +154,32 @@ export function MarkdownEditor({ value, onChange, readOnly = false }: MarkdownEd
           ) : (
             <p className="text-[#858585] italic">Nothing to preview.</p>
           )}
+        </div>
+      )}
+
+      {optimizedText !== null && (
+        <div className="border-t border-[#3a3a3a] bg-[#1a1a2e] px-4 py-3 space-y-2">
+          <p className="text-xs font-medium text-[#858585] uppercase tracking-wide">Optimized</p>
+          <div
+            className="text-sm text-[#d4d4d4] overflow-y-auto"
+            style={{ maxHeight: 200 }}
+          >
+            {optimizedText}
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              onClick={handleApply}
+              className="text-xs px-3 py-1 rounded bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              Use This
+            </button>
+            <button
+              onClick={() => setOptimizedText(null)}
+              className="text-xs px-3 py-1 rounded text-[#858585] hover:text-[#cccccc] transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
     </div>

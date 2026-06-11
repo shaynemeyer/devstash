@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { openai, AI_MODEL } from "@/lib/openai";
 import { aiLimiter, checkRateLimit } from "@/lib/rate-limit";
-import { GenerateAutoTagsSchema, GenerateDescriptionSchema, ExplainCodeSchema } from "@/lib/validations/ai";
+import { GenerateAutoTagsSchema, GenerateDescriptionSchema, ExplainCodeSchema, OptimizePromptSchema } from "@/lib/validations/ai";
 
 interface AutoTagsResult {
   success: boolean;
@@ -177,6 +177,55 @@ export async function explainCode(input: unknown): Promise<ExplainCodeResult> {
     }
 
     return { success: true, explanation };
+  } catch {
+    return { success: false, error: "AI service error. Please try again." };
+  }
+}
+
+interface OptimizePromptResult {
+  success: boolean;
+  optimizedPrompt?: string;
+  error?: string;
+}
+
+export async function optimizePrompt(input: unknown): Promise<OptimizePromptResult> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const user = await db.user.findUnique({ where: { id: session.user.id }, select: { isPro: true } });
+  if (!user?.isPro) {
+    return { success: false, error: "AI features require a Pro subscription." };
+  }
+
+  const allowed = await checkRateLimit(aiLimiter, `ai:${session.user.id}`);
+  if (!allowed) {
+    return { success: false, error: "Rate limit reached. You can optimize prompts up to 20 times per hour." };
+  }
+
+  const result = OptimizePromptSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  const { content } = result.data;
+  const truncated = content.slice(0, 4000);
+
+  try {
+    const response = await openai.responses.create({
+      model: AI_MODEL,
+      instructions:
+        "You are an expert prompt engineer. Refine the given prompt for clarity, specificity, and LLM effectiveness. Preserve the original intent. Return only the improved prompt text — no preamble, no explanation, no extra formatting.",
+      input: truncated,
+    });
+
+    const optimizedPrompt = response.output_text.trim();
+    if (!optimizedPrompt) {
+      return { success: false, error: "AI returned an empty result." };
+    }
+
+    return { success: true, optimizedPrompt };
   } catch {
     return { success: false, error: "AI service error. Please try again." };
   }
