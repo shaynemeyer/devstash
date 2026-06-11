@@ -6,6 +6,7 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
+import { GenerateDescriptionButton } from "@/components/items/GenerateDescriptionButton";
 import type { UploadedFile } from "@/components/ui/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
@@ -54,9 +55,18 @@ export function CreateItemForm({ selectedType, fields, collections, title, isPro
   return (
     <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
       <section>
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
-          Description
-        </p>
+        <div className="flex items-center justify-between mb-1.5">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Description
+          </p>
+          <GenerateDescriptionButton
+            title={title}
+            content={content}
+            itemType={typeName}
+            isPro={isPro}
+            onGenerated={setDescription}
+          />
+        </div>
         <textarea
           className="w-full rounded-md bg-muted p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
           rows={3}

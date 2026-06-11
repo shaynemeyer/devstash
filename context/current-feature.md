@@ -1,12 +1,29 @@
-# Current Feature
+# Current Feature: Generate Description via AI
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Add a Sparkles icon button next to the description field in Create and Edit item drawers
+- Clicking it calls `generateDescription` server action with current title + content (unsaved state)
+- On success: populates the description textarea with the 1–2 sentence AI-generated text
+- On error: shows a toast with a short error message
+- Button disabled when both title and content are empty
+- Pro only; renders nothing (or disabled) for free users
+- Works for all item types: Snippet, Prompt, Command, Note, Link, File, Image
+
 ## Notes
+
+- Server action: `generateDescription` in `src/actions/ai.ts` alongside `generateAutoTags`
+- Component: `src/components/items/GenerateDescriptionButton.tsx`
+- Uses `gpt-4o-mini` via existing OpenAI client
+- Zod input: `title` (optional string), `content` (optional string), `itemType` (string)
+- Returns `{ success: true, description: string }` or `{ success: false, error: string }`
+- Rate limit: reuse 20 req/hr pattern from `generateAutoTags`
+- `isPro` already threaded through `DashboardShell` — pass down same way as `SuggestTagsButton`
+- Out of scope: auto-save after generation, bulk generation, custom types
 
 ## History
 

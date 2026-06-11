@@ -30,7 +30,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { openai } from "@/lib/openai";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { generateAutoTags } from "./ai";
+import { generateAutoTags, generateDescription } from "./ai";
 
 const mockAuth = vi.mocked(auth);
 const mockFindUnique = vi.mocked(db.user.findUnique);
@@ -108,6 +108,66 @@ describe("generateAutoTags", () => {
     mockFindUnique.mockResolvedValue({ isPro: true } as never);
     mockResponsesCreate.mockRejectedValue(new Error("network error"));
     const result = await generateAutoTags({ title: "test" });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/AI service error/);
+  });
+});
+
+describe("generateDescription", () => {
+  it("returns Unauthorized when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+    const result = await generateDescription({ itemType: "snippet" });
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+  });
+
+  it("returns Pro error for free users", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: false } as never);
+    const result = await generateDescription({ itemType: "snippet" });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/Pro/);
+  });
+
+  it("returns rate limit error when limit exceeded", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockCheckRateLimit.mockResolvedValue(false);
+    const result = await generateDescription({ itemType: "snippet" });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/Rate limit/);
+  });
+
+  it("returns validation error when itemType is missing", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    const result = await generateDescription({});
+    expect(result.success).toBe(false);
+    expect(result.error).toBeTruthy();
+  });
+
+  it("returns generated description on success", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockResponsesCreate.mockResolvedValue({ output_text: "A reusable React hook for managing form state." } as never);
+    const result = await generateDescription({ title: "useForm hook", content: "export function useForm...", itemType: "snippet" });
+    expect(result.success).toBe(true);
+    expect(result.description).toBe("A reusable React hook for managing form state.");
+  });
+
+  it("returns error when API returns empty text", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockResponsesCreate.mockResolvedValue({ output_text: "   " } as never);
+    const result = await generateDescription({ title: "test", itemType: "note" });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/empty/);
+  });
+
+  it("returns error when API throws", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } } as never);
+    mockFindUnique.mockResolvedValue({ isPro: true } as never);
+    mockResponsesCreate.mockRejectedValue(new Error("network error"));
+    const result = await generateDescription({ title: "test", itemType: "prompt" });
     expect(result.success).toBe(false);
     expect(result.error).toMatch(/AI service error/);
   });

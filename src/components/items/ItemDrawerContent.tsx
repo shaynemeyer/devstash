@@ -8,6 +8,7 @@ import { FilePreview } from "@/components/ui/FilePreview";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
+import { GenerateDescriptionButton } from "@/components/items/GenerateDescriptionButton";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -82,9 +83,18 @@ export function ItemDrawerContent({
       {/* Description */}
       {editMode ? (
         <section>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
-            Description
-          </p>
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Description
+            </p>
+            <GenerateDescriptionButton
+              title={item.title}
+              content={content}
+              itemType={typeName}
+              isPro={isPro}
+              onGenerated={onDescriptionChange}
+            />
+          </div>
           <textarea
             className="w-full rounded-md bg-muted p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             rows={3}
