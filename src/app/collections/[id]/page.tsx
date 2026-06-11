@@ -64,7 +64,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pro
           </div>
           <CollectionActions collection={collection} />
         </div>
-        <ItemsGrid items={items} emptyLabel="items in this collection" />
+        <ItemsGrid items={items} emptyLabel="items in this collection" isPro={session?.user?.isPro ?? false} />
         <PaginationControls
           page={page}
           totalPages={totalPages}

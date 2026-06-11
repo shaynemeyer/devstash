@@ -8,9 +8,10 @@ import { ItemDrawer } from "@/components/items/ItemDrawer";
 
 interface PinnedItemsProps {
   items: ItemWithMeta[];
+  isPro?: boolean;
 }
 
-export function PinnedItems({ items }: PinnedItemsProps) {
+export function PinnedItems({ items, isPro }: PinnedItemsProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -67,7 +68,7 @@ export function PinnedItems({ items }: PinnedItemsProps) {
           );
         })}
       </div>
-      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} isPro={isPro} />
     </section>
   );
 }

@@ -7,9 +7,10 @@ import { ItemWithMeta } from "@/lib/db/items";
 
 interface FileListProps {
   items: ItemWithMeta[];
+  isPro?: boolean;
 }
 
-export function FileList({ items }: FileListProps) {
+export function FileList({ items, isPro }: FileListProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -33,7 +34,7 @@ export function FileList({ items }: FileListProps) {
           <FileListRow key={item.id} item={item} onClick={() => openDrawer(item.id)} />
         ))}
       </div>
-      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} isPro={isPro} />
     </>
   );
 }

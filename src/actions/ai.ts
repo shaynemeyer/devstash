@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { openai, AI_MODEL } from "@/lib/openai";
 import { aiLimiter, checkRateLimit } from "@/lib/rate-limit";
-import { GenerateAutoTagsSchema, GenerateDescriptionSchema } from "@/lib/validations/ai";
+import { GenerateAutoTagsSchema, GenerateDescriptionSchema, ExplainCodeSchema } from "@/lib/validations/ai";
 
 interface AutoTagsResult {
   success: boolean;
@@ -123,6 +123,60 @@ export async function generateDescription(input: unknown): Promise<GenerateDescr
     }
 
     return { success: true, description };
+  } catch {
+    return { success: false, error: "AI service error. Please try again." };
+  }
+}
+
+interface ExplainCodeResult {
+  success: boolean;
+  explanation?: string;
+  error?: string;
+}
+
+export async function explainCode(input: unknown): Promise<ExplainCodeResult> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const user = await db.user.findUnique({ where: { id: session.user.id }, select: { isPro: true } });
+  if (!user?.isPro) {
+    return { success: false, error: "AI features require a Pro subscription." };
+  }
+
+  const allowed = await checkRateLimit(aiLimiter, `ai:${session.user.id}`);
+  if (!allowed) {
+    return { success: false, error: "Rate limit reached. You can explain code up to 20 times per hour." };
+  }
+
+  const result = ExplainCodeSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  const { content, language, itemType } = result.data;
+  const truncated = content.slice(0, 3000);
+  const userInput = [
+    language ? `Language: ${language}` : "",
+    `Type: ${itemType}`,
+    `Code:\n${truncated}`,
+  ].filter(Boolean).join("\n");
+
+  try {
+    const response = await openai.responses.create({
+      model: AI_MODEL,
+      instructions:
+        "You are a developer tool assistant. Explain the given code or command concisely in 200-300 words. Cover what it does, how it works, and any key concepts or patterns used. Use plain markdown with short paragraphs. No code fences unless showing a specific example.",
+      input: userInput,
+    });
+
+    const explanation = response.output_text.trim();
+    if (!explanation) {
+      return { success: false, error: "AI returned an empty explanation." };
+    }
+
+    return { success: true, explanation };
   } catch {
     return { success: false, error: "AI service error. Please try again." };
   }

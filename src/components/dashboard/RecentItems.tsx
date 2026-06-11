@@ -9,9 +9,10 @@ import { ItemDrawer } from "@/components/items/ItemDrawer";
 
 interface RecentItemsProps {
   items: ItemWithMeta[];
+  isPro?: boolean;
 }
 
-export function RecentItems({ items }: RecentItemsProps) {
+export function RecentItems({ items, isPro }: RecentItemsProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -67,7 +68,7 @@ export function RecentItems({ items }: RecentItemsProps) {
           );
         })}
       </div>
-      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} isPro={isPro} />
     </section>
   );
 }

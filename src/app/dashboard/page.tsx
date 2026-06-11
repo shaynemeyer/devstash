@@ -45,8 +45,8 @@ export default async function DashboardPage() {
         </div>
         <StatsCards stats={stats} />
         <RecentCollections collections={collections} />
-        <PinnedItems items={pinnedItems} />
-        <RecentItems items={recentItems} />
+        <PinnedItems items={pinnedItems} isPro={isPro} />
+        <RecentItems items={recentItems} isPro={isPro} />
       </div>
     </DashboardShell>
   );

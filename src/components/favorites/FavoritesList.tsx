@@ -20,6 +20,7 @@ type SortDir = "asc" | "desc";
 interface FavoritesListProps {
   items: FavoriteItem[];
   collections: FavoriteCollection[];
+  isPro?: boolean;
 }
 
 function formatDate(date: Date): string {
@@ -50,7 +51,7 @@ function sortCollections(collections: FavoriteCollection[], field: SortField, di
   });
 }
 
-export function FavoritesList({ items, collections }: FavoritesListProps) {
+export function FavoritesList({ items, collections, isPro }: FavoritesListProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sortField, setSortField] = useState<SortField>("date");
@@ -147,6 +148,7 @@ export function FavoritesList({ items, collections }: FavoritesListProps) {
         itemId={selectedItemId}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
+        isPro={isPro}
       />
     </>
   );

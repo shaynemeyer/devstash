@@ -9,6 +9,7 @@ import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { GenerateDescriptionButton } from "@/components/items/GenerateDescriptionButton";
+import { explainCode } from "@/actions/ai";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
@@ -151,7 +152,13 @@ export function ItemDrawerContent({
               Content
             </p>
             {useCodeEditor ? (
-              <CodeEditor value={item.content} language={item.language || "plaintext"} readOnly />
+              <CodeEditor
+                value={item.content}
+                language={item.language || "plaintext"}
+                readOnly
+                isPro={isPro}
+                onExplain={() => explainCode({ content: item.content ?? "", language: item.language ?? undefined, itemType: typeName })}
+              />
             ) : useMarkdownEditor ? (
               <MarkdownEditor value={item.content} readOnly />
             ) : (

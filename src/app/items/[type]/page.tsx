@@ -107,11 +107,11 @@ export default async function ItemsTypePage({ params, searchParams }: Props) {
           defaultTypeId={defaultTypeId}
         />
         {type === "images" ? (
-          <ImageGallery items={items} />
+          <ImageGallery items={items} isPro={isPro} />
         ) : type === "files" ? (
-          <FileList items={items} />
+          <FileList items={items} isPro={isPro} />
         ) : (
-          <ItemsGrid items={items} emptyLabel={label.toLowerCase()} />
+          <ItemsGrid items={items} emptyLabel={label.toLowerCase()} isPro={isPro} />
         )}
         <PaginationControls
           page={page}

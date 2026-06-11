@@ -46,7 +46,7 @@ export default async function FavoritesPage() {
             </p>
           </div>
         ) : (
-          <FavoritesList items={favoriteItems} collections={favoriteCollections} />
+          <FavoritesList items={favoriteItems} collections={favoriteCollections} isPro={session.user.isPro} />
         )}
       </div>
     </DashboardShell>

@@ -2,14 +2,25 @@
 
 import { useState } from "react";
 import MonacoEditor, { type BeforeMount } from "@monaco-editor/react";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, Crown } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { toast } from "sonner";
 import { useEditorPreferences } from "@/contexts/EditorPreferencesContext";
+
+interface ExplainResult {
+  success: boolean;
+  explanation?: string;
+  error?: string;
+}
 
 interface CodeEditorProps {
   value: string;
   onChange?: (value: string) => void;
   language?: string;
   readOnly?: boolean;
+  isPro?: boolean;
+  onExplain?: () => Promise<ExplainResult>;
 }
 
 const LINE_HEIGHT = 20;
@@ -66,18 +77,37 @@ const defineCustomThemes: BeforeMount = (monaco) => {
   });
 };
 
-export function CodeEditor({ value, onChange, language = "plaintext", readOnly = false }: CodeEditorProps) {
+export function CodeEditor({ value, onChange, language = "plaintext", readOnly = false, isPro, onExplain }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
+  const [explaining, setExplaining] = useState(false);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"code" | "explain">("code");
   const { preferences } = useEditorPreferences();
 
   function handleCopy() {
-    navigator.clipboard.writeText(value);
+    const text = activeTab === "explain" && explanation ? explanation : value;
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
 
+  async function handleExplain() {
+    if (!onExplain) return;
+    setExplaining(true);
+    const result = await onExplain();
+    setExplaining(false);
+    if (!result.success) {
+      toast.error(result.error ?? "Failed to explain code");
+      return;
+    }
+    setExplanation(result.explanation ?? "");
+    setActiveTab("explain");
+  }
+
   const displayLang = language || "plaintext";
   const height = calcHeight(value);
+  const showExplainControls = readOnly && !!onExplain;
+  const hasExplanation = !!explanation;
 
   return (
     <div className="rounded-lg overflow-hidden border border-border bg-[#1e1e1e]">
@@ -87,45 +117,100 @@ export function CodeEditor({ value, onChange, language = "plaintext", readOnly =
           <span className="size-3 rounded-full bg-[#febc2e]" />
           <span className="size-3 rounded-full bg-[#28c840]" />
         </div>
-        <span className="text-xs text-[#858585] font-mono">{displayLang}</span>
-        <button
-          onClick={handleCopy}
-          className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors"
-        >
-          {copied ? <Check className="size-3.5 text-green-400" /> : <Copy className="size-3.5" />}
-          <span>{copied ? "Copied" : "Copy"}</span>
-        </button>
+
+        {hasExplanation ? (
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => setActiveTab("code")}
+              className={`text-xs px-2 py-0.5 rounded transition-colors ${
+                activeTab === "code" ? "bg-[#3a3a3a] text-[#cccccc]" : "text-[#858585] hover:text-[#cccccc]"
+              }`}
+            >
+              Code
+            </button>
+            <button
+              onClick={() => setActiveTab("explain")}
+              className={`text-xs px-2 py-0.5 rounded transition-colors ${
+                activeTab === "explain" ? "bg-[#3a3a3a] text-[#cccccc]" : "text-[#858585] hover:text-[#cccccc]"
+              }`}
+            >
+              Explain
+            </button>
+          </div>
+        ) : (
+          <span className="text-xs text-[#858585] font-mono">{displayLang}</span>
+        )}
+
+        <div className="flex items-center gap-2">
+          {showExplainControls && (
+            isPro ? (
+              <button
+                onClick={handleExplain}
+                disabled={explaining}
+                className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors disabled:opacity-50"
+              >
+                {explaining ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+                <span>{explaining ? "Explaining…" : "Explain"}</span>
+              </button>
+            ) : (
+              <span
+                title="AI features require Pro subscription"
+                className="flex items-center gap-1 text-xs text-[#858585] opacity-50 cursor-default"
+              >
+                <Crown className="size-3.5" />
+                <span>Explain</span>
+              </span>
+            )
+          )}
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors"
+          >
+            {copied ? <Check className="size-3.5 text-green-400" /> : <Copy className="size-3.5" />}
+            <span>{copied ? "Copied" : "Copy"}</span>
+          </button>
+        </div>
       </div>
-      <MonacoEditor
-        value={value}
-        height={height}
-        language={displayLang.toLowerCase()}
-        theme={preferences.theme}
-        beforeMount={defineCustomThemes}
-        options={{
-          readOnly,
-          minimap: { enabled: preferences.minimap },
-          scrollBeyondLastLine: false,
-          fontSize: preferences.fontSize,
-          tabSize: preferences.tabSize,
-          lineHeight: LINE_HEIGHT,
-          padding: { top: 12, bottom: 12 },
-          wordWrap: preferences.wordWrap ? "on" : "off",
-          scrollbar: {
-            verticalScrollbarSize: 6,
-            horizontalScrollbarSize: 6,
-            useShadows: false,
-          },
-          overviewRulerLanes: 0,
-          renderLineHighlight: readOnly ? "none" : "line",
-          folding: false,
-          lineNumbers: readOnly || !preferences.lineNumbers ? "off" : "on",
-          glyphMargin: false,
-          lineDecorationsWidth: readOnly || !preferences.lineNumbers ? 0 : 4,
-          lineNumbersMinChars: readOnly || !preferences.lineNumbers ? 0 : 3,
-        }}
-        onChange={(val) => onChange?.(val ?? "")}
-      />
+
+      {activeTab === "explain" && explanation ? (
+        <div
+          className="markdown-preview prose prose-invert prose-sm max-w-none px-4 py-3 overflow-y-auto"
+          style={{ minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT }}
+        >
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{explanation}</ReactMarkdown>
+        </div>
+      ) : (
+        <MonacoEditor
+          value={value}
+          height={height}
+          language={displayLang.toLowerCase()}
+          theme={preferences.theme}
+          beforeMount={defineCustomThemes}
+          options={{
+            readOnly,
+            minimap: { enabled: preferences.minimap },
+            scrollBeyondLastLine: false,
+            fontSize: preferences.fontSize,
+            tabSize: preferences.tabSize,
+            lineHeight: LINE_HEIGHT,
+            padding: { top: 12, bottom: 12 },
+            wordWrap: preferences.wordWrap ? "on" : "off",
+            scrollbar: {
+              verticalScrollbarSize: 6,
+              horizontalScrollbarSize: 6,
+              useShadows: false,
+            },
+            overviewRulerLanes: 0,
+            renderLineHighlight: readOnly ? "none" : "line",
+            folding: false,
+            lineNumbers: readOnly || !preferences.lineNumbers ? "off" : "on",
+            glyphMargin: false,
+            lineDecorationsWidth: readOnly || !preferences.lineNumbers ? 0 : 4,
+            lineNumbersMinChars: readOnly || !preferences.lineNumbers ? 0 : 3,
+          }}
+          onChange={(val) => onChange?.(val ?? "")}
+        />
+      )}
     </div>
   );
 }

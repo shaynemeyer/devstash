@@ -8,9 +8,10 @@ import { ItemWithMeta } from "@/lib/db/items";
 interface ItemsGridProps {
   items: ItemWithMeta[];
   emptyLabel: string;
+  isPro?: boolean;
 }
 
-export function ItemsGrid({ items, emptyLabel }: ItemsGridProps) {
+export function ItemsGrid({ items, emptyLabel, isPro }: ItemsGridProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -34,7 +35,7 @@ export function ItemsGrid({ items, emptyLabel }: ItemsGridProps) {
           <ItemCard key={item.id} item={item} onClick={() => openDrawer(item.id)} />
         ))}
       </div>
-      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <ItemDrawer itemId={selectedId} open={drawerOpen} onOpenChange={setDrawerOpen} isPro={isPro} />
     </>
   );
 }
