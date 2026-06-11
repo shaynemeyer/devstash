@@ -63,7 +63,7 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1.5 text-xs text-muted-foreground"
+            className="gap-1.5 text-sm text-muted-foreground"
             onClick={onCancelEdit}
           >
             <X className="size-3.5" />
@@ -72,7 +72,7 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1.5 text-xs text-primary"
+            className="gap-1.5 text-sm text-primary"
             onClick={onSave}
             disabled={saving || titleEmpty}
           >
@@ -85,7 +85,7 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className={`gap-1.5 text-xs ${isFavorite ? "text-amber-400" : "text-muted-foreground"}`}
+            className={`gap-1.5 text-sm ${isFavorite ? "text-amber-400" : "text-muted-foreground"}`}
             onClick={onToggleFavorite}
             disabled={favoritePending}
           >
@@ -95,7 +95,7 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className={`gap-1.5 text-xs ${isPinned ? "text-foreground" : "text-muted-foreground"}`}
+            className={`gap-1.5 text-sm ${isPinned ? "text-foreground" : "text-muted-foreground"}`}
             onClick={onTogglePin}
             disabled={pinPending}
           >
@@ -106,7 +106,7 @@ export function ItemDrawerActionBar({
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1.5 text-xs text-muted-foreground"
+              className="gap-1.5 text-sm text-muted-foreground"
               onClick={onCopyContent}
             >
               <Copy className="size-3.5" />
@@ -117,7 +117,7 @@ export function ItemDrawerActionBar({
             <a
               href={`/api/files/${item.fileUrl}`}
               download={item.fileName ?? true}
-              className="inline-flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors font-medium h-8"
+              className="inline-flex items-center gap-1.5 text-sm px-2 py-1.5 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors font-medium h-8"
             >
               <Download className="size-3.5" />
               Download
@@ -126,7 +126,7 @@ export function ItemDrawerActionBar({
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1.5 text-xs text-muted-foreground"
+            className="gap-1.5 text-sm text-muted-foreground"
             onClick={onEnterEdit}
           >
             <Pencil className="size-3.5" />

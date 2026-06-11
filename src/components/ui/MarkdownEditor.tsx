@@ -82,7 +82,7 @@ export function MarkdownEditor({
             <>
               <button
                 onClick={() => setTab("write")}
-                className={`text-xs px-2 py-0.5 rounded transition-colors ${
+                className={`text-sm px-2 py-0.5 rounded transition-colors ${
                   tab === "write"
                     ? "bg-[#3a3a3a] text-[#cccccc]"
                     : "text-[#858585] hover:text-[#cccccc]"
@@ -92,7 +92,7 @@ export function MarkdownEditor({
               </button>
               <button
                 onClick={() => setTab("preview")}
-                className={`text-xs px-2 py-0.5 rounded transition-colors ${
+                className={`text-sm px-2 py-0.5 rounded transition-colors ${
                   tab === "preview"
                     ? "bg-[#3a3a3a] text-[#cccccc]"
                     : "text-[#858585] hover:text-[#cccccc]"
@@ -102,7 +102,7 @@ export function MarkdownEditor({
               </button>
             </>
           )}
-          {readOnly && <span className="text-xs text-[#858585]">Markdown</span>}
+          {readOnly && <span className="text-sm text-[#858585]">Markdown</span>}
         </div>
         <div className="flex items-center gap-2">
           {showOptimizeControl && (
@@ -110,7 +110,7 @@ export function MarkdownEditor({
               <button
                 onClick={handleOptimize}
                 disabled={optimizing}
-                className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 text-sm text-[#858585] hover:text-[#cccccc] transition-colors disabled:opacity-50"
               >
                 {optimizing ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
                 <span>{optimizing ? "Optimizing…" : "Optimize"}</span>
@@ -118,7 +118,7 @@ export function MarkdownEditor({
             ) : (
               <span
                 title="AI features require Pro subscription"
-                className="flex items-center gap-1 text-xs text-[#858585] opacity-50 cursor-default"
+                className="flex items-center gap-1 text-sm text-[#858585] opacity-50 cursor-default"
               >
                 <Crown className="size-3.5" />
                 <span>Optimize</span>
@@ -127,7 +127,7 @@ export function MarkdownEditor({
           )}
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors"
+            className="flex items-center gap-1 text-sm text-[#858585] hover:text-[#cccccc] transition-colors"
           >
             {copied ? <Check className="size-3.5 text-green-400" /> : <Copy className="size-3.5" />}
             <span>{copied ? "Copied" : "Copy"}</span>
@@ -140,13 +140,13 @@ export function MarkdownEditor({
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           style={{ minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT, height }}
-          className="w-full resize-none bg-[#1e1e1e] text-[#d4d4d4] text-sm font-mono px-4 py-3 focus:outline-none"
+          className="w-full resize-none bg-[#1e1e1e] text-[#d4d4d4] text-base font-mono px-4 py-3 focus:outline-none"
           placeholder="Write markdown..."
           spellCheck={false}
         />
       ) : (
         <div
-          className="markdown-preview prose prose-invert prose-sm max-w-none px-4 py-3 overflow-y-auto"
+          className="markdown-preview prose prose-invert prose-base max-w-none px-4 py-3 overflow-y-auto"
           style={{ minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT }}
         >
           {value ? (
