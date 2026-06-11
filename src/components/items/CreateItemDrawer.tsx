@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { X, Check } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
@@ -13,6 +13,8 @@ import { getUserCollections } from "@/actions/collections";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
 const CREATABLE_TYPES = ["snippet", "prompt", "command", "note", "link", "file", "image"];
+const DRAWER_WIDTH_KEY = "item-drawer-width";
+const DEFAULT_WIDTH = 672;
 const FILE_TYPES = ["file", "image"];
 
 interface CreateItemDrawerProps {
@@ -24,9 +26,45 @@ interface CreateItemDrawerProps {
 }
 
 export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId, isPro = false }: CreateItemDrawerProps) {
+  const [drawerWidth, setDrawerWidth] = useState<number>(() => {
+    if (typeof window === "undefined") return DEFAULT_WIDTH;
+    const stored = localStorage.getItem(DRAWER_WIDTH_KEY);
+    return stored ? parseInt(stored, 10) : DEFAULT_WIDTH;
+  });
+  const widthRef = useRef(drawerWidth);
+
+  function handleResizeStart(e: React.PointerEvent) {
+    e.preventDefault();
+
+    function onMove(ev: PointerEvent) {
+      const minWidth = Math.floor(window.innerWidth / 3);
+      const maxWidth = Math.floor(window.innerWidth * 0.85);
+      const newWidth = Math.min(maxWidth, Math.max(minWidth, window.innerWidth - ev.clientX));
+      widthRef.current = newWidth;
+      setDrawerWidth(newWidth);
+    }
+
+    function onUp() {
+      localStorage.setItem(DRAWER_WIDTH_KEY, String(widthRef.current));
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    }
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
+      <SheetContent
+        side="right"
+        className="w-full overflow-y-auto p-0"
+        style={{ width: drawerWidth, maxWidth: "85vw", minWidth: "33vw" }}
+      >
+        <div
+          className="absolute left-0 top-0 h-full w-1.5 cursor-col-resize z-50 hover:bg-primary/20 active:bg-primary/30 transition-colors"
+          onPointerDown={handleResizeStart}
+        />
         {open && (
           <DrawerContent
             onOpenChange={onOpenChange}
