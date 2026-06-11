@@ -4,6 +4,11 @@ Full archive of completed features. See [current-feature.md](current-feature.md)
 
 - Project setup and boilerplate cleanup
 - Stripe Phase 1: installed Stripe SDK; exposed isPro on NextAuth session; added free-tier item/collection limits; wired limit checks into createItem and createCollection; 10 unit tests
+- Stripe Phase 2: checkout session route, customer portal route, webhook handler (signature verification + 3 event types), BillingSection component (free/pro states), settings page DB isPro fetch; 5 unit tests
+- Language Select Dropdown: new LanguageSelect component (shadcn Select, 25 Monaco language IDs); replaced plain text input with dropdown positioned above the code editor in both Create and Edit item drawers for snippet and command types
+- AI Auto-Tagging: OpenAI client (gpt-5-nano, Responses API), generateAutoTags server action (auth, Pro gate, Zod, 20 req/hr rate limit), SuggestTagsButton component with per-tag accept/reject badges; wired into create and edit drawers; isPro threaded from session through DashboardShell; 8 unit tests
+- AI Generate Description: generateDescription server action (auth, Pro gate, Zod, 20 req/hr rate limit), GenerateDescriptionButton component next to Description field in Create and Edit drawers; also fixed generateAutoTags json_object format error; 6 unit tests
+- Stripe Phase 1: installed Stripe SDK; exposed isPro on NextAuth session; added free-tier item/collection limits; wired limit checks into createItem and createCollection; 10 unit tests
 - Editor Preferences Settings: EditorPreferencesContext + EditorPreferencesProvider in DashboardShell; EditorPreferencesForm on /settings with font size, tab size, theme (vs-dark/monokai/github-dark), word wrap, minimap, line numbers; auto-save via updateEditorPreferences server action; editorPreferences Json? column on User with migration; applied live to Monaco CodeEditor; 11 Vitest tests for schema validation
 - Initial Next.js setup with React 19, TypeScript, Tailwind CSS v4, ESLint; all package versions locked
 - Dashboard Phase 1: ShadCN UI initialized (base-nova preset), /dashboard route created, dark mode by default, TopBar with branded logo, centered search with ⌘K hint, New Collection/New Item buttons, Sidebar and Main placeholders
