@@ -37,7 +37,7 @@ export function ItemDrawer({ itemId, open, onOpenChange, isPro = false }: ItemDr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto p-0">
         {loading && <DrawerSkeleton />}
         {!loading && item && (
           <DrawerBody key={item.id} item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} isPro={isPro} />

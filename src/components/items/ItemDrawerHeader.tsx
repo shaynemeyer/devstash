@@ -26,14 +26,14 @@ export function ItemDrawerHeader({ item, editMode, title, onTitleChange }: ItemD
         </div>
         {editMode ? (
           <input
-            className="flex-1 text-base font-semibold bg-transparent border-b border-border focus:outline-none focus:border-primary"
+            className="flex-1 text-lg font-semibold bg-transparent border-b border-border focus:outline-none focus:border-primary"
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder="Title"
             autoFocus
           />
         ) : (
-          <SheetTitle className="text-base font-semibold leading-tight">{item.title}</SheetTitle>
+          <SheetTitle className="text-lg font-semibold leading-tight">{item.title}</SheetTitle>
         )}
       </div>
       <div className="flex items-center gap-2">
