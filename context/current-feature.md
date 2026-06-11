@@ -1,12 +1,26 @@
-# Current Feature
+# Current Feature: Resizable Item Drawer
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Add a horizontal drag handle to the left edge of the item drawer
+- Allow the user to resize the drawer width by dragging
+- Minimum width: 1/3 of available screen width
+- Maximum width: reasonable upper bound (e.g. 80vw or full available content area)
+- Persist the drawer width across sessions (localStorage)
+- Resize should feel smooth and not interfere with drawer content
+
 ## Notes
+
+- The drawer is rendered in `ItemDrawer` (likely `src/components/items/ItemDrawer.tsx`)
+- Currently uses a fixed Tailwind width class (`sm:max-w-2xl`)
+- Need to switch from a static max-width to a dynamic inline width controlled by drag state
+- Use a mouse/pointer event drag handler on the left edge — no external library needed
+- Min width constraint: `window.innerWidth / 3`
+- Should work on desktop (pointer events); mobile resize is not required
 
 ## History
 

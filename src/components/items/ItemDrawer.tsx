@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -11,6 +11,9 @@ import { ItemDrawerContent } from "@/components/items/ItemDrawerContent";
 import { getUserCollections } from "@/actions/collections";
 import { toggleItemPin, toggleFavoriteItem } from "@/actions/items";
 import type { ItemDetail } from "@/lib/db/items";
+
+const DRAWER_WIDTH_KEY = "item-drawer-width";
+const DEFAULT_WIDTH = 672;
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -23,6 +26,12 @@ export function ItemDrawer({ itemId, open, onOpenChange, isPro = false }: ItemDr
   const [item, setItem] = useState<ItemDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [collections, setCollections] = useState<{ id: string; name: string }[]>([]);
+  const [drawerWidth, setDrawerWidth] = useState<number>(() => {
+    if (typeof window === "undefined") return DEFAULT_WIDTH;
+    const stored = localStorage.getItem(DRAWER_WIDTH_KEY);
+    return stored ? parseInt(stored, 10) : DEFAULT_WIDTH;
+  });
+  const widthRef = useRef(drawerWidth);
 
   useEffect(() => {
     if (!open || !itemId) return;
@@ -35,9 +44,38 @@ export function ItemDrawer({ itemId, open, onOpenChange, isPro = false }: ItemDr
     getUserCollections().then(setCollections);
   }, [open, itemId]);
 
+  function handleResizeStart(e: React.PointerEvent) {
+    e.preventDefault();
+
+    function onMove(ev: PointerEvent) {
+      const minWidth = Math.floor(window.innerWidth / 3);
+      const maxWidth = Math.floor(window.innerWidth * 0.85);
+      const newWidth = Math.min(maxWidth, Math.max(minWidth, window.innerWidth - ev.clientX));
+      widthRef.current = newWidth;
+      setDrawerWidth(newWidth);
+    }
+
+    function onUp() {
+      localStorage.setItem(DRAWER_WIDTH_KEY, String(widthRef.current));
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    }
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto p-0">
+      <SheetContent
+        side="right"
+        className="w-full overflow-y-auto p-0"
+        style={{ width: drawerWidth, maxWidth: "85vw", minWidth: "33vw" }}
+      >
+        <div
+          className="absolute left-0 top-0 h-full w-1.5 cursor-col-resize z-50 hover:bg-primary/20 active:bg-primary/30 transition-colors"
+          onPointerDown={handleResizeStart}
+        />
         {loading && <DrawerSkeleton />}
         {!loading && item && (
           <DrawerBody key={item.id} item={item} collections={collections} onItemChange={setItem} onClose={() => onOpenChange(false)} isPro={isPro} />
