@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { EditorPreferencesSchema, type EditorPreferences } from "@/lib/validations/settings";
+import { requireAuth, parseInput, withAction } from "@/lib/action-utils";
 
 interface ActionResult {
   success: boolean;
@@ -10,22 +11,11 @@ interface ActionResult {
 }
 
 export async function updateEditorPreferences(input: unknown): Promise<ActionResult> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const result = EditorPreferencesSchema.safeParse(input);
-  if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
-  }
-
-  await db.user.update({
-    where: { id: session.user.id },
-    data: { editorPreferences: result.data },
+  return withAction(async () => {
+    const { userId } = await requireAuth();
+    const data = parseInput(EditorPreferencesSchema, input);
+    await db.user.update({ where: { id: userId }, data: { editorPreferences: data } });
   });
-
-  return { success: true };
 }
 
 export async function getEditorPreferences(): Promise<EditorPreferences | null> {

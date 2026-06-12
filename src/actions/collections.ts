@@ -10,6 +10,7 @@ import {
 } from "@/lib/db/collections";
 import { CreateCollectionSchema, UpdateCollectionSchema } from "@/lib/validations/collections";
 import { checkCollectionLimit } from "@/lib/subscription";
+import { requireAuth, parseInput, withAction, ActionError } from "@/lib/action-utils";
 import type { CreatedCollection } from "@/lib/db/collections";
 
 export async function getUserCollections(): Promise<{ id: string; name: string }[]> {
@@ -25,83 +26,48 @@ interface ActionResult {
 }
 
 export async function createCollection(input: unknown): Promise<ActionResult> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+  return withAction(async () => {
+    const { userId } = await requireAuth();
+    const limitError = await checkCollectionLimit(userId);
+    if (limitError) throw new ActionError(limitError);
+    const { name, description } = parseInput(CreateCollectionSchema, input);
 
-  const limitError = await checkCollectionLimit(session.user.id);
-  if (limitError) return { success: false, error: limitError };
+    const created = await dbCreateCollection({
+      name,
+      description: description ?? null,
+      userId,
+    });
 
-  const result = CreateCollectionSchema.safeParse(input);
-  if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
-  }
-
-  const { name, description } = result.data;
-
-  const created = await dbCreateCollection({
-    name,
-    description: description ?? null,
-    userId: session.user.id,
+    if (!created) throw new ActionError("Failed to create collection");
+    return created;
   });
-
-  if (!created) {
-    return { success: false, error: "Failed to create collection" };
-  }
-
-  return { success: true, data: created };
 }
 
-export async function updateCollection(
-  id: string,
-  input: unknown
-): Promise<ActionResult> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const result = UpdateCollectionSchema.safeParse(input);
-  if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
-  }
-
-  const updated = await dbUpdateCollection(id, session.user.id, result.data);
-  if (!updated) {
-    return { success: false, error: "Failed to update collection" };
-  }
-
-  return { success: true, data: updated };
+export async function updateCollection(id: string, input: unknown): Promise<ActionResult> {
+  return withAction(async () => {
+    const { userId } = await requireAuth();
+    const data = parseInput(UpdateCollectionSchema, input);
+    const updated = await dbUpdateCollection(id, userId, data);
+    if (!updated) throw new ActionError("Failed to update collection");
+    return updated;
+  });
 }
 
 export async function deleteCollection(id: string): Promise<{ success: boolean; error?: string }> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const ok = await dbDeleteCollection(id, session.user.id);
-  if (!ok) {
-    return { success: false, error: "Failed to delete collection" };
-  }
-
-  return { success: true };
+  return withAction(async () => {
+    const { userId } = await requireAuth();
+    const ok = await dbDeleteCollection(id, userId);
+    if (!ok) throw new ActionError("Failed to delete collection");
+  });
 }
 
 export async function toggleFavoriteCollection(
   id: string,
   isFavorite: boolean
 ): Promise<{ success: boolean; error?: string }> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const ok = await setCollectionFavorite(id, session.user.id, !isFavorite);
-  if (!ok) {
-    return { success: false, error: "Failed to update collection" };
-  }
-
-  return { success: true };
+  return withAction(async () => {
+    const { userId } = await requireAuth();
+    const ok = await setCollectionFavorite(id, userId, !isFavorite);
+    if (!ok) throw new ActionError("Failed to update collection");
+  });
 }

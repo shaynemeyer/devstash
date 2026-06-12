@@ -1,12 +1,22 @@
-# Current Feature
+# Current Feature: Refactor Actions Shared Utilities
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Extract repeated auth/validation/error boilerplate from `src/actions/` into `src/lib/action-utils.ts`
+- Reduce duplication across 5 action files: `items.ts`, `collections.ts`, `ai.ts`, `settings.ts`, `search.ts`
+- New shared helpers: `ActionError`, `requireAuth()`, `parseInput()`, `requireProWithRateLimit()`, `withAction()`
+- No client-side changes required — return shape `{ success, data?, error? }` stays the same
+
 ## Notes
+
+- `action-utils.ts` must NOT have `"use server"` — it's a plain utility module
+- `withAction` wraps function bodies and handles all error catching uniformly
+- `requireProWithRateLimit` lives in `action-utils.ts` (not `ai.ts`) for future reuse
+- Implementation plan is in `context/features/refactor-scan-1.md` — Steps 1–7
 
 ## History
 
