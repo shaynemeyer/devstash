@@ -2,6 +2,7 @@ import { Star, Pin } from "lucide-react";
 import { getIcon } from "@/lib/icons";
 import { ItemWithMeta } from "@/lib/db/items";
 import { CopyButton } from "./CopyButton";
+import { TypeBadge } from "./TypeBadge";
 
 interface ItemCardProps {
   item: ItemWithMeta;
@@ -17,13 +18,7 @@ export function ItemCard({ item, onClick }: ItemCardProps) {
       <CopyButton value={item.content ?? item.url} />
       <div className="w-1 shrink-0" style={{ backgroundColor: item.typeColor }} />
       <div className="flex items-start gap-3 p-4 flex-1 min-w-0">
-        <div
-          className="size-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
-          style={{ backgroundColor: item.typeColor + "22" }}
-        >
-          {/* eslint-disable-next-line react-hooks/static-components -- getIcon returns a stable reference from a static map */}
-          <Icon className="size-4" style={{ color: item.typeColor }} />
-        </div>
+        <TypeBadge icon={Icon} color={item.typeColor} className="mt-0.5" />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className="text-sm font-medium text-foreground truncate">{item.title}</p>

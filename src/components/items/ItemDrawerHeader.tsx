@@ -2,6 +2,7 @@
 
 import { SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { getIcon } from "@/lib/icons";
+import { TypeBadge } from "@/components/items/TypeBadge";
 import type { ItemDetail } from "@/lib/db/items";
 
 interface ItemDrawerHeaderProps {
@@ -17,13 +18,7 @@ export function ItemDrawerHeader({ item, editMode, title, onTitleChange }: ItemD
   return (
     <SheetHeader className="px-5 pt-5 pb-4 border-b border-border gap-3">
       <div className="flex items-center gap-3 pr-8">
-        <div
-          className="size-9 rounded-md flex items-center justify-center shrink-0"
-          style={{ backgroundColor: item.typeColor + "22" }}
-        >
-          {/* eslint-disable-next-line react-hooks/static-components -- getIcon returns a stable reference from a static map */}
-          <Icon className="size-4" style={{ color: item.typeColor }} />
-        </div>
+        <TypeBadge icon={Icon} color={item.typeColor} />
         {editMode ? (
           <input
             className="flex-1 text-lg font-semibold bg-transparent border-b border-border focus:outline-none focus:border-primary"

@@ -1,20 +1,15 @@
 "use client";
 
-import { CodeEditor } from "@/components/ui/CodeEditor";
-import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
-import { FileUpload } from "@/components/ui/FileUpload";
+import { CodeEditor } from "@/components/editors/CodeEditor";
+import { MarkdownEditor } from "@/components/editors/MarkdownEditor";
+import { FileUpload } from "@/components/files/FileUpload";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { GenerateDescriptionButton } from "@/components/items/GenerateDescriptionButton";
-import type { UploadedFile } from "@/components/ui/FileUpload";
+import { getShownFields } from "@/lib/content-types";
+import type { UploadedFile } from "@/components/files/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
-
-const CONTENT_TYPES = ["snippet", "prompt", "command", "note"];
-const LANGUAGE_TYPES = ["snippet", "command"];
-const CODE_TYPES = ["snippet", "command"];
-const MARKDOWN_TYPES = ["note", "prompt"];
-const FILE_TYPES = ["file", "image"];
 
 interface FormFields {
   description: string;
@@ -44,13 +39,7 @@ interface CreateItemFormProps {
 export function CreateItemForm({ selectedType, fields, collections, title, isPro }: CreateItemFormProps) {
   const { description, setDescription, content, setContent, url, setUrl, language, setLanguage, tagsInput, setTagsInput, uploadedFile, setUploadedFile, collectionIds, setCollectionIds } = fields;
 
-  const typeName = selectedType?.name.toLowerCase() ?? "";
-  const showContent = CONTENT_TYPES.includes(typeName);
-  const showLanguage = LANGUAGE_TYPES.includes(typeName);
-  const showUrl = typeName === "link";
-  const showFileUpload = FILE_TYPES.includes(typeName);
-  const useCodeEditor = CODE_TYPES.includes(typeName);
-  const useMarkdownEditor = MARKDOWN_TYPES.includes(typeName);
+  const { showContent, showLanguage, showUrl, showFileUpload, useCodeEditor, useMarkdownEditor } = getShownFields(selectedType?.name ?? "");
 
   return (
     <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
@@ -62,7 +51,7 @@ export function CreateItemForm({ selectedType, fields, collections, title, isPro
           <GenerateDescriptionButton
             title={title}
             content={content}
-            itemType={typeName}
+            itemType={selectedType?.name ?? ""}
             isPro={isPro}
             onGenerated={setDescription}
           />
@@ -127,7 +116,7 @@ export function CreateItemForm({ selectedType, fields, collections, title, isPro
             File <span className="text-destructive">*</span>
           </p>
           <FileUpload
-            accept={typeName === "image" ? "image" : "file"}
+            accept={selectedType?.name.toLowerCase() === "image" ? "image" : "file"}
             value={uploadedFile}
             onChange={setUploadedFile}
           />
