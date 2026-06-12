@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import type { SidebarCollection } from "@/lib/db/collections";
 
@@ -10,6 +12,7 @@ interface CollectionsListProps {
 }
 
 export function CollectionsList({ collections, onClose }: CollectionsListProps) {
+  const pathname = usePathname();
   const favorites = collections.filter((c) => c.isFavorite);
   const rest = collections.filter((c) => !c.isFavorite);
 
@@ -28,7 +31,10 @@ export function CollectionsList({ collections, onClose }: CollectionsListProps) 
                 key={col.id}
                 href={`/collections/${col.id}`}
                 onClick={onClose}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                className={cn(
+                  "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors",
+                  pathname === `/collections/${col.id}` && "bg-sidebar-accent text-sidebar-foreground font-medium"
+                )}
               >
                 <Star className="size-3.5 shrink-0 text-amber-400 fill-amber-400" />
                 <span className="flex-1 truncate">{col.name}</span>
@@ -48,7 +54,10 @@ export function CollectionsList({ collections, onClose }: CollectionsListProps) 
                 key={col.id}
                 href={`/collections/${col.id}`}
                 onClick={onClose}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                className={cn(
+                  "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors",
+                  pathname === `/collections/${col.id}` && "bg-sidebar-accent text-sidebar-foreground font-medium"
+                )}
               >
                 <span
                   className="size-3.5 shrink-0 rounded-full"

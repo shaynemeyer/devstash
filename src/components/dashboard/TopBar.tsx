@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Plus, FolderPlus, Menu, Star } from "lucide-react";
+import { Search, Plus, FolderPlus, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -55,13 +55,6 @@ export function TopBar({ onMobileMenuClick, onNewItem, onNewCollection, onSearch
       </div>
 
       <div className="shrink-0 flex items-center gap-2">
-        <Link
-          href="/favorites"
-          className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Favorites"
-        >
-          <Star className="size-4" />
-        </Link>
         <Button
           variant="outline"
           size="sm"

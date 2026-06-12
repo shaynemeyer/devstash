@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { getIcon } from "@/lib/icons";
@@ -19,6 +20,7 @@ interface TypeNavigationProps {
 }
 
 export function TypeNavigation({ itemTypes, isCollapsed, onClose }: TypeNavigationProps) {
+  const pathname = usePathname();
   return (
     <div className={cn("px-2 pt-3 pb-2", isCollapsed && "px-2")}>
       {!isCollapsed && (
@@ -37,7 +39,8 @@ export function TypeNavigation({ itemTypes, isCollapsed, onClose }: TypeNavigati
               onClick={onClose}
               className={cn(
                 "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors",
-                isCollapsed && "justify-center px-0"
+                isCollapsed && "justify-center px-0",
+                pathname === `/items/${slug}` && "bg-sidebar-accent text-sidebar-foreground font-medium"
               )}
               title={isCollapsed ? `${type.name}s` : undefined}
             >
