@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ItemsGrid } from "@/components/items/ItemsGrid";
 import { CollectionActions } from "@/components/collections/CollectionActions";
-import { PaginationControls } from "@/components/ui/PaginationControls";
+import { PaginationControls } from "@/components/pagination/PaginationControls";
 import { getCollectionDetail, getSidebarCollections } from "@/lib/db/collections";
 import { getItemsByCollectionId, getItemTypesWithCounts } from "@/lib/db/items";
 import type { ItemWithMeta } from "@/lib/db/items";

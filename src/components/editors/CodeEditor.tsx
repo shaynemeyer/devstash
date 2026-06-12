@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import MonacoEditor, { type BeforeMount } from "@monaco-editor/react";
-import { Copy, Check, Sparkles, Loader2, Crown } from "lucide-react";
+import { Copy, Check } from "lucide-react";
+import { AIFeatureButton } from "@/components/ai/AIFeatureButton";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
@@ -143,24 +144,14 @@ export function CodeEditor({ value, onChange, language = "plaintext", readOnly =
 
         <div className="flex items-center gap-2">
           {showExplainControls && (
-            isPro ? (
-              <button
-                onClick={handleExplain}
-                disabled={explaining}
-                className="flex items-center gap-1 text-xs text-[#858585] hover:text-[#cccccc] transition-colors disabled:opacity-50"
-              >
-                {explaining ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
-                <span>{explaining ? "Explaining…" : "Explain"}</span>
-              </button>
-            ) : (
-              <span
-                title="AI features require Pro subscription"
-                className="flex items-center gap-1 text-xs text-[#858585] opacity-50 cursor-default"
-              >
-                <Crown className="size-3.5" />
-                <span>Explain</span>
-              </span>
-            )
+            <AIFeatureButton
+              label="Explain"
+              loadingLabel="Explaining…"
+              loading={explaining}
+              isPro={isPro}
+              onClick={handleExplain}
+              size="xs"
+            />
           )}
           <button
             onClick={handleCopy}

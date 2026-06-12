@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Copy, Check, Sparkles, Loader2, Crown } from "lucide-react";
+import { Copy, Check } from "lucide-react";
+import { AIFeatureButton } from "@/components/ai/AIFeatureButton";
 import { toast } from "sonner";
 
 interface OptimizeResult {
@@ -106,24 +107,13 @@ export function MarkdownEditor({
         </div>
         <div className="flex items-center gap-2">
           {showOptimizeControl && (
-            isPro ? (
-              <button
-                onClick={handleOptimize}
-                disabled={optimizing}
-                className="flex items-center gap-1 text-sm text-[#858585] hover:text-[#cccccc] transition-colors disabled:opacity-50"
-              >
-                {optimizing ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
-                <span>{optimizing ? "Optimizing…" : "Optimize"}</span>
-              </button>
-            ) : (
-              <span
-                title="AI features require Pro subscription"
-                className="flex items-center gap-1 text-sm text-[#858585] opacity-50 cursor-default"
-              >
-                <Crown className="size-3.5" />
-                <span>Optimize</span>
-              </span>
-            )
+            <AIFeatureButton
+              label="Optimize"
+              loadingLabel="Optimizing…"
+              loading={optimizing}
+              isPro={isPro}
+              onClick={handleOptimize}
+            />
           )}
           <button
             onClick={handleCopy}

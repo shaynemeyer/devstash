@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { createItem } from "@/actions/items";
-import type { UploadedFile } from "@/components/ui/FileUpload";
+import type { UploadedFile } from "@/components/files/FileUpload";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
 export function useCreateItemForm(onSuccess: () => void) {

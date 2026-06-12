@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { LogOut, Settings, User } from "lucide-react";
-import { UserAvatar } from "@/components/ui/UserAvatar";
+import { UserAvatar } from "@/components/user/UserAvatar";
 import { signOutAction } from "@/actions/auth";
 
 interface SidebarUserAreaProps {

@@ -4,7 +4,7 @@ import { getProfileUser, getProfileStats, type ProfileStats } from "@/lib/db/pro
 import { getItemTypesWithCounts } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { UserAvatar } from "@/components/ui/UserAvatar";
+import { UserAvatar } from "@/components/user/UserAvatar";
 import { getIcon } from "@/lib/icons";
 
 export default async function ProfilePage() {

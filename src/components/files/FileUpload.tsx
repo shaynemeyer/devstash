@@ -2,8 +2,8 @@
 
 import { X } from "lucide-react";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { FileUploadInput } from "@/components/ui/FileUploadInput";
-import { FilePreview } from "@/components/ui/FilePreview";
+import { FileUploadInput } from "@/components/files/FileUploadInput";
+import { FilePreview } from "@/components/files/FilePreview";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 
 export type { UploadedFile };

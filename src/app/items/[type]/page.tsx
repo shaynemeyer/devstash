@@ -7,7 +7,7 @@ import { ImageGallery } from "@/components/items/ImageGallery";
 import { FileList } from "@/components/items/FileList";
 import { TypePageActions } from "@/components/items/TypePageActions";
 import { ProUpgradeGate } from "@/components/items/ProUpgradeGate";
-import { PaginationControls } from "@/components/ui/PaginationControls";
+import { PaginationControls } from "@/components/pagination/PaginationControls";
 import { getItemsByTypeSlug, getItemTypesWithCounts } from "@/lib/db/items";
 import type { ItemWithMeta } from "@/lib/db/items";
 import { getSidebarCollections } from "@/lib/db/collections";

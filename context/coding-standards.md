@@ -56,6 +56,8 @@ Example v4 configuration:
 - Types: `src/types/[feature].ts`
 - Lib/Utils: `src/lib/[utility].ts`
 
+**`src/components/ui/` is reserved exclusively for ShadCN-generated components. Never place custom components there.** Use a feature folder instead (e.g. `components/items/`, `components/editors/`, `components/auth/`, `components/ai/`). Create a new named folder if none fits.
+
 ## Naming
 
 - Components: PascalCase (`ItemCard.tsx`)

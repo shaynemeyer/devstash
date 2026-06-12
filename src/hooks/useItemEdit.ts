@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateItem, deleteItem } from "@/actions/items";
-import type { UploadedFile } from "@/components/ui/FileUpload";
+import type { UploadedFile } from "@/components/files/FileUpload";
 import type { ItemDetail } from "@/lib/db/items";
 
 function toUploadedFile(item: ItemDetail): UploadedFile | null {
