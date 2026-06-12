@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { FileListRow } from "@/components/items/FileListRow";
 import { ItemDrawer } from "@/components/items/ItemDrawer";
+import { useItemDrawerSelection } from "@/hooks/useItemDrawerSelection";
 import { ItemWithMeta } from "@/lib/db/items";
 
 interface FileListProps {
@@ -11,13 +11,7 @@ interface FileListProps {
 }
 
 export function FileList({ items, isPro }: FileListProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  function openDrawer(id: string) {
-    setSelectedId(id);
-    setDrawerOpen(true);
-  }
+  const { selectedId, drawerOpen, openDrawer, setDrawerOpen } = useItemDrawerSelection();
 
   if (items.length === 0) {
     return (

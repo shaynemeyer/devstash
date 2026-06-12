@@ -1,19 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useItemEdit } from "@/hooks/useItemEdit";
+import { useDrawerResize } from "@/hooks/useDrawerResize";
 import { ItemDrawerHeader } from "@/components/items/ItemDrawerHeader";
 import { ItemDrawerActionBar } from "@/components/items/ItemDrawerActionBar";
 import { ItemDrawerContent } from "@/components/items/ItemDrawerContent";
 import { getUserCollections } from "@/actions/collections";
 import { toggleItemPin, toggleFavoriteItem } from "@/actions/items";
 import type { ItemDetail } from "@/lib/db/items";
-
-const DRAWER_WIDTH_KEY = "item-drawer-width";
-const DEFAULT_WIDTH = 672;
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -26,12 +24,7 @@ export function ItemDrawer({ itemId, open, onOpenChange, isPro = false }: ItemDr
   const [item, setItem] = useState<ItemDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [collections, setCollections] = useState<{ id: string; name: string }[]>([]);
-  const [drawerWidth, setDrawerWidth] = useState<number>(() => {
-    if (typeof window === "undefined") return DEFAULT_WIDTH;
-    const stored = localStorage.getItem(DRAWER_WIDTH_KEY);
-    return stored ? parseInt(stored, 10) : DEFAULT_WIDTH;
-  });
-  const widthRef = useRef(drawerWidth);
+  const { width: drawerWidth, handleResizeStart } = useDrawerResize();
 
   useEffect(() => {
     if (!open || !itemId) return;
@@ -43,27 +36,6 @@ export function ItemDrawer({ itemId, open, onOpenChange, isPro = false }: ItemDr
       .finally(() => setLoading(false));
     getUserCollections().then(setCollections);
   }, [open, itemId]);
-
-  function handleResizeStart(e: React.PointerEvent) {
-    e.preventDefault();
-
-    function onMove(ev: PointerEvent) {
-      const minWidth = Math.floor(window.innerWidth / 3);
-      const maxWidth = Math.floor(window.innerWidth * 0.85);
-      const newWidth = Math.min(maxWidth, Math.max(minWidth, window.innerWidth - ev.clientX));
-      widthRef.current = newWidth;
-      setDrawerWidth(newWidth);
-    }
-
-    function onUp() {
-      localStorage.setItem(DRAWER_WIDTH_KEY, String(widthRef.current));
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-    }
-
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

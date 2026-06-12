@@ -2,6 +2,7 @@
 
 Full archive of completed features. See [current-feature.md](current-feature.md) for the active feature.
 
+- Refactor Components Scan 2: extracted `useDrawerResize`, `useItemDrawerSelection` hooks; `src/lib/content-types.ts` constants + utils; `ItemListRow`, `TypeBadge`, `AIFeatureButton` components — eliminated ~180 lines of duplication across 11 files
 - Project setup and boilerplate cleanup
 - Stripe Phase 1: installed Stripe SDK; exposed isPro on NextAuth session; added free-tier item/collection limits; wired limit checks into createItem and createCollection; 10 unit tests
 - Stripe Phase 2: checkout session route, customer portal route, webhook handler (signature verification + 3 event types), BillingSection component (free/pro states), settings page DB isPro fetch; 5 unit tests

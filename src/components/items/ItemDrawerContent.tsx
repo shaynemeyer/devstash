@@ -1,23 +1,18 @@
 "use client";
 
 import { Tag, FolderOpen, Calendar } from "lucide-react";
-import { CodeEditor } from "@/components/ui/CodeEditor";
-import { MarkdownEditor } from "@/components/ui/MarkdownEditor";
-import { FileUpload } from "@/components/ui/FileUpload";
-import { FilePreview } from "@/components/ui/FilePreview";
+import { CodeEditor } from "@/components/editors/CodeEditor";
+import { MarkdownEditor } from "@/components/editors/MarkdownEditor";
+import { FileUpload } from "@/components/files/FileUpload";
+import { FilePreview } from "@/components/files/FilePreview";
 import { CollectionSelector } from "@/components/items/CollectionSelector";
 import { LanguageSelect } from "@/components/items/LanguageSelect";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { GenerateDescriptionButton } from "@/components/items/GenerateDescriptionButton";
 import { explainCode, optimizePrompt } from "@/actions/ai";
+import { getShownFields } from "@/lib/content-types";
 import type { UploadedFile } from "@/hooks/useFileUpload";
 import type { ItemDetail } from "@/lib/db/items";
-
-const CONTENT_TYPES = ["snippet", "prompt", "command", "note"];
-const LANGUAGE_TYPES = ["snippet", "command"];
-const CODE_TYPES = ["snippet", "command"];
-const MARKDOWN_TYPES = ["note", "prompt"];
-const FILE_UPLOAD_TYPES = ["file", "image"];
 
 interface ItemDrawerContentProps {
   item: ItemDetail;
@@ -63,12 +58,7 @@ export function ItemDrawerContent({
   onApplyOptimized,
 }: ItemDrawerContentProps) {
   const typeName = item.typeName.toLowerCase();
-  const showContent = CONTENT_TYPES.includes(typeName);
-  const showLanguage = LANGUAGE_TYPES.includes(typeName);
-  const showUrl = typeName === "link";
-  const showFileSection = FILE_UPLOAD_TYPES.includes(typeName);
-  const useCodeEditor = CODE_TYPES.includes(typeName);
-  const useMarkdownEditor = MARKDOWN_TYPES.includes(typeName);
+  const { showContent, showLanguage, showUrl, showFileUpload: showFileSection, useCodeEditor, useMarkdownEditor } = getShownFields(typeName);
 
   const created = new Date(item.createdAt).toLocaleDateString("en-US", {
     month: "long",

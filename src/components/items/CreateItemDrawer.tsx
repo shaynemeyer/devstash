@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Check } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { getIcon } from "@/lib/icons";
 import { useCreateItemForm } from "@/hooks/useCreateItemForm";
+import { useDrawerResize } from "@/hooks/useDrawerResize";
+import { TypeBadge } from "@/components/items/TypeBadge";
 import { ItemTypeSelector } from "@/components/items/ItemTypeSelector";
 import { CreateItemForm } from "@/components/items/CreateItemForm";
 import { getUserCollections } from "@/actions/collections";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 
 const CREATABLE_TYPES = ["snippet", "prompt", "command", "note", "link", "file", "image"];
-const DRAWER_WIDTH_KEY = "item-drawer-width";
-const DEFAULT_WIDTH = 672;
 const FILE_TYPES = ["file", "image"];
 
 interface CreateItemDrawerProps {
@@ -26,33 +26,7 @@ interface CreateItemDrawerProps {
 }
 
 export function CreateItemDrawer({ open, onOpenChange, itemTypes, defaultTypeId, isPro = false }: CreateItemDrawerProps) {
-  const [drawerWidth, setDrawerWidth] = useState<number>(() => {
-    if (typeof window === "undefined") return DEFAULT_WIDTH;
-    const stored = localStorage.getItem(DRAWER_WIDTH_KEY);
-    return stored ? parseInt(stored, 10) : DEFAULT_WIDTH;
-  });
-  const widthRef = useRef(drawerWidth);
-
-  function handleResizeStart(e: React.PointerEvent) {
-    e.preventDefault();
-
-    function onMove(ev: PointerEvent) {
-      const minWidth = Math.floor(window.innerWidth / 3);
-      const maxWidth = Math.floor(window.innerWidth * 0.85);
-      const newWidth = Math.min(maxWidth, Math.max(minWidth, window.innerWidth - ev.clientX));
-      widthRef.current = newWidth;
-      setDrawerWidth(newWidth);
-    }
-
-    function onUp() {
-      localStorage.setItem(DRAWER_WIDTH_KEY, String(widthRef.current));
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-    }
-
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-  }
+  const { width: drawerWidth, handleResizeStart } = useDrawerResize();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -115,13 +89,7 @@ function DrawerContent({
       <SheetHeader className="px-5 pt-5 pb-4 border-b border-border gap-3">
         <div className="flex items-center gap-3 pr-8">
           {Icon && selectedType ? (
-            <div
-              className="size-9 rounded-md flex items-center justify-center shrink-0"
-              style={{ backgroundColor: selectedType.color + "22" }}
-            >
-              {/* eslint-disable-next-line react-hooks/static-components -- getIcon returns a stable reference from a static map */}
-              <Icon className="size-4" style={{ color: selectedType.color }} />
-            </div>
+            <TypeBadge icon={Icon} color={selectedType.color} />
           ) : (
             <div className="size-9 rounded-md bg-muted shrink-0" />
           )}

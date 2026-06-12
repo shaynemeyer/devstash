@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { ItemCard } from "@/components/items/ItemCard";
 import { ItemDrawer } from "@/components/items/ItemDrawer";
+import { useItemDrawerSelection } from "@/hooks/useItemDrawerSelection";
 import { ItemWithMeta } from "@/lib/db/items";
 
 interface ItemsGridProps {
@@ -12,13 +12,7 @@ interface ItemsGridProps {
 }
 
 export function ItemsGrid({ items, emptyLabel, isPro }: ItemsGridProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  function openDrawer(id: string) {
-    setSelectedId(id);
-    setDrawerOpen(true);
-  }
+  const { selectedId, drawerOpen, openDrawer, setDrawerOpen } = useItemDrawerSelection();
 
   if (items.length === 0) {
     return (
